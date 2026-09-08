@@ -1,0 +1,57 @@
+---
+/**
+ * Privacy note — served at /privacy/
+ *
+ * The contact form collects names, emails, and free text, which is personal data.
+ * docs/deploy-pipeline.md flags this as something to decide early; this page is the
+ * placeholder for that decision. Have someone who can actually speak for the group
+ * review the wording before launch.
+ */
+import BaseLayout from '~/layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Privacy"
+  description="What CSEED does with the information you send through this site."
+>
+  <div class="wrap prose body">
+    <h1>Privacy</h1>
+
+    <p>
+      <strong>Placeholder — needs review before launch.</strong> The specifics below are unconfirmed defaults,
+      not an agreed policy.
+    </p>
+
+    <h2>What we collect</h2>
+    <p>
+      If you use the contact form, we store the name, email address, and message you submit, along
+      with the time you sent it. Nothing else is collected — there is no analytics or advertising on
+      this site.
+    </p>
+
+    <h2>Why</h2>
+    <p>So we can read your message and reply to it. That is the only use.</p>
+
+    <h2>How long we keep it</h2>
+    <p>TODO: agree a retention period, and who on the team can read submissions.</p>
+
+    <h2>Spam protection</h2>
+    <p>
+      Form submissions are checked by Cloudflare Turnstile, which receives your IP address as part
+      of that check.
+    </p>
+
+    <h2>Removing your data</h2>
+    <p>Email <a href="mailto:cseed@example.edu">cseed@example.edu</a> and we will delete it.</p>
+  </div>
+</BaseLayout>
+
+<style>
+  .body {
+    padding-block: var(--space-xl);
+  }
+
+  h2 {
+    margin-top: var(--space-lg);
+  }
+</style>

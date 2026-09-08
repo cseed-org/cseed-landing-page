@@ -1,0 +1,98 @@
+---
+/**
+ * Home page — served at `/`.
+ *
+ * Files in src/pages/ become routes by their filename:
+ *   index.astro        -> /
+ *   about.astro        -> /about/
+ *   events/index.astro -> /events/
+ *   events/[id].astro  -> /events/<id>/   (one page per collection entry)
+ */
+import { getCollection } from 'astro:content';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import Hero from '~/components/Hero.astro';
+import Section from '~/components/Section.astro';
+import EventCard from '~/components/EventCard.astro';
+import ContactForm from '~/components/ContactForm.astro';
+
+// `getCollection` reads src/content/event-graphics/ through the loader defined in
+// src/content.config.ts. The second argument filters entries; here we drop drafts,
+// but only in production builds, so drafts stay visible while running `npm run dev`.
+const events = await getCollection(
+  'event-graphics',
+  ({ data }) => import.meta.env.DEV || !data.draft,
+);
+
+const sorted = events.sort((a, b) => a.data.date.getTime() - b.data.date.getTime());
+const featured = sorted.find((event) => event.data.featured);
+const upcoming = sorted.filter((event) => event.id !== featured?.id).slice(0, 3);
+---
+
+<BaseLayout
+  title="CSEED"
+  description="CSEED runs student-led events, workshops, and dialogues. Find what's coming up and get in touch."
+>
+  <Hero
+    eyebrow="Student-led since 2014"
+    title="Come build something with us"
+    lede="CSEED runs workshops, dinners, and dialogues across the year. Everything is free, and you never need to have come before."
+  >
+    <a class="button button--primary" href="/events/">See upcoming events</a>
+    <a class="button button--ghost" href="#contact">Get in touch</a>
+  </Hero>
+
+  {
+    featured && (
+      <Section title="Next up" intro="Our nearest event — no RSVP required unless noted.">
+        <EventCard event={featured} featured loading="eager" />
+      </Section>
+    )
+  }
+
+  <Section
+    id="events"
+    title="Also on the calendar"
+    intro="A rolling look at what else we have scheduled."
+  >
+    {
+      upcoming.length > 0 ? (
+        <ul class="grid">
+          {upcoming.map((event) => (
+            <li>
+              <EventCard event={event} />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>Nothing else scheduled right now — check back after the quarter starts.</p>
+      )
+    }
+
+    <p class="more">
+      <a href="/events/">View all events &rarr;</a>
+    </p>
+  </Section>
+
+  <Section
+    id="contact"
+    title="Get in touch"
+    intro="Questions, ideas, or want to run something with us? Send a note and we'll reply by email."
+  >
+    <ContactForm />
+  </Section>
+</BaseLayout>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+    gap: var(--space-md);
+    list-style: none;
+    padding: 0;
+  }
+
+  .more {
+    margin-top: var(--space-lg);
+    font-weight: 600;
+  }
+</style>

@@ -1,0 +1,39 @@
+---
+/** A titled page section, so headings and spacing stay consistent across pages. */
+interface Props {
+  title: string;
+  /** Optional line under the section title. */
+  intro?: string;
+  /** Anchor target, e.g. id="contact" for /#contact links. */
+  id?: string;
+}
+
+const { title, intro, id } = Astro.props;
+---
+
+<section id={id} class="section">
+  <div class="wrap">
+    <header class="head">
+      <h2>{title}</h2>
+      {intro && <p class="intro">{intro}</p>}
+    </header>
+    <slot />
+  </div>
+</section>
+
+<style>
+  .section {
+    padding-block: var(--space-xl);
+  }
+
+  .head {
+    margin-bottom: var(--space-lg);
+    max-width: var(--measure);
+  }
+
+  .intro {
+    margin-top: var(--space-sm);
+    color: var(--text-muted);
+    font-size: var(--step-1);
+  }
+</style>

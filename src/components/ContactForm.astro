@@ -1,0 +1,186 @@
+---
+/**
+ * Contact form.
+ *
+ * It posts to `/api/contact`, which is served by the Cloudflare Worker described in
+ * docs/deploy-pipeline.md. **That Worker does not exist in this repo yet** — until it
+ * is built, submitting here returns a 404 and the form shows its error state. The
+ * markup is finished and correct; only the backend is outstanding.
+ *
+ * Two things worth not "tidying away":
+ *  - The `company` field is a honeypot. It is hidden from people and ignored by
+ *    screen readers; bots fill it in, and the server drops anything that has it set.
+ *  - The form works without JavaScript. `method`/`action` are real, so a no-JS
+ *    submit still reaches the endpoint; the script below only upgrades it to a
+ *    fetch so the page does not navigate away.
+ */
+const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
+---
+
+<form id="contact-form" method="post" action="/api/contact" novalidate>
+  <div class="field">
+    <label for="cf-name">Name</label>
+    <input id="cf-name" name="name" type="text" required maxlength="100" autocomplete="name" />
+  </div>
+
+  <div class="field">
+    <label for="cf-email">Email</label>
+    <input id="cf-email" name="email" type="email" required maxlength="254" autocomplete="email" />
+  </div>
+
+  <div class="field">
+    <label for="cf-message">Message</label>
+    <textarea id="cf-message" name="message" required maxlength="5000" rows="5"></textarea>
+  </div>
+
+  <!-- Honeypot. Hidden from humans and assistive tech; bots fill it in. -->
+  <div class="honeypot" aria-hidden="true">
+    <label for="cf-company">Company</label>
+    <input id="cf-company" name="company" type="text" tabindex="-1" autocomplete="off" />
+  </div>
+
+  {
+    turnstileSiteKey ? (
+      <div class="cf-turnstile" data-sitekey={turnstileSiteKey} />
+    ) : (
+      <p class="hint">
+        Set <code>PUBLIC_TURNSTILE_SITE_KEY</code> in <code>.env</code> to enable the spam
+        challenge.
+      </p>
+    )
+  }
+
+  <button class="button button--primary" type="submit">Send message</button>
+
+  <!-- aria-live means screen readers announce the result without moving focus. -->
+  <p id="contact-status" class="status" role="status" aria-live="polite"></p>
+</form>
+
+{
+  turnstileSiteKey && (
+    <script is:inline async src="https://challenges.cloudflare.com/turnstile/v0/api.js" />
+  )
+}
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('#contact-form');
+  const status = document.querySelector<HTMLParagraphElement>('#contact-status');
+
+  if (form && status) {
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const button = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+      if (button) button.disabled = true;
+
+      status.dataset.state = 'pending';
+      status.textContent = 'Sending…';
+
+      try {
+        const response = await fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { Accept: 'application/json' },
+        });
+
+        if (!response.ok) throw new Error(`Request failed with ${response.status}`);
+
+        form.reset();
+        status.dataset.state = 'ok';
+        status.textContent = 'Thanks — we got your message and will reply by email.';
+      } catch {
+        status.dataset.state = 'error';
+        status.textContent =
+          'Something went wrong. Please try again, or email us directly at cseed@example.edu.';
+      } finally {
+        if (button) button.disabled = false;
+        // Turnstile tokens are single use, so a retry needs a fresh one.
+        window.turnstile?.reset();
+      }
+    });
+  }
+</script>
+
+<style>
+  form {
+    display: grid;
+    gap: var(--space-md);
+    max-width: 34rem;
+    padding: var(--space-lg);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+  }
+
+  .field {
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  label {
+    font-size: var(--step--1);
+    font-weight: 600;
+  }
+
+  input,
+  textarea {
+    padding: 0.6em 0.75em;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    resize: vertical;
+  }
+
+  input:focus-visible,
+  textarea:focus-visible {
+    border-color: var(--brand);
+  }
+
+  /* Off-screen rather than display:none — some bots skip hidden inputs. */
+  .honeypot {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  button {
+    justify-self: start;
+  }
+
+  button:disabled {
+    opacity: 0.6;
+    cursor: progress;
+  }
+
+  .hint,
+  .status {
+    font-size: var(--step--1);
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  .status:empty {
+    display: none;
+  }
+
+  .status[data-state='ok'] {
+    color: #15803d;
+  }
+
+  .status[data-state='error'] {
+    color: #b91c1c;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .status[data-state='ok'] {
+      color: #6ee7a8;
+    }
+
+    .status[data-state='error'] {
+      color: #fca5a5;
+    }
+  }
+</style>

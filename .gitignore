@@ -1,0 +1,28 @@
+# build output
+dist/
+.astro/
+
+# dependencies
+node_modules/
+
+# cloudflare / wrangler local state (includes the local D1 sqlite file)
+.wrangler/
+
+# environment
+.env
+.env.production
+.dev.vars
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# editors / os
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/

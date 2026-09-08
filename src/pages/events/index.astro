@@ -1,0 +1,86 @@
+---
+/** Event index — served at /events/ */
+import { getCollection } from 'astro:content';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import Hero from '~/components/Hero.astro';
+import EventCard from '~/components/EventCard.astro';
+import { isUpcoming } from '~/lib/datetime';
+
+const events = await getCollection(
+  'event-graphics',
+  ({ data }) => import.meta.env.DEV || !data.draft,
+);
+
+const upcoming = events
+  .filter((event) => isUpcoming(event.data.date))
+  .sort((a, b) => a.data.date.getTime() - b.data.date.getTime());
+
+const past = events
+  .filter((event) => !isUpcoming(event.data.date))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+---
+
+<BaseLayout
+  title="Events"
+  description="Everything CSEED has coming up, plus an archive of past events."
+>
+  <Hero
+    eyebrow="Calendar"
+    title="Events"
+    lede="Everything we have scheduled. Drop-ins are welcome unless an event says otherwise."
+  />
+
+  <div class="wrap stack">
+    <section>
+      <h2>Upcoming</h2>
+      {
+        upcoming.length > 0 ? (
+          <ul class="grid">
+            {upcoming.map((event, index) => (
+              <li>
+                <EventCard event={event} loading={index < 2 ? 'eager' : 'lazy'} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No events scheduled yet. Check back soon.</p>
+        )
+      }
+    </section>
+
+    {
+      past.length > 0 && (
+        <section>
+          <h2>Past</h2>
+          <ul class="grid">
+            {past.map((event) => (
+              <li>
+                <EventCard event={event} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+  </div>
+</BaseLayout>
+
+<style>
+  .stack {
+    display: grid;
+    gap: var(--space-xl);
+    padding-block: var(--space-xl);
+  }
+
+  h2 {
+    margin-bottom: var(--space-md);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+    gap: var(--space-md);
+    list-style: none;
+    padding: 0;
+  }
+</style>
