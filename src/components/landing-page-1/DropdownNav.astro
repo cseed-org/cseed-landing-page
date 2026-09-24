@@ -18,26 +18,32 @@ const {
 } = Astro.props;
 ---
 <div class={`cseed-dropdown ${className ?? ''}`} style={`width:703px;padding-bottom:98px;${style}`}>
-  {label && (
-    <div class="cseed-dropdown__label" style="width:703px;text-align:center;font:var(--type-display-nav);letter-spacing:var(--tracking-display);color:var(--text-body);">
-      {label}
+  <div class="cseed-dropdown__panel">
+    {label && (
+      <div class="cseed-dropdown__label" style="width:703px;text-align:center;font:var(--type-display-nav);letter-spacing:var(--tracking-display);color:var(--text-body);">
+        {label}
+      </div>
+    )}
+    <div style={`padding-top:${label ? 0 : 20}px;padding-bottom:20px;`}>
+      {items.map((item) => (
+        <a
+          href={`#${item.target}`}
+          data-nav-link
+          data-nav-target={item.target}
+          class="cseed-dropdown__item"
+        >
+          <span>{item.label}</span>
+        </a>
+      ))}
     </div>
-  )}
-  <div style={`padding-top:${label ? 0 : 20}px;`}>
-    {items.map((item) => (
-      <a
-        href={`#${item.target}`}
-        data-nav-link
-        data-nav-target={item.target}
-        class="cseed-dropdown__item"
-      >
-        <span>{item.label}</span>
-      </a>
-    ))}
   </div>
 </div>
 
 <style>
+  .cseed-dropdown__panel {
+    background: var(--cseed-white);
+    box-shadow: 0 24px 48px -20px rgba(0, 0, 0, 0.35), 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
   .cseed-dropdown__item {
     display: block;
     width: 703px;
