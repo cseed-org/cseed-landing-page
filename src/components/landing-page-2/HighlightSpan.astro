@@ -1,0 +1,25 @@
+---
+/* Flat colour block behind a run of words, as in the about statement. */
+const TONE: Record<string, string> = {
+  yellow: 'var(--highlight-text-warm)',
+  pink: 'var(--highlight-text-pink)',
+  gold: 'var(--cs-highlight-yellow)',
+};
+
+interface Props {
+  tone?: string;
+}
+const { tone = 'yellow' } = Astro.props;
+---
+<span class="cs-highlight" style={`background:${TONE[tone] ?? tone};`}>
+  <slot />
+</span>
+
+<style>
+  .cs-highlight {
+    padding: 0 0.12em 0.04em;
+    margin: 0 -0.12em;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+</style>

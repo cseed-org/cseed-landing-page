@@ -1,0 +1,54 @@
+---
+interface Link {
+  label: string;
+  href?: string;
+}
+interface Props {
+  heading: string;
+  links?: Link[];
+}
+const { heading, links = [] } = Astro.props;
+---
+<div class="cs-footer-col">
+  <p class="cs-footer-col__heading">{heading}</p>
+  <div class="cs-footer-col__links">
+    {links.map((l) => (
+      <a href={l.href ?? '#'} class="cs-footer-col__link">{l.label}</a>
+    ))}
+  </div>
+</div>
+
+<style>
+  .cs-footer-col {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .cs-footer-col__heading {
+    margin: 0;
+    font-family: var(--font-brand);
+    font-size: var(--fs-footer-heading);
+    line-height: 1.2;
+    letter-spacing: var(--ls-tight);
+    color: var(--text-inverse);
+  }
+  .cs-footer-col__links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .cs-footer-col__link {
+    font-family: var(--font-brand);
+    font-size: var(--fs-footer-link);
+    line-height: 1.4;
+    letter-spacing: var(--ls-tight);
+    color: var(--text-inverse);
+    text-decoration: none;
+    width: fit-content;
+    transition: opacity var(--dur-fast) var(--ease-out-soft);
+  }
+  .cs-footer-col__link:hover {
+    color: var(--text-inverse);
+    opacity: 0.62;
+  }
+</style>

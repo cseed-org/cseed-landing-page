@@ -1,0 +1,22 @@
+---
+interface Props {
+  color?: string;
+  align?: string;
+  class?: string;
+}
+const { color = 'var(--cs-black)', align = 'left', class: className } = Astro.props;
+---
+<p class={`cs-eyebrow ${className ?? ''}`} style={`color:${color};text-align:${align};`}>
+  <slot />
+</p>
+
+<style>
+  .cs-eyebrow {
+    margin: 0;
+    font-family: var(--font-brand);
+    font-weight: 600;
+    font-size: var(--fs-eyebrow);
+    line-height: 1.2;
+    letter-spacing: 0.01em;
+  }
+</style>

@@ -1,0 +1,44 @@
+---
+import Wordmark from './Wordmark.astro';
+import NavPill from './NavPill.astro';
+
+const items = [
+  { label: 'BuildSpace', color: 'blue', href: '#buildspace' },
+  { label: 'BuildHer', color: 'pink', href: '#buildher' },
+  { label: 'Saturdays', color: 'gold', href: '#saturdays' },
+  { label: 'About Us', color: 'olive', href: '#about' },
+  { label: 'Join', color: 'rose', href: '#join' },
+];
+---
+<header class="cs-navbar">
+  <div class="cs-navbar__row">
+    <a href="#top" data-nav-link data-nav-target="top" style="text-decoration:none;">
+      <Wordmark size="30px" />
+    </a>
+    <nav class="cs-navbar__items">
+      {items.map((item) => <NavPill {...item} />)}
+    </nav>
+  </div>
+</header>
+
+<style>
+  .cs-navbar {
+    background: var(--surface-page);
+  }
+  .cs-navbar__row {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: 22px var(--gutter);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+  }
+  .cs-navbar__items {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+</style>

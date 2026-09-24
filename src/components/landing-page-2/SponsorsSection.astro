@@ -1,0 +1,63 @@
+---
+import SponsorStrip from './SponsorStrip.astro';
+import NewsletterSignup from './NewsletterSignup.astro';
+
+import sponsorMadrona from '../../assets/landing-page-2/sponsors/madrona.png';
+import sponsorFive from '../../assets/landing-page-2/sponsors/sponsor-5.png';
+
+// allen-school.png and sponsor-4.png couldn't be pulled from the design source (over
+// the design MCP's per-file size cap) — SponsorStrip falls back to a placeholder swatch
+// for any logo without a `src`. Drop these two in at src/assets/landing-page-2/sponsors/
+// and wire them back in here once you have them.
+const logos = [
+  { src: sponsorMadrona.src, alt: 'Madrona Venture Labs' },
+  { alt: 'Paul G. Allen School of Computer Science & Engineering' },
+  { alt: 'Pioneer Square Labs' },
+  { alt: 'Sponsor' },
+  { src: sponsorFive.src, alt: 'Pack Ventures' },
+];
+---
+<section class="cs-sponsors">
+  <div class="cs-sponsors__intro">
+    <h2 class="cs-sponsors__title">Sponsors</h2>
+    <p class="cs-sponsors__sub">A huge thank you to our supporters!</p>
+  </div>
+  <SponsorStrip logos={logos} />
+</section>
+
+<section id="join" class="cs-newsletter-section">
+  <NewsletterSignup />
+</section>
+
+<style>
+  .cs-sponsors {
+    padding-top: var(--section-gap);
+  }
+  .cs-sponsors__intro {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: 0 var(--gutter) clamp(32px, 4vw, 48px);
+    text-align: center;
+  }
+  .cs-sponsors__title {
+    margin: 0;
+    font-family: var(--font-brand);
+    font-weight: 400;
+    font-size: var(--fs-section-title);
+    line-height: 1.1;
+    letter-spacing: var(--ls-tight);
+    color: var(--cs-black);
+  }
+  .cs-sponsors__sub {
+    margin: 14px 0 0;
+    font-family: var(--font-brand);
+    font-size: var(--fs-section-sub);
+    line-height: 1.4;
+    color: var(--cs-black);
+  }
+  .cs-newsletter-section {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: var(--section-gap) var(--gutter) 0;
+  }
+</style>

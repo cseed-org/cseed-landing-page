@@ -1,0 +1,142 @@
+---
+import ProgramMark from './ProgramMark.astro';
+import DisplayHeading from './DisplayHeading.astro';
+import ExploreLink from './ExploreLink.astro';
+
+/* One slanted program band. `topLeft` / `topRight` are the top edge's offsets
+   from the box top, in vw. The fill runs past the box bottom by `bleed` vw so the
+   next band (stacked after it) draws the shared edge. Pass `bottomLeft` /
+   `bottomRight` (vw up from the box bottom) on the last band to close it.
+   Motion: the edge line draws across, the mark drops and settles, copy rises in;
+   while on screen the mark counter-rotates gently with scroll (see the page's
+   shared script for the scroll-linked --spin custom property). */
+const PANEL: Record<string, string> = {
+  blue: 'var(--cs-panel-blue)',
+  yellow: 'var(--cs-panel-yellow)',
+  pink: 'var(--cs-panel-pink)',
+};
+
+interface Props {
+  program?: 'buildspace' | 'buildher' | 'saturdays';
+  color?: string;
+  name?: string;
+  description?: string;
+  linkLabel?: string;
+  href?: string;
+  topLeft?: number;
+  topRight?: number;
+  bottomLeft?: number;
+  bottomRight?: number;
+  bleed?: number;
+  id?: string;
+}
+const {
+  program = 'buildspace',
+  color = 'blue',
+  name = 'buildspace',
+  description = 'A six-week cohort to build the idea that never left your mind.',
+  linkLabel = 'explore buildspace',
+  href = '#',
+  topLeft = 4,
+  topRight = 0,
+  bottomLeft,
+  bottomRight,
+  bleed = 8,
+  id,
+} = Astro.props;
+
+const closed = bottomLeft != null;
+const br = bottomRight ?? bottomLeft;
+const bl = closed ? `calc(100% - ${bottomLeft}vw)` : `calc(100% + ${bleed}vw)`;
+const brCalc = closed ? `calc(100% - ${br}vw)` : `calc(100% + ${bleed}vw)`;
+const clip = closed
+  ? `polygon(0 ${topLeft}vw, 100% ${topRight}vw, 100% ${brCalc}, 0 ${bl})`
+  : `polygon(0 ${topLeft}vw, 100% ${topRight}vw, 100% 100%, 0 100%)`;
+
+function edgeStyle(yl: number, yr: number, fromBottom: boolean) {
+  const lo = Math.min(yl, yr);
+  const hi = Math.max(yl, yr);
+  const rising = fromBottom ? yl < yr : yl > yr;
+  return { lo, hi, rising, side: fromBottom ? 'bottom' : 'top' };
+}
+const topEdge = edgeStyle(topLeft, topRight, false);
+const bottomEdge = closed ? edgeStyle(bottomLeft as number, br as number, true) : null;
+---
+<section id={id} class="cs-panel" style={`min-height:var(--band-height);`} data-program-panel>
+  <div class="cs-panel__fill" style={`background:${PANEL[color] ?? color};clip-path:${clip};inset:0 0 ${closed ? 0 : `-${bleed}vw`} 0;`}></div>
+
+  <svg class="cs-panel__edge" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"
+    style={`top:calc(${topEdge.lo}vw - 1px);height:calc(${topEdge.hi - topEdge.lo}vw + 2px);`}
+    data-reveal-edge>
+    <line x1="0" y1={topEdge.rising ? 10 : 0} x2="100" y2={topEdge.rising ? 0 : 10} stroke="var(--cs-black)" stroke-width="1" vector-effect="non-scaling-stroke" />
+  </svg>
+
+  {bottomEdge && (
+    <svg class="cs-panel__edge cs-panel__edge--bottom" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"
+      style={`bottom:calc(${bottomEdge.lo}vw - 1px);height:calc(${bottomEdge.hi - bottomEdge.lo}vw + 2px);`}
+      data-reveal-edge>
+      <line x1="0" y1={bottomEdge.rising ? 10 : 0} x2="100" y2={bottomEdge.rising ? 0 : 10} stroke="var(--cs-black)" stroke-width="1" vector-effect="non-scaling-stroke" />
+    </svg>
+  )}
+
+  <div class="cs-panel__content" style={`padding:calc(${(topLeft + topRight) / 2}vw - 0.6vw) var(--gutter) ${closed ? 'calc(var(--band-slant) + 56px)' : '72px'};`}>
+    <div class="cs-panel__mark" data-reveal-mark data-mark-spin>
+      <ProgramMark program={program} width="var(--mark-width)" />
+    </div>
+    <div class="cs-panel__name" data-reveal style="margin-top:clamp(8px,1.4vw,20px);">
+      <DisplayHeading as="h3" size="var(--fs-program-name)" align="center">{name}</DisplayHeading>
+    </div>
+    <p class="cs-panel__description" data-reveal style="transition-delay:90ms;">{description}</p>
+    <div class="cs-panel__link" data-reveal style="transition-delay:180ms;">
+      <ExploreLink label={linkLabel} href={href} />
+    </div>
+  </div>
+</section>
+
+<style>
+  .cs-panel {
+    position: relative;
+  }
+  .cs-panel__fill {
+    position: absolute;
+  }
+  .cs-panel__edge {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    overflow: visible;
+    z-index: 1;
+    pointer-events: none;
+  }
+  .cs-panel__content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .cs-panel__mark {
+    opacity: 0;
+    transform: translateY(-40px) rotate(-18deg) scale(0.7);
+    transition:
+      opacity 500ms var(--ease-out-soft),
+      transform 1100ms var(--ease-out-soft);
+  }
+  .cs-panel__mark.is-revealed {
+    opacity: 1;
+    transform: translateY(0) rotate(var(--spin, 0deg)) scale(1);
+  }
+  .cs-panel__description {
+    margin: 12px 0 0;
+    max-width: 25ch;
+    font-family: var(--font-body);
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--cs-ink);
+    text-wrap: balance;
+  }
+  .cs-panel__link {
+    margin-top: 28px;
+  }
+</style>

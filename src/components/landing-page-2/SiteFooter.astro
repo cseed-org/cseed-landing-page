@@ -1,0 +1,39 @@
+---
+import FooterColumn from './FooterColumn.astro';
+
+const columns = [
+  {
+    heading: 'Programs',
+    links: [
+      { label: 'buildspace', href: '#buildspace' },
+      { label: 'buildher', href: '#buildher' },
+      { label: 'saturdays', href: '#saturdays' },
+    ],
+  },
+  {
+    heading: 'Contact',
+    links: [{ label: 'newsletter', href: '#join' }, { label: 'cseed email' }, { label: 'instagram' }],
+  },
+];
+---
+<footer class="cs-site-footer">
+  <div class="cs-site-footer__row">
+    {columns.map((c) => (
+      <FooterColumn heading={c.heading} links={c.links} />
+    ))}
+  </div>
+</footer>
+
+<style>
+  .cs-site-footer {
+    background: var(--surface-footer);
+  }
+  .cs-site-footer__row {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: clamp(40px, 5vw, 64px) var(--gutter) clamp(64px, 8vw, 112px);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px clamp(64px, 9vw, 140px);
+  }
+</style>

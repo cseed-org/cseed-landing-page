@@ -1,0 +1,52 @@
+---
+/* A nav word on a flat highlight block, one colour per item, nudges up and
+   tilts slightly on hover. */
+const PILL: Record<string, string> = {
+  blue: 'var(--cs-pill-blue)',
+  pink: 'var(--cs-pill-pink)',
+  gold: 'var(--cs-pill-gold)',
+  olive: 'var(--cs-pill-olive)',
+  rose: 'var(--cs-pill-rose)',
+};
+
+interface Props {
+  label: string;
+  color?: string;
+  href?: string;
+  active?: boolean;
+}
+const { label, color = 'blue', href = '#', active = false } = Astro.props;
+---
+<a
+  href={href}
+  data-nav-link
+  data-nav-target={href.replace(/^#/, '')}
+  class="cs-navpill"
+  style={`background:${PILL[color] ?? color};`}
+  data-active={active ? 'true' : undefined}
+>{label}</a>
+
+<style>
+  .cs-navpill {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 7px 4px;
+    font-family: var(--font-brand);
+    font-weight: 400;
+    font-size: var(--fs-nav-link);
+    line-height: 1.2;
+    letter-spacing: var(--ls-tight);
+    color: var(--cs-brown);
+    white-space: nowrap;
+    text-decoration: none;
+    text-underline-offset: 3px;
+    transition: transform var(--dur-fast) var(--ease-out-soft);
+  }
+  .cs-navpill:hover {
+    color: var(--cs-brown);
+    transform: translateY(-2px) rotate(-1.5deg);
+  }
+  .cs-navpill[data-active] {
+    text-decoration: underline;
+  }
+</style>

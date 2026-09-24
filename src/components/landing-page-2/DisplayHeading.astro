@@ -1,0 +1,26 @@
+---
+/* Lowercase Urbanist Medium display line — section heads and program names. */
+interface Props {
+  size?: string;
+  align?: string;
+  color?: string;
+  as?: 'h1' | 'h2' | 'h3';
+  class?: string;
+}
+const { size = 'var(--fs-display)', align = 'left', color = 'var(--cs-black)', as: Tag = 'h2', class: className } =
+  Astro.props;
+---
+<Tag class={`cs-display-heading ${className ?? ''}`} style={`font-size:${size};text-align:${align};color:${color};`}>
+  <slot />
+</Tag>
+
+<style>
+  .cs-display-heading {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 500;
+    line-height: var(--lh-display);
+    letter-spacing: var(--ls-tight);
+    text-wrap: balance;
+  }
+</style>
