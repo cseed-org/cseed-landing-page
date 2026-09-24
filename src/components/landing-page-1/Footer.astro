@@ -1,0 +1,124 @@
+---
+import Wordmark from './Wordmark.astro';
+
+interface LinkItem { label: string; href: string; target?: string }
+interface Column { heading: string; links: LinkItem[] }
+
+const columns: Column[] = [
+  {
+    heading: 'programs',
+    links: [
+      { label: 'buildspace', href: '#programs', target: 'programs' },
+      { label: 'buildher', href: '#programs', target: 'programs' },
+      { label: 'saturdays', href: '#programs', target: 'programs' },
+    ],
+  },
+  {
+    heading: 'cseed',
+    links: [
+      { label: 'about us', href: '#about', target: 'about' },
+      { label: 'join', href: '#join', target: 'join' },
+      { label: 'sponsors', href: '#sponsors', target: 'sponsors' },
+    ],
+  },
+  {
+    heading: 'connect',
+    links: [
+      // TODO: swap in the real profile/handle URLs once cseed has them.
+      { label: 'instagram', href: '#' },
+      { label: 'linkedin', href: '#' },
+      { label: 'email us', href: 'mailto:hello@cseed.example.edu' },
+    ],
+  },
+];
+
+const year = new Date().getFullYear();
+
+interface Props {
+  style?: string;
+  class?: string;
+}
+const { style = '', class: className } = Astro.props;
+---
+<footer class={className} style={`width:2083px;background:var(--cseed-sun);${style}`}>
+  <div class="cseed-footer__row">
+    <div>
+      <Wordmark size={64} color="var(--cseed-ink)" />
+      <p class="cseed-footer__tagline">good people. curious ideas.</p>
+    </div>
+
+    <div class="cseed-footer__columns">
+      {columns.map((col) => (
+        <div class="cseed-footer__column">
+          <div class="cseed-footer__heading">{col.heading}</div>
+          {col.links.map((link) =>
+            link.target ? (
+              <a href={link.href} data-nav-link data-nav-target={link.target} class="cseed-footer__link">
+                {link.label}
+              </a>
+            ) : (
+              <a href={link.href} class="cseed-footer__link">{link.label}</a>
+            )
+          )}
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <p class="cseed-footer__copyright">&copy; {year} cseed. All rights reserved.</p>
+</footer>
+
+<style>
+  footer {
+    padding: 160px 83px 56px;
+    box-sizing: border-box;
+  }
+  .cseed-footer__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 64px;
+  }
+  .cseed-footer__tagline {
+    margin: 24px 0 0;
+    font: 400 32px/1.3 var(--font-display);
+    letter-spacing: var(--tracking-display);
+    color: var(--cseed-ink);
+  }
+  .cseed-footer__columns {
+    display: flex;
+    gap: 140px;
+  }
+  .cseed-footer__column {
+    display: flex;
+    flex-direction: column;
+  }
+  .cseed-footer__heading {
+    font: 500 26px/1 var(--font-body);
+    letter-spacing: var(--tracking-body);
+    color: var(--cseed-ink);
+    margin-bottom: 24px;
+  }
+  .cseed-footer__link {
+    display: block;
+    font: var(--weight-body) 24px/48px var(--font-body);
+    letter-spacing: var(--tracking-body);
+    color: var(--cseed-ink);
+    text-decoration: none;
+    opacity: 0.72;
+    transition: opacity var(--dur-hover) var(--ease-soft);
+  }
+  .cseed-footer__link:hover {
+    opacity: 1;
+    color: var(--cseed-ink);
+  }
+  .cseed-footer__copyright {
+    margin: 220px 0 0;
+    text-align: center;
+    font: var(--weight-body) 20px/1 var(--font-body);
+    letter-spacing: var(--tracking-body);
+    color: var(--cseed-ink);
+    opacity: 0.85;
+  }
+</style>
