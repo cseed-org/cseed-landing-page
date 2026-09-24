@@ -17,10 +17,10 @@ const {
   class: className,
 } = Astro.props;
 ---
-<div class={`cseed-dropdown ${className ?? ''}`} style={`width:703px;padding-bottom:98px;${style}`}>
+<div class={`cseed-dropdown ${className ?? ''}`} style={`width:max-content;padding-bottom:98px;${style}`}>
   <div class="cseed-dropdown__panel">
     {label && (
-      <div class="cseed-dropdown__label" style="width:703px;text-align:center;font:var(--type-display-nav);letter-spacing:var(--tracking-display);color:var(--text-body);">
+      <div class="cseed-dropdown__label" style="text-align:center;font:var(--type-display-nav);letter-spacing:var(--tracking-display);color:var(--text-body);">
         {label}
       </div>
     )}
@@ -41,14 +41,15 @@ const {
 
 <style>
   .cseed-dropdown__panel {
-    background: var(--cseed-white);
+    width: max-content;
+    background: var(--surface-page);
     box-shadow: 0 24px 48px -20px rgba(0, 0, 0, 0.35), 0 4px 12px rgba(0, 0, 0, 0.08);
   }
   .cseed-dropdown__item {
     display: block;
-    width: 703px;
     height: 72px;
     line-height: 72px;
+    padding: 0 32px;
     text-align: center;
     font: var(--weight-body) 28px/72px var(--font-body);
     letter-spacing: var(--tracking-body);
