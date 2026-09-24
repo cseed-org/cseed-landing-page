@@ -1,0 +1,42 @@
+---
+import SectionHeading from './SectionHeading.astro';
+import TextLink from './TextLink.astro';
+
+interface Props {
+  wideImageSrc?: string;
+  tallImageSrc?: string;
+  style?: string;
+  class?: string;
+}
+const { wideImageSrc, tallImageSrc, style = '', class: className } = Astro.props;
+---
+<div class={className} style={style}>
+  <div data-reveal>
+    <SectionHeading align="left" width={1400} style="margin-left:83px;margin-top:128px;">
+      come as you are. make something yours.
+    </SectionHeading>
+  </div>
+  <div data-reveal style="transition-delay:120ms;">
+    <div style="margin-left:83px;margin-top:-32px;">
+      <TextLink href="#join" arrowLength={39.408} data-nav-link data-nav-target="join">join cseed</TextLink>
+    </div>
+  </div>
+  <div data-reveal="fade" style="transition-delay:240ms;">
+    <div style="display:flex;gap:67px;margin-top:104px;padding-left:47px;">
+      <div
+        style={`width:1344px;height:644px;flex:none;${
+          wideImageSrc
+            ? `background:url("${wideImageSrc}") center / cover no-repeat;`
+            : 'background:var(--surface-placeholder);'
+        }`}
+      ></div>
+      <div
+        style={`width:560px;height:644px;flex:none;${
+          tallImageSrc
+            ? `background:url("${tallImageSrc}") 35.385% 0% / 111.130% 104.348% no-repeat;`
+            : 'background:var(--surface-placeholder);'
+        }`}
+      ></div>
+    </div>
+  </div>
+</div>

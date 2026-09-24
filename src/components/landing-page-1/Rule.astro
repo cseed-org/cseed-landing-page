@@ -1,0 +1,32 @@
+---
+interface Props {
+  width?: number;
+  weight?: number;
+  color?: string;
+  vertical?: boolean;
+  length?: number;
+  animate?: boolean;
+  delay?: number;
+  style?: string;
+  class?: string;
+}
+const {
+  width = 1920,
+  weight = 0.5,
+  color = 'var(--rule-ink)',
+  vertical = false,
+  length,
+  animate = false,
+  delay = 0,
+  style = '',
+  class: className,
+} = Astro.props;
+
+const size = vertical
+  ? `width:${weight}px;height:${length ?? width}px;`
+  : `width:${width}px;height:${weight}px;`;
+const animAttrs = animate
+  ? { 'data-rule-animate': vertical ? 'vertical' : 'horizontal', style: `${size}background:${color};flex:none;transition-delay:${delay}ms;${style}` }
+  : { style: `${size}background:${color};flex:none;${style}` };
+---
+<div class={className} {...animAttrs}></div>

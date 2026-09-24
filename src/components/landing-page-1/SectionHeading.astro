@@ -1,0 +1,24 @@
+---
+interface Props {
+  size?: number;
+  width?: number;
+  align?: 'left' | 'center' | 'right';
+  color?: string;
+  as?: string;
+  style?: string;
+  class?: string;
+}
+const {
+  size = 96,
+  width = 740,
+  align = 'center',
+  color = 'var(--text-body)',
+  as: Tag = 'h2',
+  style = '',
+  class: className,
+} = Astro.props;
+---
+<Tag
+  class={className}
+  style={`margin:0;width:${width}px;height:200px;font:${'var(--weight-display)'} ${size}px/200px var(--font-display);letter-spacing:var(--tracking-display);text-align:${align};white-space:nowrap;color:${color};${style}`}
+><slot /></Tag>

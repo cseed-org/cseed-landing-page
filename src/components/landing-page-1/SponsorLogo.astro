@@ -1,0 +1,20 @@
+---
+interface Props {
+  src?: string;
+  alt?: string;
+  width?: number;
+  height?: number;
+  style?: string;
+  class?: string;
+}
+const { src, alt = '', width = 347, height = 99, style = '', class: className } = Astro.props;
+const fill = src
+  ? `background:url("${src}") center / contain no-repeat;`
+  : `background:var(--surface-placeholder);border-radius:4px;`;
+---
+<div
+  class={className}
+  role="img"
+  aria-label={alt}
+  style={`width:${width}px;height:${height}px;flex:none;${fill}${style}`}
+></div>

@@ -1,0 +1,14 @@
+---
+interface Props {
+  size?: number;
+  color?: string;
+  as?: string;
+  style?: string;
+  class?: string;
+}
+const { size = 60, color = 'var(--text-wordmark-page)', as: Tag = 'span', style = '', class: className } = Astro.props;
+---
+<Tag
+  class={className}
+  style={`display:inline-block;font:${'var(--weight-wordmark)'} ${size}px/200px var(--font-wordmark);letter-spacing:var(--tracking-wordmark);color:${color};white-space:nowrap;${style}`}
+>cseed</Tag>

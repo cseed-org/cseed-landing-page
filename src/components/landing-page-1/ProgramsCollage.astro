@@ -1,0 +1,125 @@
+---
+import Polaroid from './Polaroid.astro';
+import ProgramCopy from './ProgramCopy.astro';
+import HighlightStroke from './HighlightStroke.astro';
+
+interface Props {
+  buildspaceImageSrc?: string;
+  buildherImageSrc?: string;
+  saturdaysImageSrc?: string;
+  communityWideImageSrc?: string;
+  style?: string;
+  class?: string;
+}
+const {
+  buildspaceImageSrc,
+  buildherImageSrc,
+  saturdaysImageSrc,
+  communityWideImageSrc,
+  style = '',
+  class: className,
+} = Astro.props;
+---
+<div class={className} style={`position:relative;width:2083px;height:2560px;${style}`}>
+  <!-- intro -->
+  <div class="cseed-collage__intro">
+    <div style="position:relative;">
+      <div data-reveal>
+        <h2 class="cseed-collage__title">a place for your<br />next what if.</h2>
+      </div>
+      <HighlightStroke style="left:340px;top:276px;" />
+    </div>
+    <div data-reveal style="transition-delay:200ms;">
+      <p class="cseed-collage__lede">{'We bring curious people together\nto build, design, and try something new.\nAll experience levels welcome.'}</p>
+    </div>
+    <div data-reveal style="transition-delay:300ms;grid-column:1 / -1;margin-top:56px;">
+      <div class="cseed-collage__eyebrow">three ways to make yourself at home</div>
+    </div>
+  </div>
+
+  <!-- 01 buildspace -->
+  <div data-reveal="fade" style="position:absolute;left:130px;top:555px;">
+    <Polaroid src={saturdaysImageSrc} w={920} h={590} rotate={-1.2} position="center 30%" />
+  </div>
+  <div data-reveal style="transition-delay:200ms;position:absolute;left:150px;top:1185px;">
+    <div class="cseed-collage__hand" style="transform:rotate(-1.5deg);">little ideas, big cheers.</div>
+  </div>
+  <ProgramCopy
+    n="01" eyebrow="the six-week cohort" name="buildspace" link="find your cohort"
+    blurb={'Make progress on that idea you keep\nthinking about, with a community\nbuilding alongside you.'}
+    style="left:1150px;top:610px;"
+  />
+
+  <!-- 02 buildher -->
+  <ProgramCopy
+    n="02" eyebrow="grow together" name="buildher" link="meet buildher"
+    blurb={'A welcoming community for women\nand non-binary people exploring STEM.'}
+    style="left:110px;top:1375px;"
+  />
+  <div data-reveal="fade" style="position:absolute;left:965px;top:1225px;">
+    <Polaroid src={buildspaceImageSrc} w={740} h={560} rotate={-1.5} position="center 20%" />
+  </div>
+  <div data-reveal="fade" style="transition-delay:180ms;position:absolute;left:1680px;top:1375px;">
+    <Polaroid src={buildherImageSrc} w={290} h={440} rotate={2.2} position="22% center" style="z-index:2;" />
+  </div>
+  <div data-reveal style="transition-delay:300ms;position:absolute;left:1745px;top:1100px;">
+    <div style="position:relative;">
+      <div class="cseed-collage__hand" style="transform:rotate(-8deg);text-align:center;width:230px;">curious<br />people<br />brighter<br />together.</div>
+      <svg width="96" height="80" viewBox="0 0 96 80" style="position:absolute;left:-110px;top:60px;overflow:visible;" aria-hidden="true">
+        <path d="M90 6 C 55 10, 25 30, 12 68" stroke="#000" stroke-width="2.4" fill="none" stroke-linecap="round" />
+        <path d="M2 52 L 12 70 L 28 58" stroke="#000" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </div>
+  </div>
+
+  <!-- 03 saturdays -->
+  <div data-reveal="fade" style="position:absolute;left:80px;top:1900px;">
+    <Polaroid src={communityWideImageSrc} w={1100} h={530} rotate={-1.6} />
+  </div>
+  <div data-reveal style="transition-delay:200ms;position:absolute;left:120px;top:2475px;">
+    <div class="cseed-collage__hand" style="transform:rotate(-1.5deg);">same energy, different ideas.</div>
+  </div>
+  <ProgramCopy
+    n="03" eyebrow="come hang out" name="saturdays" link="see you saturday"
+    blurb={'Bring a project, a question, or just\nyourself. A weekly space to make\nthings and meet people.'}
+    style="left:1260px;top:1985px;"
+  />
+</div>
+
+<style>
+  .cseed-collage__intro {
+    position: absolute;
+    left: 100px;
+    top: 40px;
+    width: 1883px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 80px;
+    align-items: end;
+  }
+  .cseed-collage__title {
+    font: 400 150px/0.95 var(--font-display);
+    letter-spacing: -0.045em;
+    color: var(--cseed-ink);
+    margin: 0;
+  }
+  .cseed-collage__lede {
+    font: 300 34px/1.5 var(--font-body);
+    color: var(--cseed-ink);
+    margin: 0;
+    padding-bottom: 14px;
+    white-space: pre-line;
+  }
+  .cseed-collage__eyebrow {
+    font: 400 18px/1 var(--font-body);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--cseed-ink);
+    padding-left: 6px;
+  }
+  .cseed-collage__hand {
+    font: 400 28px/1.15 var(--font-hand);
+    letter-spacing: 0.06em;
+    color: var(--cseed-ink);
+  }
+</style>

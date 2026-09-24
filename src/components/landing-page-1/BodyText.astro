@@ -1,0 +1,25 @@
+---
+interface Props {
+  width?: number | string;
+  leading?: number;
+  align?: 'left' | 'center' | 'right';
+  color?: string;
+  as?: string;
+  style?: string;
+  class?: string;
+}
+const {
+  width = 703,
+  leading = 61,
+  align = 'left',
+  color = 'var(--text-body)',
+  as: Tag = 'p',
+  style = '',
+  class: className,
+} = Astro.props;
+const widthCss = typeof width === 'number' ? `${width}px` : width;
+---
+<Tag
+  class={className}
+  style={`margin:0;width:${widthCss};font:${'var(--weight-body)'} var(--size-body)/${leading}px var(--font-body);letter-spacing:var(--tracking-body);text-align:${align};white-space:pre-line;color:${color};${style}`}
+><slot /></Tag>

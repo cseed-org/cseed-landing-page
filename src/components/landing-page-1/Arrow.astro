@@ -1,0 +1,23 @@
+---
+// Arrow geometry transcribed verbatim from the .fig vector paths
+// (Arrow 5/6 = 86px, Arrow 10 = 39.408px, Arrow 11 = 36.235px, Arrow 7/8/9 = 30.052px).
+interface Props {
+  length?: number;
+  angle?: number;
+  color?: string;
+  style?: string;
+  class?: string;
+}
+const { length = 30.052, angle = -45, color = 'var(--cseed-ink)', style = '', class: className } = Astro.props;
+const L = length;
+const d = `M ${L + 0.707} 0.707 C ${L + 1.098} 0.317 ${L + 1.098} -0.317 ${L + 0.707} -0.707 L ${L - 5.657} -7.071 C ${L - 6.047} -7.462 ${L - 6.681} -7.462 ${L - 7.071} -7.071 C ${L - 7.462} -6.681 ${L - 7.462} -6.047 ${L - 7.071} -5.657 L ${L - 1.414} 0 L ${L - 7.071} 5.657 C ${L - 7.462} 6.047 ${L - 7.462} 6.681 ${L - 7.071} 7.071 C ${L - 6.681} 7.462 ${L - 6.047} 7.462 ${L - 5.657} 7.071 L ${L + 0.707} 0.707 Z M 0 0 L 0 1 L ${L} 1 L ${L} 0 L ${L} -1 L 0 -1 L 0 0 Z`;
+---
+<svg
+  class={className}
+  width={L + 3}
+  height="16"
+  viewBox={`-1 -8 ${L + 3} 16`}
+  fill={color}
+  aria-hidden="true"
+  style={`display:block;overflow:visible;transform:rotate(${angle}deg);${style}`}
+><path d={d} fill-rule="nonzero" /></svg>

@@ -1,0 +1,97 @@
+---
+import Wordmark from './Wordmark.astro';
+import TextLink from './TextLink.astro';
+import Arrow from './Arrow.astro';
+
+interface Props {
+  imageSrc: string;
+  wordmark?: boolean;
+  display?: string;
+  cta?: string;
+  style?: string;
+  class?: string;
+}
+const {
+  imageSrc,
+  wordmark = true,
+  display = 'good people. curious ideas.',
+  cta = 'join cohort  6 ',
+  style = '',
+  class: className,
+} = Astro.props;
+---
+<div class={`cseed-hero ${className ?? ''}`} style={style}>
+  <div class="cseed-hero__photo" style={`background-image:url("${imageSrc}");`}></div>
+
+  {wordmark && (
+    <div class="cseed-hero__wordmark">
+      <Wordmark size={80} color="var(--text-wordmark-photo)" />
+    </div>
+  )}
+
+  <div class="cseed-hero__display">{display}</div>
+
+  <div class="cseed-hero__cta">
+    <TextLink variant="mono" href="#join" class="js-nav-link" data-nav-link data-nav-target="join">{cta}</TextLink>
+  </div>
+
+  <div class="cseed-hero__arrows">
+    <Arrow length={86} angle={90} color="var(--rule-on-photo)" style="animation:cseed-arrow-nudge 3600ms var(--ease-inout) infinite;" />
+    <Arrow length={86} angle={90} color="var(--rule-on-photo)" style="animation:cseed-arrow-nudge 3600ms var(--ease-inout) 400ms infinite;" />
+  </div>
+</div>
+
+<style>
+  .cseed-hero {
+    position: relative;
+    width: 2083px;
+    height: var(--hero-h, 1327px);
+    overflow: hidden;
+    background: var(--surface-photo);
+  }
+  .cseed-hero__photo {
+    position: absolute;
+    left: -19px;
+    top: -112px;
+    width: 2417px;
+    height: max(1603px, calc(var(--hero-h, 1327px) + 280px));
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    animation: cseed-fade var(--dur-hero) var(--ease-soft) both, cseed-hero-drift 24000ms var(--ease-soft) both;
+  }
+  .cseed-hero__wordmark {
+    position: absolute;
+    left: 909px;
+    top: 0;
+    width: 266px;
+    text-align: center;
+    animation: cseed-fade-up var(--dur-hero) var(--ease-soft) 200ms both;
+  }
+  .cseed-hero__display {
+    position: absolute;
+    left: 172px;
+    bottom: 334px;
+    width: 1853px;
+    text-align: center;
+    font: var(--type-display-hero);
+    letter-spacing: var(--tracking-hero);
+    color: var(--text-display-hero);
+    white-space: nowrap;
+    animation: cseed-hero-settle var(--dur-hero) var(--ease-soft) 420ms both;
+  }
+  .cseed-hero__cta {
+    position: absolute;
+    left: 837px;
+    bottom: 132px;
+    animation: cseed-fade-up var(--dur-hero) var(--ease-soft) 760ms both;
+  }
+  .cseed-hero__arrows {
+    position: absolute;
+    left: 2000px;
+    bottom: 173px;
+    display: flex;
+    gap: 33px;
+    animation: cseed-fade var(--dur-hero) var(--ease-soft) 1000ms both;
+  }
+</style>

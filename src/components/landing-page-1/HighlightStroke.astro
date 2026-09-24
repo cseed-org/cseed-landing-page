@@ -1,0 +1,49 @@
+---
+interface Props { style?: string }
+const { style = '' } = Astro.props;
+---
+<svg
+  data-stroke
+  width="470"
+  height="36"
+  viewBox="0 0 500 44"
+  preserveAspectRatio="none"
+  style={`position:absolute;overflow:visible;${style}`}
+  aria-hidden="true"
+>
+  <path
+    class="cseed-stroke__main"
+    d="M6 30 C 120 18, 300 10, 494 8"
+    stroke="#F5E530"
+    stroke-width="13"
+    stroke-linecap="round"
+    fill="none"
+    pathLength="1"
+  />
+  <path
+    class="cseed-stroke__accent"
+    d="M40 40 C 170 30, 330 24, 470 22"
+    stroke="#F5E530"
+    stroke-width="7"
+    stroke-linecap="round"
+    fill="none"
+    opacity="0.75"
+    pathLength="1"
+  />
+</svg>
+
+<style>
+  svg[data-stroke] path {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+  svg[data-stroke] .cseed-stroke__main {
+    transition: stroke-dashoffset 1100ms var(--ease-soft) 500ms;
+  }
+  svg[data-stroke] .cseed-stroke__accent {
+    transition: stroke-dashoffset 900ms var(--ease-soft) 900ms;
+  }
+  svg[data-stroke].is-revealed path {
+    stroke-dashoffset: 0;
+  }
+</style>
