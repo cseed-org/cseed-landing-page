@@ -1,0 +1,63 @@
+---
+interface Props {
+  name: string;
+  role: string;
+  rotate?: number;
+  lift?: number;
+  w?: number | 'auto';
+  h?: number;
+  style?: string;
+}
+const { name, role, rotate = 0, lift = 0, w = 300, h = 360, style = '' } = Astro.props;
+const width = w === 'auto' ? 'auto' : `${w}px`;
+---
+<div
+  class="cseed-team-polaroid"
+  style={`--rotate:${rotate};--lift:${lift}px;width:${width};${style}`}
+>
+  <div class="cseed-team-polaroid__photo" style={`height:${h}px;`}>
+    <span>photo</span>
+  </div>
+  <div class="cseed-team-polaroid__name">{name}</div>
+  <div class="cseed-team-polaroid__role">{role}</div>
+</div>
+
+<style>
+  .cseed-team-polaroid {
+    flex: none;
+    padding: 16px 16px 22px;
+    background: var(--cseed-white);
+    box-shadow: 0 14px 34px -16px rgba(40, 34, 20, 0.28), 0 2px 6px rgba(40, 34, 20, 0.06);
+    transform: translateY(var(--lift)) rotate(calc(var(--rotate) * 1deg));
+    transition: transform 700ms var(--ease-soft), box-shadow 700ms var(--ease-soft);
+  }
+  .cseed-team-polaroid:hover {
+    box-shadow: 0 30px 60px -20px rgba(40, 34, 20, 0.32), 0 4px 10px rgba(40, 34, 20, 0.08);
+    transform: translateY(calc(var(--lift) - 12px)) rotate(calc(var(--rotate) * 0.35deg));
+  }
+  .cseed-team-polaroid__photo {
+    width: 100%;
+    background: var(--cseed-mist);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .cseed-team-polaroid__photo span {
+    font: 400 18px/1 var(--font-mono);
+    letter-spacing: 0.04em;
+    color: var(--cseed-ink-soft);
+  }
+  .cseed-team-polaroid__name {
+    margin-top: 18px;
+    text-align: center;
+    font: 400 30px/1.1 var(--font-hand);
+    letter-spacing: 0.04em;
+    color: var(--cseed-ink);
+  }
+  .cseed-team-polaroid__role {
+    margin-top: 10px;
+    text-align: center;
+    font: 300 18px/1 var(--font-body);
+    color: var(--cseed-ink-soft);
+  }
+</style>

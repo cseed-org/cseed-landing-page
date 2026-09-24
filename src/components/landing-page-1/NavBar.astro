@@ -8,6 +8,7 @@ interface Props {
   height?: number;
   itemSize?: number;
   wordmarkSize?: number;
+  page?: 'landing' | 'about';
   style?: string;
   class?: string;
 }
@@ -16,20 +17,59 @@ const {
   height = 140,
   itemSize = 52,
   wordmarkSize = 46,
+  page = 'landing',
   style = '',
   class: className,
 } = Astro.props;
 
-const items = [
-  { label: 'programs', target: 'programs', dropdown: true },
-  { label: 'about us', target: 'about', dropdown: false },
-  { label: 'sponsors', target: 'sponsors', dropdown: false },
-  { label: 'join', target: 'join', dropdown: false },
-];
+const ABOUT_PAGE_PATH = '/landing-page-1/about/';
+const LANDING_PAGE_PATH = '/landing-page-1/';
+
+const brand =
+  page === 'landing' ? { target: 'top' } : { external: LANDING_PAGE_PATH };
+
+// On the landing page every item scrolls in-page except "about us", which
+// jumps to the standalone about page. On the about page it is the reverse:
+// "about us" scrolls to its own top and everything else goes back to the
+// landing page (without preserving which section — matches the source file).
+const items =
+  page === 'landing'
+    ? [
+        {
+          label: 'programs',
+          target: 'programs',
+          dropdown: [
+            { label: 'buildspace', target: 'programs' },
+            { label: 'buildher', target: 'programs' },
+            { label: 'saturdays', target: 'programs' },
+          ],
+        },
+        { label: 'about us', external: ABOUT_PAGE_PATH },
+        { label: 'sponsors', target: 'sponsors' },
+        { label: 'join', target: 'join' },
+      ]
+    : [
+        {
+          label: 'programs',
+          external: LANDING_PAGE_PATH,
+          dropdown: [
+            { label: 'buildspace', external: LANDING_PAGE_PATH },
+            { label: 'buildher', external: LANDING_PAGE_PATH },
+            { label: 'saturdays', external: LANDING_PAGE_PATH },
+          ],
+        },
+        { label: 'about us', target: 'top' },
+        { label: 'sponsors', external: LANDING_PAGE_PATH },
+        { label: 'join', external: LANDING_PAGE_PATH },
+      ];
 ---
 <div class={`cseed-navbar ${className ?? ''}`} style={`position:relative;width:${width}px;height:${height}px;background:var(--surface-page);${style}`}>
   <div class="cseed-navbar__brand" style={`height:${height}px;`}>
-    <a href="#top" data-nav-link data-nav-target="top" style="text-decoration:none;">
+    <a
+      href={brand.external ?? `#${brand.target}`}
+      {...(brand.target ? { 'data-nav-link': true, 'data-nav-target': brand.target } : {})}
+      style="text-decoration:none;"
+    >
       <Wordmark size={wordmarkSize} style={`line-height:${height}px;`} />
     </a>
   </div>
@@ -38,15 +78,14 @@ const items = [
     {items.map((item) => (
       <div class="cseed-navitem">
         <a
-          href={`#${item.target}`}
-          data-nav-link
-          data-nav-target={item.target}
+          href={item.external ?? `#${item.target}`}
+          {...(item.target ? { 'data-nav-link': true, 'data-nav-target': item.target } : {})}
           class="cseed-navitem__link"
           style={`font:${'var(--weight-display)'} ${itemSize}px/1 var(--font-display);letter-spacing:var(--tracking-display);`}
         >{item.label}</a>
         {item.dropdown && (
           <div class="cseed-navitem__dropdown" style={`top:${height - 1}px;`}>
-            <DropdownNav />
+            <DropdownNav items={item.dropdown} />
           </div>
         )}
       </div>

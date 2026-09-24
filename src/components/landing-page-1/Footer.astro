@@ -4,41 +4,76 @@ import Wordmark from './Wordmark.astro';
 interface LinkItem { label: string; href: string; target?: string }
 interface Column { heading: string; links: LinkItem[] }
 
-const columns: Column[] = [
-  {
-    heading: 'programs',
-    links: [
-      { label: 'buildspace', href: '#programs', target: 'programs' },
-      { label: 'buildher', href: '#programs', target: 'programs' },
-      { label: 'saturdays', href: '#programs', target: 'programs' },
-    ],
-  },
-  {
-    heading: 'cseed',
-    links: [
-      { label: 'about us', href: '#about', target: 'about' },
-      { label: 'join', href: '#join', target: 'join' },
-      { label: 'sponsors', href: '#sponsors', target: 'sponsors' },
-    ],
-  },
-  {
-    heading: 'connect',
-    links: [
-      // TODO: swap in the real profile/handle URLs once cseed has them.
-      { label: 'instagram', href: '#' },
-      { label: 'linkedin', href: '#' },
-      { label: 'email us', href: 'mailto:hello@cseed.example.edu' },
-    ],
-  },
-];
-
-const year = new Date().getFullYear();
+const LANDING_PAGE_PATH = '/landing-page-1/';
+const ABOUT_PAGE_PATH = '/landing-page-1/about/';
 
 interface Props {
+  page?: 'landing' | 'about';
   style?: string;
   class?: string;
 }
-const { style = '', class: className } = Astro.props;
+const { page = 'landing', style = '', class: className } = Astro.props;
+
+// On the landing page these are in-page anchors except "about us", which
+// jumps to the standalone about page. On the about page every link but
+// "about us" itself goes back to the landing page (matches the source file).
+const columns: Column[] =
+  page === 'landing'
+    ? [
+        {
+          heading: 'programs',
+          links: [
+            { label: 'buildspace', href: '#programs', target: 'programs' },
+            { label: 'buildher', href: '#programs', target: 'programs' },
+            { label: 'saturdays', href: '#programs', target: 'programs' },
+          ],
+        },
+        {
+          heading: 'cseed',
+          links: [
+            { label: 'about us', href: ABOUT_PAGE_PATH },
+            { label: 'join', href: '#join', target: 'join' },
+            { label: 'sponsors', href: '#sponsors', target: 'sponsors' },
+          ],
+        },
+        {
+          heading: 'connect',
+          links: [
+            // TODO: swap in the real profile/handle URLs once cseed has them.
+            { label: 'instagram', href: '#' },
+            { label: 'linkedin', href: '#' },
+            { label: 'email us', href: 'mailto:hello@cseed.example.edu' },
+          ],
+        },
+      ]
+    : [
+        {
+          heading: 'programs',
+          links: [
+            { label: 'buildspace', href: LANDING_PAGE_PATH },
+            { label: 'buildher', href: LANDING_PAGE_PATH },
+            { label: 'saturdays', href: LANDING_PAGE_PATH },
+          ],
+        },
+        {
+          heading: 'cseed',
+          links: [
+            { label: 'about us', href: '#top', target: 'top' },
+            { label: 'join', href: LANDING_PAGE_PATH },
+            { label: 'sponsors', href: LANDING_PAGE_PATH },
+          ],
+        },
+        {
+          heading: 'connect',
+          links: [
+            { label: 'instagram', href: '#' },
+            { label: 'linkedin', href: '#' },
+            { label: 'email us', href: 'mailto:hello@cseed.example.edu' },
+          ],
+        },
+      ];
+
+const year = new Date().getFullYear();
 ---
 <footer class={className} style={`width:2083px;background:var(--cseed-sun);${style}`}>
   <div class="cseed-footer__row">

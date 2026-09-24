@@ -1,5 +1,5 @@
 ---
-interface Item { label: string; target: string }
+interface Item { label: string; target?: string; external?: string }
 interface Props {
   label?: string;
   items?: Item[];
@@ -27,9 +27,8 @@ const {
     <div style={`padding-top:${label ? 0 : 20}px;padding-bottom:20px;`}>
       {items.map((item) => (
         <a
-          href={`#${item.target}`}
-          data-nav-link
-          data-nav-target={item.target}
+          href={item.external ?? `#${item.target}`}
+          {...(item.target ? { 'data-nav-link': true, 'data-nav-target': item.target } : {})}
           class="cseed-dropdown__item"
         >
           <span>{item.label}</span>
