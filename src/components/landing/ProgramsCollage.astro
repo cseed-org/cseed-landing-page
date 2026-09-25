@@ -1,0 +1,216 @@
+---
+import Reveal from '../core/Reveal.astro';
+import TextLink from '../core/TextLink.astro';
+import Polaroid from './Polaroid.astro';
+
+/*
+ * "a place for your next what if." -- the programs collage: polaroid-framed
+ * photo placeholders, zigzag rows, three programs. Built to the source's
+ * 2083px canvas with its exact absolute positions.
+ */
+const programs = [
+  {
+    n: '01',
+    eyebrow: 'the six-week cohort',
+    name: 'buildspace',
+    blurb: 'Make progress on that idea you keep\nthinking about, with a community\nbuilding alongside you.',
+    link: 'find your cohort',
+    href: '../buildspace/',
+    photo: { slot: 'lp-buildspace', w: 920, h: 590, rotate: -1.2, position: 'center 30%', style: 'left:130px; top:555px' },
+    copy: 'left:1150px; top:610px',
+  },
+  {
+    n: '02',
+    eyebrow: 'grow together',
+    name: 'buildher',
+    blurb: 'A welcoming community for women\nand non-binary people exploring STEM.',
+    link: 'meet buildher',
+    href: '../join/',
+    photo: null,
+    copy: 'left:110px; top:1375px',
+  },
+  {
+    n: '03',
+    eyebrow: 'come hang out',
+    name: 'saturdays',
+    blurb: 'Bring a project, a question, or just\nyourself. A weekly space to make\nthings and meet people.',
+    link: 'see you saturday',
+    href: '../saturdays/',
+    photo: { slot: 'lp-saturdays', w: 1100, h: 530, rotate: -1.6, position: 'center', style: 'left:80px; top:1900px' },
+    copy: 'left:1260px; top:1985px',
+  },
+];
+---
+
+<div class="programs-collage" id="programs">
+  <div class="programs-intro">
+    <div class="programs-intro-heading">
+      <Reveal>
+        <h2 class="programs-title">a place for your<br />next what if.</h2>
+      </Reveal>
+      <svg class="highlight-stroke" data-draw width="470" height="36" viewBox="0 0 500 44" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M6 30 C 120 18, 300 10, 494 8" stroke="#F5E530" stroke-width="13" stroke-linecap="round" fill="none" pathLength="1" class="highlight-stroke-a" />
+        <path d="M40 40 C 170 30, 330 24, 470 22" stroke="#F5E530" stroke-width="7" stroke-linecap="round" fill="none" opacity=".75" pathLength="1" class="highlight-stroke-b" />
+      </svg>
+    </div>
+    <Reveal delay={150} class="programs-intro-rule-wrap">
+      <div class="programs-intro-rule"></div>
+    </Reveal>
+    <Reveal delay={200} class="programs-intro-copy">
+      <p class="programs-lede">{'We bring curious people together\nto build, design, and try something new.\nAll experience levels welcome.'}</p>
+    </Reveal>
+    <Reveal delay={300} class="programs-eyebrow-wrap">
+      <div class="programs-eyebrow">three ways to make yourself at home</div>
+    </Reveal>
+  </div>
+
+  {
+    programs.map((p) => (
+      <>
+        {p.photo && (
+          <Reveal mode="fade" style={`position:absolute; ${p.photo.style}`}>
+            <Polaroid slot={p.photo.slot} w={p.photo.w} h={p.photo.h} rotate={p.photo.rotate} position={p.photo.position} />
+          </Reveal>
+        )}
+        <div class="program-copy" style={`position:absolute; ${p.copy}`} id={p.name}>
+          <Reveal>
+            <div class="program-eyebrow">{p.n}</div>
+          </Reveal>
+          <Reveal delay={120}>
+            <h3 class="program-name">{p.name}</h3>
+          </Reveal>
+          <Reveal delay={240}>
+            <p class="program-blurb">{p.blurb}</p>
+          </Reveal>
+          <Reveal delay={360}>
+            <div class="program-link">
+              <TextLink href={p.href} arrowLength={22}>{p.link}</TextLink>
+            </div>
+          </Reveal>
+        </div>
+      </>
+    ))
+  }
+
+  {/* buildher's two photos sit outside the [n].photo single-slot shape above */}
+  <Reveal mode="fade" style="position:absolute; left:965px; top:1225px">
+    <Polaroid slot="lp-buildher-wide" w={740} h={560} rotate={-1.5} position="center 20%" />
+  </Reveal>
+  <Reveal mode="fade" delay={180} style="position:absolute; left:1680px; top:1375px; z-index:2">
+    <Polaroid slot="lp-buildher-tall" w={290} h={440} rotate={2.2} position="22% center" z={2} />
+  </Reveal>
+</div>
+
+<style>
+  .programs-collage {
+    position: relative;
+    width: 2083px;
+    height: 2560px;
+  }
+  .programs-intro {
+    position: absolute;
+    left: 100px;
+    top: 40px;
+    width: 1883px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    column-gap: 80px;
+    align-items: end;
+  }
+  .programs-intro-heading {
+    position: relative;
+  }
+  .programs-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: var(--weight-display);
+    font-size: 150px;
+    line-height: 0.95;
+    letter-spacing: -0.045em;
+    color: var(--cseed-ink);
+  }
+  .highlight-stroke {
+    position: absolute;
+    left: 340px;
+    top: 276px;
+    overflow: visible;
+  }
+  .highlight-stroke path {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset 1100ms var(--ease-soft);
+  }
+  .highlight-stroke.is-shown .highlight-stroke-a {
+    transition-delay: 500ms;
+  }
+  .highlight-stroke.is-shown .highlight-stroke-b {
+    transition-delay: 900ms;
+    transition-duration: 900ms;
+  }
+  .highlight-stroke.is-shown path {
+    stroke-dashoffset: 0;
+  }
+  .programs-collage :global(.programs-intro-rule-wrap) {
+    align-self: stretch;
+    display: flex;
+    align-items: flex-end;
+  }
+  .programs-intro-rule {
+    width: 1px;
+    height: 250px;
+    background: var(--cseed-ink);
+    margin-bottom: 14px;
+  }
+  .programs-intro-copy {
+    padding-bottom: 14px;
+  }
+  .programs-lede {
+    margin: 0;
+    font-family: var(--font-body);
+    font-weight: 300;
+    font-size: 34px;
+    line-height: 1.5;
+    color: var(--cseed-ink);
+    white-space: pre-line;
+  }
+  .programs-eyebrow-wrap {
+    grid-column: 1 / -1;
+    margin-top: 56px;
+  }
+  .programs-eyebrow {
+    padding-left: 6px;
+    font: 400 18px/1 var(--font-body);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--cseed-ink);
+  }
+
+  .program-eyebrow {
+    font: 400 18px/1 var(--font-body);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--cseed-ink);
+  }
+  .program-name {
+    margin: 26px 0 0;
+    font-family: var(--font-display);
+    font-weight: var(--weight-display);
+    font-size: 118px;
+    line-height: 0.95;
+    letter-spacing: -0.045em;
+    color: var(--cseed-ink);
+  }
+  .program-blurb {
+    margin: 32px 0 0;
+    width: 560px;
+    font: 300 27px/1.5 var(--font-body);
+    color: var(--cseed-ink);
+    white-space: pre-line;
+  }
+  .program-link {
+    margin-top: 34px;
+  }
+  .program-link :global(.text-link) {
+    font-size: 26px;
+  }
+</style>

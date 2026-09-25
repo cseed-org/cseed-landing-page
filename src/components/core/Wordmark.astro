@@ -1,43 +1,23 @@
 ---
 interface Props {
-  size?: number | string;
-  tone?: 'cream' | 'deep';
-  star?: boolean;
-  as?: 'span' | 'div' | 'a';
-  href?: string;
+  size?: number;
+  color?: string;
+  as?: 'span' | 'div';
   class?: string;
 }
 
-const { size = 28, tone = 'cream', star = true, as = 'span', href, class: className } = Astro.props;
-const Tag = href ? 'a' : as;
-const wmSize = typeof size === 'number' ? `${size}px` : size;
+const { size = 60, color = 'var(--text-wordmark-page)', as: Tag = 'span', class: className } = Astro.props;
 ---
 
-<Tag class:list={['wordmark', className]} data-tone={tone} href={href} style={`--wm-size:${wmSize}`}>
-  cseed{star && <span class="wordmark-star" aria-hidden="true">*</span>}
-</Tag>
+<Tag class:list={['wordmark', className]} style={`font-size:${size}px; color:${color}`}>cseed</Tag>
 
 <style>
   .wordmark {
-    display: inline-flex;
-    align-items: flex-start;
-    font-family: var(--font-display);
-    font-weight: var(--weight-extrabold);
-    font-size: var(--wm-size);
-    line-height: var(--type-wordmark-leading);
-    letter-spacing: var(--type-wordmark-tracking);
-    text-decoration: none;
-  }
-  .wordmark[data-tone='cream'] {
-    color: var(--cream-100);
-  }
-  .wordmark[data-tone='deep'] {
-    color: var(--green-800);
-  }
-  .wordmark-star {
-    font-size: 0.52em;
-    margin-left: 0.02em;
-    margin-top: 0.08em;
-    font-weight: var(--weight-bold);
+    display: inline-block;
+    font-family: var(--font-wordmark);
+    font-weight: var(--weight-wordmark);
+    line-height: 200px;
+    letter-spacing: var(--tracking-wordmark);
+    white-space: nowrap;
   }
 </style>

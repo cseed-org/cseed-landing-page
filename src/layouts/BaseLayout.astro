@@ -7,8 +7,8 @@ interface Props {
 }
 
 const {
-  title = 'cseed — a community for the next generation of builders',
-  description = 'CSEED is a student-run community that helps builders turn ideas into impact through people, resources, and real opportunities.',
+  title = 'cseed — good people. curious ideas.',
+  description = 'CSEED runs community programs for people who want to build something: buildspace, buildher, and saturdays.',
 } = Astro.props;
 ---
 
@@ -23,5 +23,104 @@ const {
   </head>
   <body>
     <slot />
+    <script>
+      const CANVAS_WIDTH = 2083;
+      const NAV_HEIGHT = 100;
+
+      function zoom(): number {
+        const z = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--page-zoom'));
+        return z > 0 ? z : 1;
+      }
+
+      function fit() {
+        const w = window.innerWidth || document.documentElement.clientWidth || CANVAS_WIDTH;
+        document.documentElement.style.setProperty('--page-zoom', String(Math.min(1, w / CANVAS_WIDTH) || 1));
+      }
+
+      function fitHero() {
+        const hero = document.querySelector<HTMLElement>('[data-hero]');
+        if (!hero) return;
+        const h = window.innerHeight || document.documentElement.clientHeight || 1293;
+        const next = Math.round(h / zoom());
+        hero.style.height = (Number.isFinite(next) && next > 320 ? next : 1293) + 'px';
+      }
+
+      function initNavVisibility() {
+        const hero = document.querySelector<HTMLElement>('[data-hero]');
+        const nav = document.querySelector<HTMLElement>('[data-navbar-wrap]');
+        if (!hero || !nav) return;
+        const onScroll = () => {
+          const bottom = hero.getBoundingClientRect().bottom;
+          const show = bottom <= (window.innerHeight || 800) * 0.45;
+          nav.classList.toggle('is-visible', show);
+        };
+        onScroll();
+        window.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', onScroll);
+      }
+
+      function initReveal() {
+        const els = document.querySelectorAll('[data-reveal], [data-draw]');
+        if (!('IntersectionObserver' in window)) {
+          els.forEach((el) => el.classList.add('is-shown'));
+          return;
+        }
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('is-shown');
+                io.unobserve(entry.target);
+              }
+            });
+          },
+          { rootMargin: '0px 0px -6% 0px', threshold: 0.01 },
+        );
+        els.forEach((el) => io.observe(el));
+      }
+
+      function initAnchorScroll() {
+        document.addEventListener('click', (e) => {
+          const a = (e.target as HTMLElement)?.closest?.('a[href^="#"]') as HTMLAnchorElement | null;
+          if (!a) return;
+          const id = a.getAttribute('href')?.slice(1);
+          if (!id) return;
+          const el = document.getElementById(id);
+          if (!el) return;
+          e.preventDefault();
+          const navPx = NAV_HEIGHT * zoom();
+          const r = el.getBoundingClientRect();
+          window.scrollTo({ top: Math.max(0, window.scrollY + r.top - navPx - 24), behavior: 'smooth' });
+        });
+      }
+
+      function settle() {
+        fit();
+        fitHero();
+      }
+
+      settle();
+      requestAnimationFrame(settle);
+      window.addEventListener('load', settle);
+      window.addEventListener('resize', settle);
+      if (window.ResizeObserver) new ResizeObserver(settle).observe(document.documentElement);
+
+      initNavVisibility();
+      initReveal();
+      initAnchorScroll();
+    </script>
   </body>
 </html>
+
+<style is:global>
+  html {
+    background: var(--surface-page);
+  }
+  body {
+    margin: 0;
+    background: var(--surface-page);
+  }
+  .canvas {
+    zoom: var(--page-zoom, 1);
+  }
+</style>

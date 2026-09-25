@@ -1,0 +1,39 @@
+---
+interface Props {
+  width?: number;
+  weight?: number;
+  color?: string;
+  vertical?: boolean;
+  length?: number;
+  animate?: boolean;
+  delay?: number;
+  class?: string;
+}
+
+const {
+  width = 1920,
+  weight = 0.5,
+  color = 'var(--rule-ink)',
+  vertical = false,
+  length,
+  animate = false,
+  delay = 0,
+  class: className,
+} = Astro.props;
+
+const size = vertical ? `width:${weight}px; height:${length ?? width}px` : `width:${width}px; height:${weight}px`;
+---
+
+<div
+  class:list={['rule', className]}
+  data-rule-animate={animate ? true : undefined}
+  data-vertical={vertical ? true : undefined}
+  style={`${size}; background:${color}; transition-delay:${delay}ms`}
+>
+</div>
+
+<style>
+  .rule {
+    flex: none;
+  }
+</style>

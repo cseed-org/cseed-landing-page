@@ -1,0 +1,32 @@
+---
+interface Props {
+  size?: number;
+  width?: number;
+  align?: 'left' | 'center' | 'right';
+  color?: string;
+  as?: 'h2' | 'h3';
+  class?: string;
+}
+
+const { size = 96, width = 740, align = 'center', color = 'var(--text-body)', as: Tag = 'h2', class: className } =
+  Astro.props;
+---
+
+<Tag
+  class:list={['section-heading', className]}
+  style={`width:${width}px; font-size:${size}px; text-align:${align}; color:${color}`}
+>
+  <slot />
+</Tag>
+
+<style>
+  .section-heading {
+    margin: 0;
+    height: 200px;
+    font-family: var(--font-display);
+    font-weight: var(--weight-display);
+    line-height: 200px;
+    letter-spacing: var(--tracking-display);
+    white-space: nowrap;
+  }
+</style>

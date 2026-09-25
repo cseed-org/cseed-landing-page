@@ -1,238 +1,62 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/sections/Hero.astro';
 import NavBar from '../components/navigation/NavBar.astro';
-import SiteFooter from '../components/navigation/SiteFooter.astro';
-import Wordmark from '../components/core/Wordmark.astro';
-import Button from '../components/core/Button.astro';
-import Annotation from '../components/core/Annotation.astro';
-import StatCapsule from '../components/core/StatCapsule.astro';
-import TornDivider from '../components/layout/TornDivider.astro';
-import SectionHeading from '../components/layout/SectionHeading.astro';
-import PhotoCard from '../components/media/PhotoCard.astro';
-import PolaroidStack from '../components/media/PolaroidStack.astro';
+import ProgramsCollage from '../components/landing/ProgramsCollage.astro';
+import CommunityBand from '../components/landing/CommunityBand.astro';
+import SponsorStrip from '../components/sections/SponsorStrip.astro';
+import MissionPrompt from '../components/sections/MissionPrompt.astro';
+import Footer from '../components/landing/Footer.astro';
 
-const footerColumns = [
-  { title: 'programs', links: ['buildspace', 'buildher'] },
-  { title: 'community', links: ['team', 'join', 'events'] },
-  { title: 'more', links: ['projects', 'resources'] },
-];
+const sponsors = ['Madrona Venture Labs', 'Allen School', 'Pioneer Square Labs', 'Partner', 'Pack Ventures'];
 ---
 
 <BaseLayout>
-  <div class="page">
-    <!-- hero -->
-    <section class="hero ph ph-meadow">
-      <div class="hero-scrim" aria-hidden="true"></div>
-      <NavBar active="home" tone="on-photo" />
-      <div class="hero-content">
-        <Annotation arrow="down-right" rotate={-4} class="hero-annotation">{'ideas\npeople\npossibilities'}</Annotation>
-        <h1 class="hero-title"><Wordmark size="clamp(88px, 15vw, 232px)" tone="cream" as="span" /></h1>
-        <p class="hero-lede">a community for the next generation of builders</p>
-        <div class="hero-actions">
-          <Button variant="primary" size="lg" arrow="right" href="#join">join the community</Button>
-          <Button variant="ghost" size="lg" href="#buildspace">explore</Button>
-        </div>
+  <div class="canvas-frame">
+    <div class="canvas" id="top">
+      <Hero />
+      <div class="navbar-wrap" data-navbar-wrap>
+        <NavBar />
       </div>
-      <TornDivider fill="var(--cream-200)" tear="a" height={52} class="band-divider" />
-    </section>
-
-    <!-- intro -->
-    <section class="intro">
-      <div class="intro-inner">
-        <p class="intro-copy">
-          CSEED is a student-run community that helps builders turn ideas into impact through people, resources,
-          and real opportunities.
-        </p>
-        <div class="intro-photos">
-          <PolaroidStack count={3} size={104} />
-        </div>
-      </div>
-      <TornDivider fill="var(--green-500)" tear="b" height={44} class="band-divider" />
-    </section>
-
-    <!-- stats -->
-    <section class="stats ph ph-meadow">
-      <div class="stats-inner">
-        <StatCapsule value="1K+" label="members" />
-        <StatCapsule value="50+" label="events" />
-        <StatCapsule value="100+" label="projects" />
-        <StatCapsule value="∞" label="possibilities" />
-      </div>
-      <TornDivider fill="var(--cream-200)" tear="a" height={44} class="band-divider" />
-    </section>
-
-    <!-- what you can do -->
-    <section class="offer">
-      <div class="offer-inner">
-        <SectionHeading tone="deep">what you can do</SectionHeading>
-        <div class="offer-grid">
-          <PhotoCard label="meet amazing people" placeholder="meadow" />
-          <PhotoCard label="build real projects" placeholder="forest" />
-          <PhotoCard label="learn new skills" placeholder="sky" />
-          <PhotoCard label="get opportunities" placeholder="meadow" />
-        </div>
-      </div>
-      <TornDivider fill="var(--water-500)" tear="b" height={44} class="band-divider" />
-    </section>
-
-    <!-- cta -->
-    <section class="cta ph ph-water">
-      <div class="cta-inner">
-        <h2 class="cta-title">ready to build a brighter tomorrow?</h2>
-        <Button variant="primary" size="lg" arrow="right" href="#join">join cseed</Button>
-      </div>
-    </section>
-
-    <SiteFooter columns={footerColumns} />
+      <div style="height:96px"></div>
+      <div id="about"></div>
+      <ProgramsCollage />
+      <CommunityBand />
+      <div id="sponsors" style="height:176px"></div>
+      <SponsorStrip names={sponsors} />
+      <div style="height:176px"></div>
+      <MissionPrompt />
+      <div style="height:240px"></div>
+      <Footer />
+    </div>
   </div>
 </BaseLayout>
 
 <style>
-  .page {
-    font-family: var(--font-body);
-    color: var(--ink-900);
+  .canvas-frame {
+    width: 100%;
+    overflow-x: hidden;
+  }
+  .canvas {
+    width: 2083px;
     background: var(--surface-page);
   }
-
-  section {
-    position: relative;
-  }
-
-  .band-divider {
-    position: absolute;
+  .navbar-wrap {
+    position: fixed;
+    top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
+    width: 2083px;
+    z-index: 10;
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      transform 620ms var(--ease-soft),
+      opacity 420ms var(--ease-soft);
   }
-
-  /* hero */
-  .hero {
-    min-height: 92vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-  .hero-scrim {
-    position: absolute;
-    inset: 0;
-    background: var(--scrim-photo);
-  }
-  .hero-content {
-    position: relative;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    max-width: var(--max-page);
-    width: 100%;
-    margin: 0 auto;
-    padding: 0 var(--gutter-page) 72px;
-  }
-  .hero-annotation {
-    margin-bottom: var(--space-16);
-  }
-  .hero-title {
-    margin: 0;
-  }
-  .hero-lede {
-    margin: 20px 0 32px;
-    max-width: var(--measure-narrow);
-    color: var(--cream-100);
-    font-size: var(--type-body-lg-size);
-    line-height: var(--type-lede-leading);
-    letter-spacing: var(--type-lede-tracking);
-  }
-  .hero-actions {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-
-  /* intro */
-  .intro {
-    padding: 40px 0 96px;
-    background: var(--cream-200);
-  }
-  .intro-inner {
-    max-width: var(--max-page);
-    margin: 0 auto;
-    padding: 0 var(--gutter-page);
-    display: grid;
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-    gap: 40px;
-    align-items: center;
-  }
-  .intro-copy {
-    margin: 0;
-    font-size: var(--type-body-size);
-    line-height: var(--type-body-leading);
-    max-width: var(--measure-body);
-  }
-  .intro-photos {
-    display: flex;
-    justify-content: flex-end;
-  }
-
-  /* stats */
-  .stats {
-    padding: 72px 0;
-  }
-  .stats-inner {
-    max-width: var(--max-page);
-    margin: 0 auto;
-    padding: 0 var(--gutter-page);
-    display: flex;
-    gap: 20px;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  /* offer */
-  .offer {
-    padding: 72px 0 96px;
-    background: var(--cream-200);
-  }
-  .offer-inner {
-    max-width: var(--max-page);
-    margin: 0 auto;
-    padding: 0 var(--gutter-page);
-  }
-  .offer-grid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 20px;
-    margin-top: 32px;
-  }
-  @media (max-width: 860px) {
-    .offer-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-    .intro-inner {
-      grid-template-columns: 1fr;
-    }
-    .intro-photos {
-      justify-content: flex-start;
-    }
-  }
-
-  /* cta */
-  .cta {
-    padding: 96px 0;
-    text-align: center;
-  }
-  .cta-inner {
-    max-width: var(--max-page);
-    margin: 0 auto;
-    padding: 0 var(--gutter-page);
-  }
-  .cta-title {
-    margin: 0 auto 32px;
-    max-width: 20ch;
-    color: var(--cream-100);
-    font-family: var(--font-display);
-    font-weight: var(--weight-bold);
-    font-size: var(--type-h2-size);
-    line-height: 1.06;
-    letter-spacing: var(--type-display-tracking);
+  .navbar-wrap.is-visible {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
   }
 </style>

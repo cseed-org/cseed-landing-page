@@ -1,0 +1,30 @@
+---
+import SectionHeading from '../core/SectionHeading.astro';
+import TextLink from '../core/TextLink.astro';
+
+interface Props {
+  heading?: string;
+  linkLabel?: string;
+  href?: string;
+}
+const { heading = 'interested in our mission?', linkLabel = 'sponsor us', href = '#sponsors' } = Astro.props;
+---
+
+<div class="mission-prompt">
+  <div data-reveal>
+    <SectionHeading width={981}>{heading}</SectionHeading>
+  </div>
+  <div data-reveal style="transition-delay:120ms">
+    <TextLink href={href} arrowLength={36.235}>{linkLabel}</TextLink>
+  </div>
+</div>
+
+<style>
+  .mission-prompt {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 26px;
+  }
+</style>

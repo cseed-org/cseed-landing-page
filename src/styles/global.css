@@ -1,8 +1,7 @@
 @import './tokens/fonts.css';
 @import './tokens/colors.css';
 @import './tokens/typography.css';
-@import './tokens/spacing.css';
-@import './tokens/shape.css';
+@import './tokens/layout.css';
 @import './tokens/motion.css';
 
 *,
@@ -12,7 +11,7 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  background: var(--surface-page);
 }
 
 body {
@@ -20,9 +19,6 @@ body {
   background: var(--surface-page);
   color: var(--text-body);
   font-family: var(--font-body);
-  font-size: var(--type-body-size);
-  line-height: var(--type-body-leading);
-  -webkit-font-smoothing: antialiased;
 }
 
 img,
@@ -31,70 +27,61 @@ svg {
   max-width: 100%;
 }
 
-a {
-  color: inherit;
-}
-
 :focus-visible {
-  outline: 2px solid var(--focus-ring);
-  outline-offset: 1px;
+  outline: 2px solid var(--cseed-ink);
+  outline-offset: 2px;
 }
 
 /*
- * Placeholder fills for the photography this design calls for. No production
- * images were supplied, so every "photo" band and card in the page renders as
- * a brand-colored, diagonally-hatched swatch instead of a real photo. Swap by
- * replacing the element's background with a real `url(...)` image -- the
- * scrims, radii and shadows around it are already sized for a photo.
+ * No production photography was supplied with the design, so every photo
+ * plate/band renders as the same dark "no image yet" fallback the source
+ * components already define (--surface-photo, pure black) plus a faint
+ * hatch so it reads as a placeholder rather than a rendering bug. White and
+ * yellow text stay legible on it exactly as the design intends for real,
+ * dark cohort photography.
  */
 .ph {
-  position: relative;
-  background-repeat: repeat;
-  background-size: 22px 22px;
-}
-.ph::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-.ph-meadow {
-  background-color: var(--green-500);
+  background-color: var(--surface-photo);
   background-image: repeating-linear-gradient(
     -45deg,
-    rgba(253, 252, 247, 0.1) 0,
-    rgba(253, 252, 247, 0.1) 1px,
+    rgba(255, 255, 255, 0.05) 0,
+    rgba(255, 255, 255, 0.05) 1px,
     transparent 1px,
-    transparent 11px
+    transparent 13px
   );
 }
-.ph-forest {
-  background-color: var(--green-800);
-  background-image: repeating-linear-gradient(
-    -45deg,
-    rgba(253, 252, 247, 0.08) 0,
-    rgba(253, 252, 247, 0.08) 1px,
-    transparent 1px,
-    transparent 11px
-  );
+
+/*
+ * Reveal-on-scroll (an addition to the static source design, matching the
+ * design system's own `Reveal` component): fades content up once as it
+ * enters the viewport. `data-reveal-mode="fade"` skips the vertical travel.
+ * Toggled by the shared script in BaseLayout.astro.
+ */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(var(--rise));
+  transition:
+    opacity var(--dur-reveal) var(--ease-soft),
+    transform var(--dur-reveal) var(--ease-soft);
 }
-.ph-sky {
-  background-color: var(--sky-400);
-  background-image: repeating-linear-gradient(
-    -45deg,
-    rgba(253, 252, 247, 0.12) 0,
-    rgba(253, 252, 247, 0.12) 1px,
-    transparent 1px,
-    transparent 11px
-  );
+[data-reveal][data-reveal-mode='fade'] {
+  transform: none;
 }
-.ph-water {
-  background-color: var(--water-500);
-  background-image: repeating-linear-gradient(
-    -45deg,
-    rgba(253, 252, 247, 0.1) 0,
-    rgba(253, 252, 247, 0.1) 1px,
-    transparent 1px,
-    transparent 11px
-  );
+[data-reveal].is-shown {
+  opacity: 1;
+  transform: none;
+}
+
+/* Rule draw-in, matching the design system's `Rule animate` prop. */
+[data-rule-animate] {
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 1100ms var(--ease-soft);
+}
+[data-rule-animate][data-vertical] {
+  transform: scaleY(0);
+  transform-origin: top center;
+}
+[data-rule-animate].is-shown {
+  transform: none;
 }

@@ -1,0 +1,47 @@
+---
+interface Props {
+  slot: string;
+  w: number;
+  h: number;
+  rotate?: number;
+  position?: string;
+  style?: string;
+  z?: number;
+}
+const { slot, w, h, rotate = 0, position = 'center', style = '', z } = Astro.props;
+---
+
+<figure
+  class="polaroid"
+  data-slot={slot}
+  style={`--pl-rotate:${rotate}deg; ${z !== undefined ? `z-index:${z};` : ''} ${style}`}
+>
+  <div class="polaroid-photo ph" style={`width:${w}px; height:${h}px; background-position:${position}`}></div>
+</figure>
+
+<style>
+  .polaroid {
+    position: absolute;
+    margin: 0;
+    padding: 18px;
+    box-sizing: content-box;
+    background: var(--cseed-white);
+    box-shadow:
+      0 14px 34px -16px rgba(40, 34, 20, 0.28),
+      0 2px 6px rgba(40, 34, 20, 0.06);
+    transform: rotate(var(--pl-rotate));
+    transition:
+      transform 700ms var(--ease-soft),
+      box-shadow 700ms var(--ease-soft);
+  }
+  .polaroid:hover {
+    transform: rotate(calc(var(--pl-rotate) * 0.35)) translateY(-12px);
+    box-shadow:
+      0 30px 60px -20px rgba(40, 34, 20, 0.32),
+      0 4px 10px rgba(40, 34, 20, 0.08);
+  }
+  .polaroid-photo {
+    display: block;
+    overflow: hidden;
+  }
+</style>

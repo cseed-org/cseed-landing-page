@@ -1,0 +1,34 @@
+---
+import SponsorLogo from '../core/SponsorLogo.astro';
+
+interface Props {
+  names?: string[];
+}
+const { names = [] } = Astro.props;
+const run = [...names, ...names];
+---
+
+<div class="sponsor-strip">
+  <div class="sponsor-strip-track">
+    {run.map((name, i) => <SponsorLogo name={name} data-i={i} />)}
+  </div>
+</div>
+
+<style>
+  .sponsor-strip {
+    width: 100%;
+    height: 289px;
+    background: var(--surface-strip);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+  }
+  .sponsor-strip-track {
+    display: flex;
+    align-items: center;
+    gap: 124px;
+    padding-left: 14px;
+    flex: none;
+    animation: cseed-marquee 72s linear infinite;
+  }
+</style>

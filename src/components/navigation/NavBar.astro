@@ -1,89 +1,117 @@
 ---
 import Wordmark from '../core/Wordmark.astro';
-import Button from '../core/Button.astro';
+import Rule from '../core/Rule.astro';
+import DropdownNav from './DropdownNav.astro';
 
-export const CSEED_NAV = [
-  { label: 'home', href: '#home' },
-  { label: 'buildspace', href: '#buildspace' },
-  { label: 'buildher', href: '#buildher' },
-  { label: 'team', href: '#team' },
+/* Source node "nav bar" -- 2085x200, wordmark inset 41px, Playfair 80 items
+   right-aligned, 1px black rule 182px down. Rendered here at a 100px band
+   (itemSize 38 / wordmarkSize 36) since it becomes a fixed, sticky-after-hero
+   bar -- same ratio LandingPage.jsx renders it at. */
+const items = [
+  { label: 'programs', href: '#programs', children: ['buildspace', 'buildher', 'saturdays'] },
+  { label: 'about us', href: '#about' },
   { label: 'join', href: '#join' },
 ];
-
-interface Props {
-  active?: string;
-  tone?: 'on-photo' | 'on-light';
-  cta?: string;
-  class?: string;
-}
-
-const { active = 'home', tone = 'on-photo', cta = 'join', class: className } = Astro.props;
-const cream = tone === 'on-photo';
+const height = 100;
 ---
 
-<nav class:list={['nav-bar', className]} data-tone={tone}>
-  <a href="#home" class="nav-bar-mark">
-    <Wordmark size={26} tone={cream ? 'cream' : 'deep'} star={false} />
+<div class="nav-bar" style={`height:${height}px`}>
+  <a class="nav-bar-mark" href="#top" style={`height:${height}px`}>
+    <Wordmark size={36} />
   </a>
-  <ul class="nav-bar-links">
+  <div class="nav-bar-items" style={`height:${height}px`}>
     {
-      CSEED_NAV.map((item) => (
-        <li>
-          <a href={item.href} class:list={{ 'is-active': item.label === active }}>
+      items.map((item) => (
+        <div class="nav-bar-item" style={`height:${height}px`}>
+          <a href={item.href} class:list={['nav-bar-link', { 'nav-bar-link--join': item.label === 'join' }]}>
             {item.label}
           </a>
-        </li>
+          {item.children && (
+            <div class="nav-bar-dropdown" style={`top:${height}px`}>
+              <DropdownNav items={item.children} width="max-content" />
+            </div>
+          )}
+        </div>
       ))
     }
-  </ul>
-  <Button variant={cream ? 'primary' : 'solid'} size="sm" arrow="up-right" href="#join">{cta}</Button>
-</nav>
+  </div>
+  <Rule width={2085} weight={1} class="nav-bar-rule" />
+</div>
 
 <style>
   .nav-bar {
     position: relative;
-    z-index: 5;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-24);
-    height: var(--nav-height);
-    padding: 0 var(--gutter-page);
+    width: 100%;
+    background: var(--surface-page);
   }
   .nav-bar-mark {
-    text-decoration: none;
-  }
-  .nav-bar-links {
+    position: absolute;
+    left: 41px;
+    top: 0;
     display: flex;
     align-items: center;
-    gap: var(--space-32);
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  .nav-bar-links a {
     text-decoration: none;
-    font-family: var(--font-body);
-    font-size: 15px;
-    font-weight: var(--weight-medium);
-    letter-spacing: var(--type-nav-tracking);
-    padding-bottom: 3px;
-    border-bottom: 1.5px solid transparent;
-    opacity: 0.8;
-    transition: opacity var(--dur-hover) var(--ease-out-soft);
   }
-  .nav-bar-links a.is-active {
+  .nav-bar-items {
+    position: absolute;
+    right: 77px;
+    top: 0;
+    display: flex;
+    align-items: center;
+    gap: 36px;
+  }
+  .nav-bar-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .nav-bar-link {
+    font-family: var(--font-display);
+    font-weight: var(--weight-display);
+    font-size: 38px;
+    line-height: 1;
+    letter-spacing: var(--tracking-display);
+    color: var(--text-body);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: opacity var(--dur-hover) var(--ease-soft);
+  }
+  .nav-bar-items:has(.nav-bar-item:hover) .nav-bar-item:not(:hover) .nav-bar-link {
+    opacity: 0.45;
+  }
+  .nav-bar-link--join {
+    padding: 0 8px;
+    margin: 0 -8px;
+    background: linear-gradient(
+      transparent 42%,
+      var(--cseed-sun) 42%,
+      var(--cseed-sun) 92%,
+      transparent 92%
+    );
+  }
+  .nav-bar-dropdown {
+    position: absolute;
+    left: 50%;
+    min-width: 100%;
+    transform: translateX(-50%) translateY(-12px);
+    opacity: 0;
+    pointer-events: none;
+    padding: 0 32px 24px;
+    box-sizing: border-box;
+    background: var(--surface-page);
+    transition:
+      opacity var(--dur-hover) var(--ease-soft),
+      transform var(--dur-hover) var(--ease-soft);
+    z-index: 4;
+  }
+  .nav-bar-item:hover .nav-bar-dropdown {
     opacity: 1;
-    font-weight: var(--weight-semibold);
-    border-bottom-color: currentColor;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
   }
-  .nav-bar-links a:hover {
-    opacity: 1;
-  }
-  .nav-bar[data-tone='on-photo'] .nav-bar-links a {
-    color: var(--cream-100);
-  }
-  .nav-bar[data-tone='on-light'] .nav-bar-links a {
-    color: var(--green-800);
+  .nav-bar :global(.nav-bar-rule) {
+    position: absolute;
+    left: 0;
+    bottom: 0;
   }
 </style>

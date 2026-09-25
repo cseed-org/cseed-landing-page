@@ -1,0 +1,25 @@
+---
+/*
+ * Motion helper (an addition -- the source design is static). Fades content
+ * up once as it enters the viewport, at the brand's slow, unbouncy pace.
+ * The actual reveal is driven by the shared IntersectionObserver script in
+ * BaseLayout.astro, which toggles `.is-shown` on every `[data-reveal]`
+ * element; this component just sets up the attributes and initial state.
+ */
+interface Props {
+  mode?: 'up' | 'fade';
+  delay?: number;
+  style?: string;
+  class?: string;
+}
+const { mode = 'up', delay = 0, style = '', class: className } = Astro.props;
+---
+
+<div
+  class:list={['reveal', className]}
+  data-reveal
+  data-reveal-mode={mode}
+  style={`transition-delay:${delay}ms; ${style}`}
+>
+  <slot />
+</div>

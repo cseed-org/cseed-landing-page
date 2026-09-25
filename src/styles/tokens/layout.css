@@ -1,0 +1,34 @@
+:root {
+  /* The source canvas is authored at 2083px wide with a 1920px rule measure.
+     Every value below is transcribed, not normalised. */
+  --canvas-width: 2083px;
+  --rule-measure: 1920px;
+  --page-margin: 83px; /* left edge of lede / "join cseed" */
+  --nav-margin: 41px; /* wordmark inset in the nav bar */
+  --nav-height: 200px;
+  --hero-height: 1606.996px;
+  --strip-height: 289px; /* sponsor strip ground */
+  --strip-gap: 124px; /* gap between sponsor logos */
+
+  /* rule weights, verbatim */
+  --rule-hairline: 0.5px; /* page rules, nav underline, link underlines */
+  --rule-nav: 1px;
+  --rule-on-photo-weight: 1.5px; /* the white CTA underline in the hero */
+  --rule-arrow: 2px; /* arrow stroke */
+
+  /* measures used in the source */
+  --measure-section-heading: 740px;
+  --measure-body: 703px;
+  --measure-lede: 1142px;
+  --measure-hero-display: 1853px;
+
+  /* fixed component sizes */
+  --size-program-image: 577px;
+  --size-program-image-h: 465px;
+  --size-sponsor-logo: 347px;
+  --size-sponsor-logo-h: 99px;
+
+  /* nothing in the source is rounded or shadowed */
+  --radius-none: 0px;
+  --shadow-none: none;
+}

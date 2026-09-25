@@ -1,0 +1,38 @@
+---
+/*
+ * No sponsor logo files were supplied, so each lockup renders as a plain
+ * bordered placeholder carrying the sponsor's name -- same 347x99 footprint
+ * a real logo image would take.
+ */
+interface Props {
+  name: string;
+  width?: number;
+  height?: number;
+  class?: string;
+}
+
+const { name, width = 347, height = 99, class: className } = Astro.props;
+---
+
+<div class:list={['sponsor-logo', className]} role="img" aria-label={name} style={`width:${width}px; height:${height}px`}>
+  <span>{name}</span>
+</div>
+
+<style>
+  .sponsor-logo {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 0.5px solid var(--cseed-ink);
+  }
+  .sponsor-logo span {
+    font-family: var(--font-body);
+    font-weight: var(--weight-body);
+    font-size: 18px;
+    letter-spacing: var(--tracking-body);
+    color: var(--cseed-ink-soft);
+    text-align: center;
+    padding: 0 16px;
+  }
+</style>

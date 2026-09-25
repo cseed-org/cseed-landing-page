@@ -1,53 +1,92 @@
+/* Motion is an addition to the source design (the source file is static).
+   It is tuned to the design's vibe: slow, gentle, no bounce, no overshoot. */
 :root {
-  --ease-grow: cubic-bezier(0.22, 0.9, 0.24, 1);
-  --ease-sway: cubic-bezier(0.45, 0.05, 0.55, 0.95);
-  --ease-out-soft: cubic-bezier(0.16, 0.84, 0.44, 1);
-  --dur-tap: 120ms;
-  --dur-hover: 220ms;
-  --dur-reveal: 640ms;
-  --dur-drift: 9s;
-  --sway-amount: 2.5deg;
-  --lift-hover: -2px;
-  --press-scale: 0.97;
+  --ease-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-inout: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-quick: 180ms;
+  --dur-hover: 320ms;
+  --dur-reveal: 900ms;
+  --dur-hero: 1400ms;
+  --stagger: 120ms;
+  --rise: 24px; /* fade-up travel */
+  --drift: 1.03;
 }
 
-@keyframes cseed-sway {
-  0%,
-  100% {
-    transform: rotate(calc(var(--sway-amount) * -1));
-  }
-  50% {
-    transform: rotate(var(--sway-amount));
-  }
-}
-
-@keyframes cseed-drift {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-@keyframes cseed-rise {
+@keyframes cseed-fade-up {
   from {
     opacity: 0;
-    transform: translateY(22px);
+    transform: translateY(var(--rise));
   }
   to {
     opacity: 1;
     transform: none;
   }
 }
+@keyframes cseed-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes cseed-hero-settle {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes cseed-hero-drift {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.04);
+  }
+}
+@keyframes cseed-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes cseed-arrow-nudge {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(4px, -4px);
+  }
+}
 
 @media (prefers-reduced-motion: reduce) {
   :root {
-    --sway-amount: 0deg;
+    --dur-quick: 0ms;
+    --dur-hover: 0ms;
+    --dur-reveal: 0ms;
+    --dur-hero: 0ms;
+    --stagger: 0ms;
+    --rise: 0px;
+    --drift: 1;
   }
   * {
-    animation: none !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 1ms !important;
   }
+}
+
+a {
+  color: var(--link-ink);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--cseed-ink-soft);
 }

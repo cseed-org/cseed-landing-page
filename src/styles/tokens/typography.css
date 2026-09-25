@@ -1,27 +1,58 @@
 :root {
-  /* wordmark / hero: lowercase Poppins ExtraBold, tight tracking */
-  --type-wordmark-size: clamp(88px, 15vw, 232px);
-  --type-wordmark-tracking: -0.045em;
-  --type-wordmark-leading: 0.86;
+  /* families */
+  --font-display: 'Playfair Display', ui-serif, Georgia, 'Times New Roman', serif;
+  --font-wordmark: Ubuntu, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    sans-serif;
+  --font-body: Poppins, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'Anonymous Pro', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-hand: 'Shadows Into Light Two', 'Comic Sans MS', cursive;
 
-  --type-display-size: clamp(40px, 5.2vw, 72px);
-  --type-display-tracking: -0.03em;
-  --type-display-leading: 1.02;
+  /* weights as authored */
+  --weight-display: 400;
+  --weight-wordmark: 700;
+  --weight-body: 275; /* ExtraLight; Poppins resolves to 200 */
+  --weight-mono: 400;
 
-  --type-h2-size: clamp(30px, 3.4vw, 46px);
-  --type-h3-size: 24px;
-  --type-body-lg-size: 19px;
-  --type-body-size: 16px;
-  --type-small-size: 14px;
-  --type-label-size: 13px;
+  /* sizes */
+  --size-display-hero: 160px;
+  --size-display-section: 96px;
+  --size-display-nav: 80px;
+  --size-display-lede: 80px;
+  --size-wordmark-hero: 80px;
+  --size-wordmark-nav: 60px;
+  --size-mono-cta: 80px;
+  --size-body: 36px;
+  --size-body-lg: 48px;
 
-  --type-body-leading: 1.55;
-  --type-lede-leading: 1.45;
-  --type-lede-tracking: 0.02em;
-  --type-nav-tracking: 0.01em;
-  --type-label-tracking: 0.06em;
+  /* line heights as authored (all absolute in the source) */
+  --leading-display-hero: 200px;
+  --leading-display-section: 200px;
+  --leading-display-nav: 200px;
+  --leading-lede: 109px;
+  --leading-mono-cta: 109px;
+  --leading-body: 61px;
+  --leading-body-stacked: 98px;
 
-  --type-hand-size: 19px;
-  --type-hand-leading: 1.18;
-  --type-hand-rotate: -4deg;
+  /* tracking */
+  --tracking-display: -0.06em;
+  --tracking-lede: -0.08em;
+  --tracking-hero: -0.06em;
+  --tracking-wordmark: -0.03em;
+  --tracking-mono: -0.1em;
+  --tracking-body: 0.09em;
+
+  /* composed text styles */
+  --type-display-hero: var(--weight-display) var(--size-display-hero) / var(--leading-display-hero)
+    var(--font-display);
+  --type-display-section: var(--weight-display) var(--size-display-section) / var(--leading-display-section)
+    var(--font-display);
+  --type-display-nav: var(--weight-display) var(--size-display-nav) / var(--leading-display-nav) var(--font-display);
+  --type-display-lede: var(--weight-display) var(--size-display-lede) / var(--leading-lede) var(--font-display);
+  --type-wordmark-hero: var(--weight-wordmark) var(--size-wordmark-hero) / var(--leading-display-hero)
+    var(--font-wordmark);
+  --type-wordmark-nav: var(--weight-wordmark) var(--size-wordmark-nav) / var(--leading-display-nav)
+    var(--font-wordmark);
+  --type-mono-cta: var(--weight-mono) var(--size-mono-cta) / var(--leading-mono-cta) var(--font-mono);
+  --type-body-default: var(--weight-body) var(--size-body) / var(--leading-body) var(--font-body);
+  --type-body-stacked: var(--weight-body) var(--size-body) / var(--leading-body-stacked) var(--font-body);
 }

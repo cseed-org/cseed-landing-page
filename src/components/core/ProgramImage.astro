@@ -1,0 +1,27 @@
+---
+interface Props {
+  width?: number;
+  height?: number;
+  position?: string;
+  class?: string;
+}
+
+const { width = 577, height = 465, position = 'center', class: className } = Astro.props;
+---
+
+<div
+  class:list={['program-image', 'ph', className]}
+  style={`width:${width}px; height:${height}px; background-position:${position}`}
+>
+</div>
+
+<style>
+  .program-image {
+    flex: none;
+    overflow: hidden;
+    transition: transform 1200ms var(--ease-soft);
+  }
+  .program-image:hover {
+    transform: scale(var(--drift));
+  }
+</style>

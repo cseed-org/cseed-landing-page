@@ -1,0 +1,110 @@
+---
+import Wordmark from '../core/Wordmark.astro';
+import TextLink from '../core/TextLink.astro';
+import Arrow from '../core/Arrow.astro';
+
+/*
+ * Source node "hero" -- a photograph bled past the 2083px-wide canvas,
+ * yellow wordmark, 160px display line in --cseed-sun, a white mono CTA and
+ * two 86px scroll arrows. All positions below are the literal pixel values
+ * from the source design, authored against this fixed canvas -- the whole
+ * page (see BaseLayout's script) is scaled as one unit via CSS `zoom`, so
+ * nothing in here needs to be responsive on its own.
+ *
+ * Height is set client-side to fill the viewport (see `fitHero()` in
+ * BaseLayout's script); 1293 is only the pre-JS default.
+ */
+interface Props {
+  display?: string;
+  cta?: string;
+}
+const { display = 'good people. curious ideas.', cta = 'scroll down' } = Astro.props;
+---
+
+<section class="hero" data-hero style="height:1293px">
+  <div class="hero-photo ph" aria-hidden="true"></div>
+  <div class="hero-scrim" aria-hidden="true"></div>
+  <div class="hero-wordmark">
+    <Wordmark size={75} color="var(--text-wordmark-photo)" />
+  </div>
+  <h1 class="hero-display">{display}</h1>
+  <div class="hero-cta">
+    <TextLink variant="mono" href="#programs">{cta}</TextLink>
+  </div>
+  <div class="hero-arrows">
+    <span class="hero-arrow hero-arrow--a"><Arrow length={86} angle={90} color="var(--rule-on-photo)" /></span>
+    <span class="hero-arrow hero-arrow--b"><Arrow length={86} angle={90} color="var(--rule-on-photo)" /></span>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    width: 2083px;
+    overflow: hidden;
+    background: var(--surface-photo);
+  }
+  .hero-photo {
+    position: absolute;
+    left: -19px;
+    top: -112px;
+    width: 2417px;
+    height: max(1603px, calc(100% + 280px));
+    animation:
+      cseed-fade var(--dur-hero) var(--ease-soft) both,
+      cseed-hero-drift 24000ms var(--ease-soft) both;
+  }
+  .hero-scrim {
+    position: absolute;
+    left: -58px;
+    top: 28px;
+    right: -315px;
+    bottom: -168px;
+    pointer-events: none;
+    background: linear-gradient(rgba(20, 16, 10, 0) 28%, rgba(20, 16, 10, 0.52) 52%, rgba(20, 16, 10, 0.72) 100%);
+  }
+  .hero-wordmark {
+    position: absolute;
+    left: 909px;
+    top: 0;
+    width: 266px;
+    text-align: center;
+    animation: cseed-fade-up var(--dur-hero) var(--ease-soft) 200ms both;
+  }
+  .hero-display {
+    position: absolute;
+    left: 140px;
+    top: 895px;
+    margin: 0;
+    width: 1853px;
+    text-align: center;
+    font-family: var(--font-display);
+    font-weight: var(--weight-display);
+    letter-spacing: var(--tracking-hero);
+    color: var(--text-display-hero);
+    white-space: nowrap;
+    font-size: 130px;
+    animation: cseed-hero-settle var(--dur-hero) var(--ease-soft) 420ms both;
+  }
+  .hero-cta {
+    position: absolute;
+    left: 837px;
+    bottom: 132px;
+    animation: cseed-fade-up var(--dur-hero) var(--ease-soft) 760ms both;
+  }
+  .hero-arrows {
+    position: absolute;
+    left: 2000px;
+    bottom: 173px;
+    display: flex;
+    gap: 33px;
+    animation: cseed-fade var(--dur-hero) var(--ease-soft) 1000ms both;
+  }
+  .hero-arrow {
+    display: inline-flex;
+    animation: cseed-arrow-nudge 3600ms var(--ease-inout) infinite;
+  }
+  .hero-arrow--b {
+    animation-delay: 400ms;
+  }
+</style>
