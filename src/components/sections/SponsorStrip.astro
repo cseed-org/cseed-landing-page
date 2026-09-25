@@ -1,16 +1,18 @@
 ---
 import SponsorLogo from '../core/SponsorLogo.astro';
 
+/* The light band -- 289px of --surface-strip carrying a 124px-gap row of
+   347x99 partner lockups, doubled so the marquee loops seamlessly. */
 interface Props {
-  names?: string[];
+  logos: { src: string; alt: string }[];
 }
-const { names = [] } = Astro.props;
-const run = [...names, ...names];
+const { logos } = Astro.props;
+const run = [...logos, ...logos];
 ---
 
 <div class="sponsor-strip">
   <div class="sponsor-strip-track">
-    {run.map((name, i) => <SponsorLogo name={name} data-i={i} />)}
+    {run.map((logo) => <SponsorLogo src={logo.src} alt={logo.alt} />)}
   </div>
 </div>
 

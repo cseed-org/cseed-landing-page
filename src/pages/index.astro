@@ -8,7 +8,13 @@ import SponsorStrip from '../components/sections/SponsorStrip.astro';
 import MissionPrompt from '../components/sections/MissionPrompt.astro';
 import Footer from '../components/landing/Footer.astro';
 
-const sponsors = ['Madrona Venture Labs', 'Allen School', 'Pioneer Square Labs', 'Partner', 'Pack Ventures'];
+const sponsors = [
+  { src: '/images/sponsors/madrona.png', alt: 'Madrona Venture Labs' },
+  { src: '/images/sponsors/allen-school.png', alt: 'Paul G. Allen School of Computer Science & Engineering' },
+  { src: '/images/sponsors/pioneer-square-labs.png', alt: 'Pioneer Square Labs' },
+  { src: '/images/sponsors/a.png', alt: 'Partner' },
+  { src: '/images/sponsors/five.png', alt: 'Pack Ventures' },
+];
 ---
 
 <BaseLayout>
@@ -23,7 +29,7 @@ const sponsors = ['Madrona Venture Labs', 'Allen School', 'Pioneer Square Labs',
       <ProgramsCollage />
       <CommunityBand />
       <div id="sponsors" style="height:176px"></div>
-      <SponsorStrip names={sponsors} />
+      <SponsorStrip logos={sponsors} />
       <div style="height:176px"></div>
       <MissionPrompt />
       <div style="height:240px"></div>
