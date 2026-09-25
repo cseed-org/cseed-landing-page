@@ -1,0 +1,53 @@
+:root {
+  --ease-grow: cubic-bezier(0.22, 0.9, 0.24, 1);
+  --ease-sway: cubic-bezier(0.45, 0.05, 0.55, 0.95);
+  --ease-out-soft: cubic-bezier(0.16, 0.84, 0.44, 1);
+  --dur-tap: 120ms;
+  --dur-hover: 220ms;
+  --dur-reveal: 640ms;
+  --dur-drift: 9s;
+  --sway-amount: 2.5deg;
+  --lift-hover: -2px;
+  --press-scale: 0.97;
+}
+
+@keyframes cseed-sway {
+  0%,
+  100% {
+    transform: rotate(calc(var(--sway-amount) * -1));
+  }
+  50% {
+    transform: rotate(var(--sway-amount));
+  }
+}
+
+@keyframes cseed-drift {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes cseed-rise {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --sway-amount: 0deg;
+  }
+  * {
+    animation: none !important;
+    transition-duration: 1ms !important;
+  }
+}

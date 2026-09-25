@@ -1,0 +1,73 @@
+:root {
+  /* --- base ramps: sampled from the cseed design reference --- */
+  --green-950: #16210f;
+  --green-900: #20321a;
+  --green-800: #2a431d;
+  --green-700: #3c5722;
+  --green-600: #5b6c2e;
+  --green-500: #7a8f3e;
+  --green-400: #899a3f;
+  --green-300: #a8b86a;
+  --green-200: #cbd6a4;
+  --green-100: #e7edd6;
+
+  --sky-700: #3f6d97;
+  --sky-600: #4b7ea9;
+  --sky-500: #5388b4;
+  --sky-400: #7aa7cb;
+  --sky-300: #a9c7de;
+  --sky-200: #cfe0ec;
+  --sky-100: #e8f1f7;
+
+  --water-500: #5f96a9;
+  --water-300: #9dc3ce;
+
+  --cream-100: #fdfcf7;
+  --cream-200: #f6f3e7;
+  --cream-300: #eee9d8;
+  --cream-400: #ded7c0;
+
+  --ink-900: #2b2a24;
+  --ink-700: #4c4a41;
+  --ink-500: #7b776b;
+
+  --white: #ffffff;
+  --butter-300: #f9dc8f;
+  --butter-500: #f0c14b;
+  --petal-200: #fdf6e3;
+
+  /* --- semantic aliases --- */
+  --surface-page: var(--cream-200);
+  --surface-card: var(--cream-100);
+  --surface-raised: var(--white);
+  --surface-sky: var(--sky-500);
+  --surface-meadow: var(--green-500);
+  --surface-deep: var(--green-800);
+
+  --text-body: var(--ink-900);
+  --text-muted: var(--ink-500);
+  --text-heading: var(--green-800);
+  --text-on-photo: var(--cream-100);
+  --text-on-deep: var(--cream-200);
+  --text-annotation: var(--cream-100);
+  --text-annotation-on-light: var(--green-700);
+
+  --action-fill: var(--cream-100);
+  --action-fill-hover: var(--white);
+  --action-text: var(--ink-900);
+  --action-fill-solid: var(--green-700);
+  --action-text-solid: var(--cream-100);
+  --action-ghost-border: rgba(253, 252, 247, 0.75);
+
+  --capsule-fill: rgba(42, 67, 29, 0.42);
+  --capsule-fill-light: rgba(253, 252, 247, 0.86);
+  --scrim-photo: linear-gradient(180deg, rgba(22, 33, 15, 0.34) 0%, rgba(22, 33, 15, 0) 42%);
+  --scrim-card: linear-gradient(180deg, rgba(22, 33, 15, 0) 38%, rgba(22, 33, 15, 0.62) 100%);
+
+  --border-hairline: rgba(43, 42, 36, 0.12);
+  --border-on-photo: rgba(253, 252, 247, 0.38);
+  --focus-ring: var(--butter-500);
+
+  --link: var(--green-700);
+  --link-hover: var(--green-600);
+}

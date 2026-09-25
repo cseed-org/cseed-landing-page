@@ -1,0 +1,48 @@
+---
+interface Props {
+  value: string;
+  label: string;
+  tone?: 'on-photo' | 'light';
+  class?: string;
+}
+
+const { value, label, tone = 'on-photo', class: className } = Astro.props;
+---
+
+<div class:list={['stat-capsule', className]} data-tone={tone}>
+  <span class="stat-value">{value}</span>
+  <span class="stat-label">{label}</span>
+</div>
+
+<style>
+  .stat-capsule {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 20px 34px;
+    border-radius: var(--radius-pill);
+    backdrop-filter: blur(var(--blur-capsule));
+  }
+  .stat-capsule[data-tone='on-photo'] {
+    background: var(--capsule-fill);
+    color: var(--cream-100);
+  }
+  .stat-capsule[data-tone='light'] {
+    background: var(--capsule-fill-light);
+    color: var(--green-800);
+  }
+  .stat-value {
+    font-family: var(--font-display);
+    font-weight: var(--weight-bold);
+    font-size: 38px;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .stat-label {
+    font-family: var(--font-body);
+    font-size: var(--type-small-size);
+    letter-spacing: 0.01em;
+    opacity: 0.92;
+  }
+</style>

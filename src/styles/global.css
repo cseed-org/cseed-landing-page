@@ -1,266 +1,100 @@
-/*
- * Global styles: design tokens, a small reset, and element defaults.
- * Imported once, in src/layouts/BaseLayout.astro.
- *
- * Anything component-specific belongs in that component's own <style> block —
- * Astro scopes those automatically, so they cannot leak.
- */
+@import './tokens/fonts.css';
+@import './tokens/colors.css';
+@import './tokens/typography.css';
+@import './tokens/spacing.css';
+@import './tokens/shape.css';
+@import './tokens/motion.css';
 
-/* ---------------------------------------------------------------- tokens */
-:root {
-  color-scheme: light dark;
-
-  /* Brand. Swap these three and the whole site follows. */
-  --brand: #4c2a85;
-  --brand-bright: #7c4dcc;
-  --accent: #c2410c;
-  /* Text placed on top of a --brand fill. */
-  --on-brand: #ffffff;
-
-  /* Neutrals */
-  --bg: #fbfaf9;
-  --surface: #ffffff;
-  --border: #e5e1dd;
-  --text: #1c1917;
-  --text-muted: #57534e;
-
-  /* Type scale */
-  --font-sans:
-    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
-
-  --step--1: clamp(0.83rem, 0.8rem + 0.15vw, 0.9rem);
-  --step-0: clamp(1rem, 0.96rem + 0.2vw, 1.1rem);
-  --step-1: clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem);
-  --step-2: clamp(1.6rem, 1.4rem + 1vw, 2.1rem);
-  --step-3: clamp(2.1rem, 1.7rem + 2vw, 3.2rem);
-
-  /* Spacing + shape */
-  --space-xs: 0.5rem;
-  --space-sm: 0.75rem;
-  --space-md: 1.25rem;
-  --space-lg: 2.5rem;
-  --space-xl: 4.5rem;
-  --radius: 12px;
-  --radius-lg: 20px;
-  --shadow: 0 1px 2px rgb(28 25 23 / 0.06), 0 8px 24px -12px rgb(28 25 23 / 0.18);
-
-  --measure: 68ch;
-  --page-max: 1140px;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --brand: #a78bfa;
-    --brand-bright: #c4b5fd;
-    --accent: #fb923c;
-    --on-brand: #1b1220;
-    --bg: #17151a;
-    --surface: #201d26;
-    --border: #35303d;
-    --text: #f5f3f0;
-    --text-muted: #b0a8a2;
-    --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.7);
-  }
-}
-
-/* ----------------------------------------------------------------- reset */
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
 
-* {
-  margin: 0;
-}
-
 html {
-  -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
 body {
-  min-height: 100dvh;
-  font-family: var(--font-sans);
-  font-size: var(--step-0);
-  line-height: 1.6;
-  color: var(--text);
-  background: var(--bg);
+  margin: 0;
+  background: var(--surface-page);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-leading);
   -webkit-font-smoothing: antialiased;
-  display: flex;
-  flex-direction: column;
 }
 
 img,
-picture,
-svg,
-video {
+svg {
   display: block;
   max-width: 100%;
-  height: auto;
-}
-
-input,
-button,
-textarea,
-select {
-  font: inherit;
-  color: inherit;
-}
-
-/* --------------------------------------------------------- element defaults */
-h1,
-h2,
-h3 {
-  line-height: 1.15;
-  text-wrap: balance;
-  font-weight: 650;
-  letter-spacing: -0.015em;
-}
-
-h1 {
-  font-size: var(--step-3);
-}
-h2 {
-  font-size: var(--step-2);
-}
-h3 {
-  font-size: var(--step-1);
-}
-
-p,
-li {
-  text-wrap: pretty;
 }
 
 a {
-  color: var(--brand);
-  text-underline-offset: 0.2em;
-}
-
-a:hover {
-  color: var(--brand-bright);
+  color: inherit;
 }
 
 :focus-visible {
-  outline: 3px solid var(--brand-bright);
-  outline-offset: 2px;
-  border-radius: 4px;
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
 }
 
-code {
-  font-family: var(--font-mono);
-  font-size: 0.9em;
-  background: color-mix(in oklab, var(--brand) 10%, transparent);
-  padding: 0.15em 0.4em;
-  border-radius: 5px;
+/*
+ * Placeholder fills for the photography this design calls for. No production
+ * images were supplied, so every "photo" band and card in the page renders as
+ * a brand-colored, diagonally-hatched swatch instead of a real photo. Swap by
+ * replacing the element's background with a real `url(...)` image -- the
+ * scrims, radii and shadows around it are already sized for a photo.
+ */
+.ph {
+  position: relative;
+  background-repeat: repeat;
+  background-size: 22px 22px;
 }
-
-blockquote {
-  border-left: 3px solid var(--brand);
-  padding-left: var(--space-md);
-  color: var(--text-muted);
-}
-
-hr {
-  border: 0;
-  border-top: 1px solid var(--border);
-}
-
-/* --------------------------------------------------------------- utilities */
-.wrap {
-  width: 100%;
-  max-width: var(--page-max);
-  margin-inline: auto;
-  padding-inline: var(--space-md);
-}
-
-.prose > * + * {
-  margin-top: var(--space-md);
-}
-
-.prose {
-  max-width: var(--measure);
-}
-
-/* Visible only to screen readers, until focused (used by the skip link). */
-.visually-hidden {
+.ph::after {
+  content: '';
   position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
+  inset: 0;
+  pointer-events: none;
 }
-
-.visually-hidden:focus-visible {
-  position: fixed;
-  top: var(--space-sm);
-  left: var(--space-sm);
-  z-index: 100;
-  width: auto;
-  height: auto;
-  clip-path: none;
-  padding: var(--space-sm) var(--space-md);
-  background: var(--surface);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
+.ph-meadow {
+  background-color: var(--green-500);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(253, 252, 247, 0.1) 0,
+    rgba(253, 252, 247, 0.1) 1px,
+    transparent 1px,
+    transparent 11px
+  );
 }
-
-.button {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-xs);
-  padding: 0.7em 1.35em;
-  border: 1px solid transparent;
-  border-radius: 999px;
-  font-weight: 600;
-  font-size: var(--step--1);
-  text-decoration: none;
-  cursor: pointer;
-  transition:
-    transform 0.15s ease,
-    background-color 0.15s ease,
-    border-color 0.15s ease;
+.ph-forest {
+  background-color: var(--green-800);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(253, 252, 247, 0.08) 0,
+    rgba(253, 252, 247, 0.08) 1px,
+    transparent 1px,
+    transparent 11px
+  );
 }
-
-.button:hover {
-  transform: translateY(-1px);
+.ph-sky {
+  background-color: var(--sky-400);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(253, 252, 247, 0.12) 0,
+    rgba(253, 252, 247, 0.12) 1px,
+    transparent 1px,
+    transparent 11px
+  );
 }
-
-.button--primary {
-  background: var(--brand);
-  color: var(--on-brand);
-}
-
-.button--primary:hover {
-  background: var(--brand-bright);
-  color: var(--on-brand);
-}
-
-.button--ghost {
-  background: transparent;
-  border-color: var(--border);
-  color: var(--text);
-}
-
-.button--ghost:hover {
-  border-color: var(--brand);
-  color: var(--brand);
+.ph-water {
+  background-color: var(--water-500);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(253, 252, 247, 0.1) 0,
+    rgba(253, 252, 247, 0.1) 1px,
+    transparent 1px,
+    transparent 11px
+  );
 }

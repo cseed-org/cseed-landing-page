@@ -1,0 +1,62 @@
+---
+interface Props {
+  tone?: 'deep' | 'cream';
+  lede?: string;
+  class?: string;
+}
+
+const { tone = 'deep', lede, class: className } = Astro.props;
+---
+
+<header class:list={['section-heading', className]} data-tone={tone}>
+  <div class="section-heading-copy">
+    <h2><slot /></h2>
+    {lede && <p class="section-heading-lede">{lede}</p>}
+  </div>
+  <slot name="action" />
+</header>
+
+<style>
+  .section-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-32);
+    flex-wrap: wrap;
+  }
+  .section-heading-copy {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-16);
+    max-width: var(--measure-body);
+  }
+  .section-heading[data-tone='deep'] h2 {
+    color: var(--text-heading);
+  }
+  .section-heading[data-tone='cream'] h2 {
+    color: var(--cream-100);
+  }
+  .section-heading h2 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: var(--weight-bold);
+    font-size: var(--type-h2-size);
+    line-height: var(--type-display-leading);
+    letter-spacing: var(--type-display-tracking);
+  }
+  .section-heading-lede {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: var(--type-body-lg-size);
+    line-height: var(--type-lede-leading);
+    max-width: var(--measure-body);
+  }
+  .section-heading[data-tone='deep'] .section-heading-lede {
+    color: var(--text-heading);
+    opacity: 0.82;
+  }
+  .section-heading[data-tone='cream'] .section-heading-lede {
+    color: var(--cream-100);
+    opacity: 0.94;
+  }
+</style>

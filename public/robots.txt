@@ -1,5 +1,2 @@
 User-agent: *
 Allow: /
-
-# Update the host before launch — it must match `site` in astro.config.mjs.
-Sitemap: https://cseed.example.edu/sitemap-index.xml

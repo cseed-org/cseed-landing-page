@@ -1,0 +1,27 @@
+:root {
+  /* wordmark / hero: lowercase Poppins ExtraBold, tight tracking */
+  --type-wordmark-size: clamp(88px, 15vw, 232px);
+  --type-wordmark-tracking: -0.045em;
+  --type-wordmark-leading: 0.86;
+
+  --type-display-size: clamp(40px, 5.2vw, 72px);
+  --type-display-tracking: -0.03em;
+  --type-display-leading: 1.02;
+
+  --type-h2-size: clamp(30px, 3.4vw, 46px);
+  --type-h3-size: 24px;
+  --type-body-lg-size: 19px;
+  --type-body-size: 16px;
+  --type-small-size: 14px;
+  --type-label-size: 13px;
+
+  --type-body-leading: 1.55;
+  --type-lede-leading: 1.45;
+  --type-lede-tracking: 0.02em;
+  --type-nav-tracking: 0.01em;
+  --type-label-tracking: 0.06em;
+
+  --type-hand-size: 19px;
+  --type-hand-leading: 1.18;
+  --type-hand-rotate: -4deg;
+}

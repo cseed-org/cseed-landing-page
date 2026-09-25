@@ -1,0 +1,61 @@
+---
+import IconButton from '../core/IconButton.astro';
+
+interface Props {
+  label: string;
+  placeholder?: 'meadow' | 'forest' | 'sky' | 'water';
+  href?: string;
+  height?: number;
+  arrow?: boolean;
+  class?: string;
+}
+
+const { label, placeholder = 'meadow', href = '#', height = 150, arrow = true, class: className } = Astro.props;
+---
+
+<a class:list={['photo-card', 'ph', `ph-${placeholder}`, className]} href={href} style={`height:${height}px`}>
+  <span class="photo-card-scrim" aria-hidden="true"></span>
+  <span class="photo-card-label">{label}</span>
+  {arrow && <IconButton glyph="↗" size="sm" tone="on-photo" label={label} class="photo-card-arrow" />}
+</a>
+
+<style>
+  .photo-card {
+    position: relative;
+    display: block;
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    text-decoration: none;
+    box-shadow: var(--shadow-soft);
+    transition:
+      transform var(--dur-hover) var(--ease-grow),
+      box-shadow var(--dur-hover) var(--ease-out-soft);
+  }
+  .photo-card:hover {
+    box-shadow: var(--shadow-card);
+    transform: translateY(-3px);
+  }
+  .photo-card-scrim {
+    position: absolute;
+    inset: 0;
+    background: var(--scrim-card);
+  }
+  .photo-card-label {
+    position: absolute;
+    left: 14px;
+    bottom: 12px;
+    right: 56px;
+    color: var(--text-on-photo);
+    font-family: var(--font-display);
+    font-weight: var(--weight-semibold);
+    font-size: 17px;
+    line-height: 1.18;
+    letter-spacing: -0.01em;
+    white-space: pre-line;
+  }
+  .photo-card :global(.photo-card-arrow) {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+  }
+</style>

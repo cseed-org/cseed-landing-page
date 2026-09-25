@@ -1,40 +1,15 @@
 ---
-/**
- * The HTML shell every page shares: <head> metadata, skip link, header, footer.
- *
- * Pages use it like this:
- *
- *   ---
- *   import BaseLayout from '~/layouts/BaseLayout.astro';
- *   ---
- *   <BaseLayout title="Events" description="What we have coming up.">
- *     <h1>Events</h1>
- *   </BaseLayout>
- */
-import Header from '~/components/Header.astro';
-import Footer from '~/components/Footer.astro';
-import '~/styles/global.css';
+import '../styles/global.css';
 
 interface Props {
-  /** Page title. The site name is appended automatically. */
-  title: string;
-  /** Meta description, ~150 chars. Also used for social previews. */
-  description: string;
-  /** Path to a social preview image in `public/`. */
-  ogImage?: string;
-  /** Set true on pages that should not be indexed. */
-  noindex?: boolean;
+  title?: string;
+  description?: string;
 }
 
-const { title, description, ogImage = '/og-default.png', noindex = false } = Astro.props;
-
-const SITE_NAME = 'CSEED';
-const fullTitle = title === SITE_NAME ? title : `${title} · ${SITE_NAME}`;
-
-// Astro.site comes from `site` in astro.config.mjs. The fallback keeps `astro dev`
-// working if that is ever unset.
-const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin);
-const ogImageUrl = new URL(ogImage, Astro.site ?? Astro.url.origin);
+const {
+  title = 'cseed — a community for the next generation of builders',
+  description = 'CSEED is a student-run community that helps builders turn ideas into impact through people, resources, and real opportunities.',
+} = Astro.props;
 ---
 
 <!doctype html>
@@ -43,35 +18,10 @@ const ogImageUrl = new URL(ogImage, Astro.site ?? Astro.url.origin);
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="canonical" href={canonical} />
-
-    <title>{fullTitle}</title>
+    <title>{title}</title>
     <meta name="description" content={description} />
-    {noindex && <meta name="robots" content="noindex, nofollow" />}
-
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content={SITE_NAME} />
-    <meta property="og:title" content={fullTitle} />
-    <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonical} />
-    <meta property="og:image" content={ogImageUrl} />
-    <meta name="twitter:card" content="summary_large_image" />
-
-    <meta name="generator" content={Astro.generator} />
   </head>
-
   <body>
-    <a class="visually-hidden" href="#main">Skip to content</a>
-    <Header />
-    <main id="main">
-      <slot />
-    </main>
-    <Footer />
+    <slot />
   </body>
 </html>
-
-<style>
-  main {
-    flex: 1;
-  }
-</style>

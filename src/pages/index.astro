@@ -1,98 +1,238 @@
 ---
-/**
- * Home page — served at `/`.
- *
- * Files in src/pages/ become routes by their filename:
- *   index.astro        -> /
- *   about.astro        -> /about/
- *   events/index.astro -> /events/
- *   events/[id].astro  -> /events/<id>/   (one page per collection entry)
- */
-import { getCollection } from 'astro:content';
-import BaseLayout from '~/layouts/BaseLayout.astro';
-import Hero from '~/components/Hero.astro';
-import Section from '~/components/Section.astro';
-import EventCard from '~/components/EventCard.astro';
-import ContactForm from '~/components/ContactForm.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import NavBar from '../components/navigation/NavBar.astro';
+import SiteFooter from '../components/navigation/SiteFooter.astro';
+import Wordmark from '../components/core/Wordmark.astro';
+import Button from '../components/core/Button.astro';
+import Annotation from '../components/core/Annotation.astro';
+import StatCapsule from '../components/core/StatCapsule.astro';
+import TornDivider from '../components/layout/TornDivider.astro';
+import SectionHeading from '../components/layout/SectionHeading.astro';
+import PhotoCard from '../components/media/PhotoCard.astro';
+import PolaroidStack from '../components/media/PolaroidStack.astro';
 
-// `getCollection` reads src/content/event-graphics/ through the loader defined in
-// src/content.config.ts. The second argument filters entries; here we drop drafts,
-// but only in production builds, so drafts stay visible while running `npm run dev`.
-const events = await getCollection(
-  'event-graphics',
-  ({ data }) => import.meta.env.DEV || !data.draft,
-);
-
-const sorted = events.sort((a, b) => a.data.date.getTime() - b.data.date.getTime());
-const featured = sorted.find((event) => event.data.featured);
-const upcoming = sorted.filter((event) => event.id !== featured?.id).slice(0, 3);
+const footerColumns = [
+  { title: 'programs', links: ['buildspace', 'buildher'] },
+  { title: 'community', links: ['team', 'join', 'events'] },
+  { title: 'more', links: ['projects', 'resources'] },
+];
 ---
 
-<BaseLayout
-  title="CSEED"
-  description="CSEED runs student-led events, workshops, and dialogues. Find what's coming up and get in touch."
->
-  <Hero
-    eyebrow="Student-led since 2014"
-    title="Come build something with us"
-    lede="CSEED runs workshops, dinners, and dialogues across the year. Everything is free, and you never need to have come before."
-  >
-    <a class="button button--primary" href="/events/">See upcoming events</a>
-    <a class="button button--ghost" href="#contact">Get in touch</a>
-  </Hero>
+<BaseLayout>
+  <div class="page">
+    <!-- hero -->
+    <section class="hero ph ph-meadow">
+      <div class="hero-scrim" aria-hidden="true"></div>
+      <NavBar active="home" tone="on-photo" />
+      <div class="hero-content">
+        <Annotation arrow="down-right" rotate={-4} class="hero-annotation">{'ideas\npeople\npossibilities'}</Annotation>
+        <h1 class="hero-title"><Wordmark size="clamp(88px, 15vw, 232px)" tone="cream" as="span" /></h1>
+        <p class="hero-lede">a community for the next generation of builders</p>
+        <div class="hero-actions">
+          <Button variant="primary" size="lg" arrow="right" href="#join">join the community</Button>
+          <Button variant="ghost" size="lg" href="#buildspace">explore</Button>
+        </div>
+      </div>
+      <TornDivider fill="var(--cream-200)" tear="a" height={52} class="band-divider" />
+    </section>
 
-  {
-    featured && (
-      <Section title="Next up" intro="Our nearest event — no RSVP required unless noted.">
-        <EventCard event={featured} featured loading="eager" />
-      </Section>
-    )
-  }
+    <!-- intro -->
+    <section class="intro">
+      <div class="intro-inner">
+        <p class="intro-copy">
+          CSEED is a student-run community that helps builders turn ideas into impact through people, resources,
+          and real opportunities.
+        </p>
+        <div class="intro-photos">
+          <PolaroidStack count={3} size={104} />
+        </div>
+      </div>
+      <TornDivider fill="var(--green-500)" tear="b" height={44} class="band-divider" />
+    </section>
 
-  <Section
-    id="events"
-    title="Also on the calendar"
-    intro="A rolling look at what else we have scheduled."
-  >
-    {
-      upcoming.length > 0 ? (
-        <ul class="grid">
-          {upcoming.map((event) => (
-            <li>
-              <EventCard event={event} />
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>Nothing else scheduled right now — check back after the quarter starts.</p>
-      )
-    }
+    <!-- stats -->
+    <section class="stats ph ph-meadow">
+      <div class="stats-inner">
+        <StatCapsule value="1K+" label="members" />
+        <StatCapsule value="50+" label="events" />
+        <StatCapsule value="100+" label="projects" />
+        <StatCapsule value="∞" label="possibilities" />
+      </div>
+      <TornDivider fill="var(--cream-200)" tear="a" height={44} class="band-divider" />
+    </section>
 
-    <p class="more">
-      <a href="/events/">View all events &rarr;</a>
-    </p>
-  </Section>
+    <!-- what you can do -->
+    <section class="offer">
+      <div class="offer-inner">
+        <SectionHeading tone="deep">what you can do</SectionHeading>
+        <div class="offer-grid">
+          <PhotoCard label="meet amazing people" placeholder="meadow" />
+          <PhotoCard label="build real projects" placeholder="forest" />
+          <PhotoCard label="learn new skills" placeholder="sky" />
+          <PhotoCard label="get opportunities" placeholder="meadow" />
+        </div>
+      </div>
+      <TornDivider fill="var(--water-500)" tear="b" height={44} class="band-divider" />
+    </section>
 
-  <Section
-    id="contact"
-    title="Get in touch"
-    intro="Questions, ideas, or want to run something with us? Send a note and we'll reply by email."
-  >
-    <ContactForm />
-  </Section>
+    <!-- cta -->
+    <section class="cta ph ph-water">
+      <div class="cta-inner">
+        <h2 class="cta-title">ready to build a brighter tomorrow?</h2>
+        <Button variant="primary" size="lg" arrow="right" href="#join">join cseed</Button>
+      </div>
+    </section>
+
+    <SiteFooter columns={footerColumns} />
+  </div>
 </BaseLayout>
 
 <style>
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
-    gap: var(--space-md);
-    list-style: none;
-    padding: 0;
+  .page {
+    font-family: var(--font-body);
+    color: var(--ink-900);
+    background: var(--surface-page);
   }
 
-  .more {
-    margin-top: var(--space-lg);
-    font-weight: 600;
+  section {
+    position: relative;
+  }
+
+  .band-divider {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
+  /* hero */
+  .hero {
+    min-height: 92vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .hero-scrim {
+    position: absolute;
+    inset: 0;
+    background: var(--scrim-photo);
+  }
+  .hero-content {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: var(--max-page);
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 var(--gutter-page) 72px;
+  }
+  .hero-annotation {
+    margin-bottom: var(--space-16);
+  }
+  .hero-title {
+    margin: 0;
+  }
+  .hero-lede {
+    margin: 20px 0 32px;
+    max-width: var(--measure-narrow);
+    color: var(--cream-100);
+    font-size: var(--type-body-lg-size);
+    line-height: var(--type-lede-leading);
+    letter-spacing: var(--type-lede-tracking);
+  }
+  .hero-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  /* intro */
+  .intro {
+    padding: 40px 0 96px;
+    background: var(--cream-200);
+  }
+  .intro-inner {
+    max-width: var(--max-page);
+    margin: 0 auto;
+    padding: 0 var(--gutter-page);
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: 40px;
+    align-items: center;
+  }
+  .intro-copy {
+    margin: 0;
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-leading);
+    max-width: var(--measure-body);
+  }
+  .intro-photos {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  /* stats */
+  .stats {
+    padding: 72px 0;
+  }
+  .stats-inner {
+    max-width: var(--max-page);
+    margin: 0 auto;
+    padding: 0 var(--gutter-page);
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* offer */
+  .offer {
+    padding: 72px 0 96px;
+    background: var(--cream-200);
+  }
+  .offer-inner {
+    max-width: var(--max-page);
+    margin: 0 auto;
+    padding: 0 var(--gutter-page);
+  }
+  .offer-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+    margin-top: 32px;
+  }
+  @media (max-width: 860px) {
+    .offer-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .intro-inner {
+      grid-template-columns: 1fr;
+    }
+    .intro-photos {
+      justify-content: flex-start;
+    }
+  }
+
+  /* cta */
+  .cta {
+    padding: 96px 0;
+    text-align: center;
+  }
+  .cta-inner {
+    max-width: var(--max-page);
+    margin: 0 auto;
+    padding: 0 var(--gutter-page);
+  }
+  .cta-title {
+    margin: 0 auto 32px;
+    max-width: 20ch;
+    color: var(--cream-100);
+    font-family: var(--font-display);
+    font-weight: var(--weight-bold);
+    font-size: var(--type-h2-size);
+    line-height: 1.06;
+    letter-spacing: var(--type-display-tracking);
   }
 </style>

@@ -8,20 +8,17 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "sync": "astro sync",
     "lint": "prettier --check .",
     "format": "prettier --write .",
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^7.3.1",
-    "zod": "^4.5.4"
+    "astro": "^7.3.1"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "prettier": "^3.9.6",
     "prettier-plugin-astro": "^0.14.1",
-    "sharp": "^0.35.4",
     "typescript": "^6.0.3"
   }
 }

@@ -1,0 +1,89 @@
+---
+import Wordmark from '../core/Wordmark.astro';
+import Button from '../core/Button.astro';
+
+export const CSEED_NAV = [
+  { label: 'home', href: '#home' },
+  { label: 'buildspace', href: '#buildspace' },
+  { label: 'buildher', href: '#buildher' },
+  { label: 'team', href: '#team' },
+  { label: 'join', href: '#join' },
+];
+
+interface Props {
+  active?: string;
+  tone?: 'on-photo' | 'on-light';
+  cta?: string;
+  class?: string;
+}
+
+const { active = 'home', tone = 'on-photo', cta = 'join', class: className } = Astro.props;
+const cream = tone === 'on-photo';
+---
+
+<nav class:list={['nav-bar', className]} data-tone={tone}>
+  <a href="#home" class="nav-bar-mark">
+    <Wordmark size={26} tone={cream ? 'cream' : 'deep'} star={false} />
+  </a>
+  <ul class="nav-bar-links">
+    {
+      CSEED_NAV.map((item) => (
+        <li>
+          <a href={item.href} class:list={{ 'is-active': item.label === active }}>
+            {item.label}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+  <Button variant={cream ? 'primary' : 'solid'} size="sm" arrow="up-right" href="#join">{cta}</Button>
+</nav>
+
+<style>
+  .nav-bar {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-24);
+    height: var(--nav-height);
+    padding: 0 var(--gutter-page);
+  }
+  .nav-bar-mark {
+    text-decoration: none;
+  }
+  .nav-bar-links {
+    display: flex;
+    align-items: center;
+    gap: var(--space-32);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .nav-bar-links a {
+    text-decoration: none;
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--type-nav-tracking);
+    padding-bottom: 3px;
+    border-bottom: 1.5px solid transparent;
+    opacity: 0.8;
+    transition: opacity var(--dur-hover) var(--ease-out-soft);
+  }
+  .nav-bar-links a.is-active {
+    opacity: 1;
+    font-weight: var(--weight-semibold);
+    border-bottom-color: currentColor;
+  }
+  .nav-bar-links a:hover {
+    opacity: 1;
+  }
+  .nav-bar[data-tone='on-photo'] .nav-bar-links a {
+    color: var(--cream-100);
+  }
+  .nav-bar[data-tone='on-light'] .nav-bar-links a {
+    color: var(--green-800);
+  }
+</style>
