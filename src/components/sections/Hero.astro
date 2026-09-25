@@ -21,7 +21,7 @@ const { display = 'good people. curious ideas.', cta = 'scroll down' } = Astro.p
 ---
 
 <section class="hero" data-hero style="height:1293px">
-  <div class="hero-photo ph" aria-hidden="true"></div>
+  <div class="hero-photo" aria-hidden="true"></div>
   <div class="hero-scrim" aria-hidden="true"></div>
   <div class="hero-wordmark">
     <Wordmark size={75} color="var(--text-wordmark-photo)" />
@@ -45,6 +45,7 @@ const { display = 'good people. curious ideas.', cta = 'scroll down' } = Astro.p
     top: -112px;
     width: 2417px;
     height: max(1603px, calc(100% + 280px));
+    background: url('/images/hero.webp') center / cover no-repeat;
     animation:
       cseed-fade var(--dur-hero) var(--ease-soft) both,
       cseed-hero-drift 24000ms var(--ease-soft) both;
