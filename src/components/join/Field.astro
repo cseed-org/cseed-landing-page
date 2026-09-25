@@ -1,0 +1,50 @@
+---
+interface Props {
+  label: string;
+  help?: string;
+  span?: number;
+}
+const { label, help, span = 1 } = Astro.props;
+---
+
+<label class="jn-field" style={`grid-column: span ${span}`}>
+  <span class="jn-label">{label}</span>
+  <div class="jn-control">
+    <slot />
+    <div class="jn-focus-bar"></div>
+  </div>
+  {help && <span class="jn-help">{help}</span>}
+</label>
+
+<style>
+  .jn-field {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .jn-label {
+    font: 400 30px/1.2 var(--font-body);
+    color: var(--cseed-ink);
+  }
+  .jn-control {
+    position: relative;
+  }
+  .jn-focus-bar {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 3px;
+    width: 0;
+    background: var(--cseed-sun);
+    transition: width 600ms var(--ease-soft);
+  }
+  .jn-field:focus-within .jn-focus-bar {
+    width: 100%;
+  }
+  .jn-help {
+    margin-top: 8px;
+    font: 300 20px/1.4 var(--font-body);
+    color: var(--cseed-ink-soft);
+  }
+</style>

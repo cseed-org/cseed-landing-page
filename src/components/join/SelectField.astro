@@ -1,0 +1,102 @@
+---
+import Field from './Field.astro';
+
+interface Props {
+  name: string;
+  label: string;
+  help?: string;
+  span?: number;
+  options: string[];
+}
+const { name, label, help, span = 1, options } = Astro.props;
+---
+
+<div class="jn-select" data-jn-select={name} style={`grid-column: span ${span}`}>
+  <Field label={label} help={help}>
+    <button type="button" class="jn-input jn-select-btn" data-jn-select-btn>
+      <span data-jn-select-value>select...</span>
+      <span class="jn-caret">▾</span>
+    </button>
+    <input class="jn-input" data-jn-select-other placeholder="tell us" hidden />
+  </Field>
+  <div class="jn-select-panel">
+    <div class="jn-select-list">
+      {
+        options.map((o) => (
+          <button type="button" class="jn-option" data-value={o}>
+            {o}
+          </button>
+        ))
+      }
+      <button type="button" class="jn-option jn-option--hand" data-other>other...</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .jn-select {
+    position: relative;
+    z-index: 1;
+  }
+  .jn-select.is-open {
+    z-index: 5;
+  }
+  .jn-select-btn {
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--cseed-ink-soft);
+  }
+  .jn-select.has-value .jn-select-btn {
+    color: var(--cseed-ink);
+  }
+  .jn-caret {
+    display: inline-block;
+    font-size: 22px;
+    transition: transform 400ms var(--ease-soft);
+  }
+  .jn-select.is-open .jn-caret {
+    transform: rotate(180deg);
+  }
+  .jn-select-panel {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    margin-top: -2px;
+    background: var(--surface-page);
+    border-bottom: 1px solid var(--cseed-ink);
+    box-shadow: 0 30px 50px -30px rgba(40, 34, 20, 0.35);
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 500ms var(--ease-soft);
+  }
+  .jn-select.is-open .jn-select-panel {
+    max-height: 1000px;
+  }
+  .jn-select-list {
+    display: flex;
+    flex-direction: column;
+    padding: 12px 0 16px;
+  }
+  .jn-option {
+    appearance: none;
+    border: 0;
+    text-align: left;
+    cursor: pointer;
+    padding: 12px 0 12px 20px;
+    background: transparent;
+    color: var(--cseed-ink);
+    font: 300 26px/1.25 var(--font-body);
+    transition: background 200ms;
+  }
+  .jn-option:hover,
+  .jn-option.is-active {
+    background: var(--cseed-white);
+  }
+  .jn-option--hand {
+    font: 400 30px/1.2 var(--font-hand);
+  }
+</style>

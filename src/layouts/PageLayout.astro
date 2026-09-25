@@ -1,0 +1,42 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import NavBar from '../components/navigation/NavBar.astro';
+import Footer from '../components/landing/Footer.astro';
+
+/* Shell for every page except the landing page: the nav is fixed and always
+   visible from the top (the landing page instead reveals it after the hero). */
+interface Props {
+  title: string;
+  description?: string;
+}
+const { title, description } = Astro.props;
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="canvas-frame">
+    <div class="canvas page-canvas" id="top">
+      <div class="page-nav"><NavBar /></div>
+      <slot />
+      <Footer />
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .canvas-frame {
+    width: 100%;
+    overflow-x: hidden;
+  }
+  .page-canvas {
+    width: 2083px;
+    background: var(--surface-page);
+    overflow: hidden;
+  }
+  .page-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 2083px;
+    z-index: 10;
+  }
+</style>

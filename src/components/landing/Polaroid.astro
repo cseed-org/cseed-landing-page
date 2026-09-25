@@ -1,6 +1,6 @@
 ---
 interface Props {
-  slot: string;
+  photoId: string;
   w: number;
   h: number;
   rotate?: number;
@@ -8,20 +8,23 @@ interface Props {
   style?: string;
   z?: number;
 }
-const { slot, w, h, rotate = 0, position = 'center', style = '', z } = Astro.props;
+const { photoId, w, h, rotate = 0, position = 'center', style = '', z } = Astro.props;
 ---
 
 <figure
   class="polaroid"
-  data-slot={slot}
+  data-photo={photoId}
   style={`--pl-rotate:${rotate}deg; ${z !== undefined ? `z-index:${z};` : ''} ${style}`}
 >
-  <div class="polaroid-photo ph" style={`width:${w}px; height:${h}px; background-position:${position}`}></div>
+  <div class="polaroid-photo ph-light" style={`width:${w}px; height:${h}px; background-position:${position}`}></div>
 </figure>
 
 <style>
+  /* relative (not absolute like the source) so the positioned Reveal wrapper
+     around it gets a real box -- a zero-size wrapper never triggers the
+     scroll observer, which left the photos permanently invisible. */
   .polaroid {
-    position: absolute;
+    position: relative;
     margin: 0;
     padding: 18px;
     box-sizing: content-box;
@@ -41,7 +44,6 @@ const { slot, w, h, rotate = 0, position = 'center', style = '', z } = Astro.pro
       0 4px 10px rgba(40, 34, 20, 0.08);
   }
   .polaroid-photo {
-    display: block;
     overflow: hidden;
   }
 </style>

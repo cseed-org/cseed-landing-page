@@ -29,7 +29,7 @@ const { display = 'good people. curious ideas.', cta = 'scroll down' } = Astro.p
   </div>
   <h1 class="hero-display">{display}</h1>
   <div class="hero-cta">
-    <TextLink variant="mono" href="#programs">{cta}</TextLink>
+    <TextLink variant="mono" href="#programs" style="font-size:65px">{cta}</TextLink>
   </div>
   <div class="hero-arrows">
     <span class="hero-arrow hero-arrow--a"><Arrow length={86} angle={90} color="var(--rule-on-photo)" /></span>
@@ -71,10 +71,13 @@ const { display = 'good people. curious ideas.', cta = 'scroll down' } = Astro.p
     text-align: center;
     animation: cseed-fade-up var(--dur-hero) var(--ease-soft) 200ms both;
   }
+  /* Anchored from the bottom (unlike the source's top:895px) so it can never
+     collide with the wordmark above it when the viewport-fit hero comes out
+     shorter than the source's ~1293px default -- common on real monitors. */
   .hero-display {
     position: absolute;
     left: 140px;
-    top: 895px;
+    bottom: 242px;
     margin: 0;
     width: 1853px;
     text-align: center;

@@ -27,6 +27,10 @@ svg {
   max-width: 100%;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 :focus-visible {
   outline: 2px solid var(--cseed-ink);
   outline-offset: 2px;
@@ -51,6 +55,21 @@ svg {
   );
 }
 
+/* Empty photo slot on paper, as the source's unfilled `image-slot`s render
+   (programs collage, community band). */
+.ph-light {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--cseed-mist);
+}
+.ph-light::after {
+  content: 'photo';
+  font: 400 18px/1 var(--font-mono);
+  letter-spacing: 0.04em;
+  color: var(--cseed-ink-soft);
+}
+
 /*
  * Reveal-on-scroll (an addition to the static source design, matching the
  * design system's own `Reveal` component): fades content up once as it
@@ -70,6 +89,21 @@ svg {
 [data-reveal].is-shown {
   opacity: 1;
   transform: none;
+}
+
+/* Page-level text styles shared by every ui_kit page in the source
+   (pcSerif / abSerif / bsSerif / jnSerif / saSerif, and the matching eyebrows). */
+.t-serif {
+  margin: 0;
+  font: 400 150px/0.95 var(--font-display);
+  letter-spacing: -0.045em;
+  color: var(--cseed-ink);
+}
+.t-eyebrow {
+  font: 400 18px/1 var(--font-body);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--cseed-ink);
 }
 
 /* Rule draw-in, matching the design system's `Rule animate` prop. */

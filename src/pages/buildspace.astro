@@ -1,0 +1,545 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import Reveal from '../components/core/Reveal.astro';
+import Rule from '../components/core/Rule.astro';
+import TextLink from '../components/core/TextLink.astro';
+import TrackIcon from '../components/buildspace/TrackIcon.astro';
+
+const details = [
+  ['format', 'Six weeks, one build night a week, in person.'],
+  ['who it is for', 'Anyone with an idea they have not started yet.'],
+  ['what you leave with', 'Something you made, and people who watched you make it.'],
+];
+
+const projects: [string, string, string, number][] = [
+  ['plantpal', 'A sensor that texts you when your plants are thirsty.', 'Maya Chen', 5],
+  ['study buddy', 'Matches classmates into study groups by schedule.', 'Leo Novak', 5],
+  ['thriftmap', 'A live map of secondhand stores and what just came in.', 'Zara Ahmed', 4],
+  ['lofi loop', 'A browser synth for making study beats in a minute.', 'Kai Tanaka', 4],
+  ['commute', 'Bus arrival times on an e-ink display by the door.', 'Omar Haddad', 3],
+  ['potluck', 'Plan shared dinners without the group chat chaos.', 'Ruby Clarke', 3],
+];
+
+// Same seeded starfield as the source: three box-shadow layers of 1px stars.
+const stars = (() => {
+  let s = 11;
+  const r = () => {
+    s = (s * 9301 + 49297) % 233280;
+    return s / 233280;
+  };
+  const layer = (n: number, size: number, a: number) =>
+    Array.from(
+      { length: n },
+      () => `${Math.round(r() * 2083)}px ${Math.round(r() * 1500)}px 0 ${size}px rgba(255,255,255,${a})`,
+    ).join(',');
+  return [layer(220, 0, 0.55), layer(90, 0.6, 0.8), layer(24, 1.2, 1)];
+})();
+
+const rings = [
+  { d: 1100, dur: 140, dot: 0, color: 'transparent', reverse: false },
+  { d: 780, dur: 90, dot: 12, color: 'var(--cseed-white)', reverse: true },
+  { d: 480, dur: 48, dot: 22, color: 'var(--cseed-sun)', reverse: false },
+];
+
+const tracks = [
+  { kind: 'hardware', label: 'hardware', ring: '#B45CE0' },
+  { kind: 'software', label: 'software', ring: '#16A36F' },
+  { kind: 'xra', label: 'extended reality', ring: '#2F5BFF', note: 'build with computer vision, AR and VR' },
+  { kind: 'wildcard', label: 'wildcard', ring: '#E0A800' },
+  { kind: 'creatives', label: 'creatives', ring: '#FF0066' },
+] as const;
+---
+
+<PageLayout title="buildspace — cseed">
+  <section class="bs-space" id="cohort">
+    {
+      stars.map((sh, i) => (
+        <div
+          class="bs-stars"
+          style={`box-shadow:${sh}; ${i ? `animation:bs-twinkle ${5 + i * 3}s ease-in-out infinite alternate` : ''}`}
+        />
+      ))
+    }
+    <div class="bs-orbits">
+      {
+        rings.map((ring) => (
+          <div
+            class="bs-ring"
+            style={`width:${ring.d}px; height:${ring.d}px; margin-left:${-ring.d / 2}px; margin-top:${-ring.d / 2}px; animation:bs-orbit ${ring.dur}s linear infinite${ring.reverse ? ' reverse' : ''}`}
+          >
+            <div
+              class="bs-ring-dot"
+              style={`top:${-ring.dot / 2}px; width:${ring.dot}px; height:${ring.dot}px; margin-left:${-ring.dot / 2}px; background:${ring.color}; box-shadow:0 0 ${ring.dot * 2}px ${ring.color}`}
+            />
+          </div>
+        ))
+      }
+      <div class="bs-sun"></div>
+    </div>
+    <div class="bs-space-copy">
+      <Reveal delay={150}>
+        <h2 class="t-serif" style="font-size:240px; color:var(--cseed-white)">join<br />cohort 6.</h2>
+      </Reveal>
+      <Reveal delay={300}>
+        <p class="bs-body" style="color:var(--cseed-white); margin-top:60px; width:720px">
+          Six weeks to bring your idea to life, alongside people building their own.
+        </p>
+      </Reveal>
+      <Reveal delay={450}>
+        <div class="bs-cohort-facts">
+          {
+            [
+              ['duration', '6 weeks'],
+              ['applications', 'open now'],
+              ['launch', 'date tbd'],
+            ].map(([k, v]) => (
+              <div class="bs-cohort-fact">
+                <span class="bs-mono" style="font-size:18px; opacity:0.7">
+                  {k}
+                </span>
+                <span class="bs-mono" style="font-size:30px">
+                  {v}
+                </span>
+              </div>
+            ))
+          }
+        </div>
+      </Reveal>
+      <Reveal delay={600}>
+        <div style="margin-top:110px">
+          <TextLink
+            href="/join/"
+            color="var(--cseed-white)"
+            arrowLength={26}
+            style="font:400 34px/1 var(--font-body); gap:14px"
+          >
+            apply for cohort 6
+          </TextLink>
+        </div>
+      </Reveal>
+    </div>
+  </section>
+
+  <section class="bs-section">
+    <Reveal><div class="t-eyebrow">01 / the six-week cohort</div></Reveal>
+    <div class="bs-intro">
+      <Reveal delay={120}><h1 class="t-serif" style="font-size:240px">buildspace</h1></Reveal>
+      <Reveal delay={240}>
+        <div style="display:flex; flex-direction:column; gap:44px; padding-bottom:30px">
+          <p class="bs-body" style="white-space:pre-line">
+            {'Make progress on that idea you keep\nthinking about, with a community\nbuilding alongside you.'}
+          </p>
+        </div>
+      </Reveal>
+    </div>
+    <div class="bs-details">
+      {
+        details.map(([k, v], i) => (
+          <Reveal delay={i * 120}>
+            <div class="bs-detail">
+              <Rule width="100%" weight={1} animate delay={i * 120} />
+              <div class="t-eyebrow">{k}</div>
+              <p class="bs-body" style="font-size:30px">
+                {v}
+              </p>
+            </div>
+          </Reveal>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="bs-section">
+    <div class="bs-head" style="margin-bottom:140px">
+      <Reveal><div class="t-eyebrow">cohort 06 tracks</div></Reveal>
+      <Reveal delay={120}><h2 class="t-serif">pick your track</h2></Reveal>
+    </div>
+    <div class="bs-tracks">
+      {
+        tracks.map((t, i) => (
+          <Reveal delay={i * 120}>
+            <div class="bs-track" data-kind={t.kind}>
+              <div class="bs-track-icon" data-track-hover>
+                <div class="bs-track-ring" style={`border-color:${t.ring}`} />
+                <div class="bs-track-orbit bs-spin-5">
+                  <div class="bs-track-orbit-dot" style={`background:${t.ring}`} />
+                </div>
+                <div class="bs-track-idle">
+                  <div class="bs-spin-8">
+                    <TrackIcon kind={t.kind} />
+                  </div>
+                </div>
+                {'note' in t && (
+                  <div class="bs-track-note">
+                    <span>{t.note}</span>
+                  </div>
+                )}
+              </div>
+              <div class="bs-track-label">
+                {t.label.split(' ').map((w) => (
+                  <div>{w}</div>
+                ))}
+              </div>
+              {t.kind === 'xra' && <div class="bs-track-new">new track!</div>}
+            </div>
+          </Reveal>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="bs-section">
+    <div class="bs-head" style="margin-bottom:130px">
+      <Reveal><div class="t-eyebrow">made at buildspace</div></Reveal>
+      <Reveal delay={120}><h2 class="t-serif">past projects</h2></Reveal>
+    </div>
+    <div class="bs-projects">
+      {
+        projects.map(([name, blurb, by, cohort], i) => (
+          <Reveal delay={(i % 3) * 120}>
+            <div class="bs-project">
+              <div class="bs-project-image">
+                <span>project image</span>
+              </div>
+              <div class="t-eyebrow">
+                cohort {String(cohort).padStart(2, '0')} / {by}
+              </div>
+              <h3 class="t-serif" style="font-size:64px; letter-spacing:-0.035em">
+                {name}
+              </h3>
+              <p class="bs-body" style="font-size:26px">
+                {blurb}
+              </p>
+            </div>
+          </Reveal>
+        ))
+      }
+    </div>
+  </section>
+
+  <div class="bs-group">
+    <div class="bs-group-slot" style="height:520px"><span>group photo</span></div>
+    <div class="bs-group-slot" style="height:620px"><span>group photo</span></div>
+    <div class="bs-group-slot" style="height:520px"><span>group photo</span></div>
+  </div>
+</PageLayout>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-track-hover]').forEach((el) => {
+    el.addEventListener('mousemove', (e) => {
+      const r = el.getBoundingClientRect();
+      const z = r.width / el.offsetWidth || 1;
+      el.style.setProperty('--x', `${(e.clientX - r.left) / z}px`);
+      el.style.setProperty('--y', `${(e.clientY - r.top) / z}px`);
+    });
+  });
+</script>
+
+<style is:global>
+  @keyframes bs-orbit {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes bs-twinkle {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0.35;
+    }
+  }
+  @keyframes bs-pulse {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.09);
+    }
+  }
+  @keyframes bs-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+</style>
+
+<style>
+  .bs-body {
+    margin: 0;
+    font: 300 34px/1.5 var(--font-body);
+    color: var(--cseed-ink);
+    text-wrap: pretty;
+  }
+  .bs-mono {
+    font: 400 22px/1.3 var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .bs-space {
+    position: relative;
+    height: 1500px;
+    overflow: hidden;
+    color: var(--cseed-white);
+    background: radial-gradient(
+      ellipse 70% 60% at 72% 48%,
+      oklch(0.26 0.06 270) 0%,
+      oklch(0.14 0.03 270) 45%,
+      oklch(0.08 0.01 270) 100%
+    );
+  }
+  .bs-stars {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1px;
+    height: 1px;
+    border-radius: 50%;
+  }
+  .bs-orbits {
+    position: absolute;
+    left: 1500px;
+    top: 750px;
+    width: 0;
+    height: 0;
+  }
+  .bs-ring {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+  }
+  .bs-ring-dot {
+    position: absolute;
+    left: 50%;
+    border-radius: 50%;
+  }
+  .bs-sun {
+    position: absolute;
+    left: -60px;
+    top: -60px;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, oklch(0.93 0.14 95), var(--cseed-sun) 45%, oklch(0.6 0.12 70));
+    box-shadow: 0 0 120px oklch(0.85 0.15 90 / 0.45);
+  }
+  .bs-space-copy {
+    position: relative;
+    padding: 330px 100px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .bs-cohort-facts {
+    display: grid;
+    grid-template-columns: repeat(3, 250px);
+    gap: 50px;
+    margin-top: 110px;
+  }
+  .bs-cohort-fact {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.4);
+    padding-top: 22px;
+  }
+
+  .bs-section {
+    padding: 240px 100px 0;
+  }
+  .bs-intro {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 120px;
+    align-items: end;
+    margin-top: 40px;
+  }
+  .bs-details {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 80px;
+    margin-top: 180px;
+  }
+  .bs-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+  .bs-head {
+    display: flex;
+    flex-direction: column;
+    gap: 34px;
+  }
+
+  .bs-tracks {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 40px;
+  }
+  .bs-track {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+  }
+  .bs-track-icon {
+    --x: 0px;
+    --y: 0px;
+    position: relative;
+    width: 300px;
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+  }
+  .bs-track-icon:hover {
+    z-index: 4;
+  }
+  .bs-track-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px dashed;
+    opacity: 0.55;
+  }
+  .bs-track-orbit {
+    position: absolute;
+    inset: 0;
+  }
+  .bs-track-orbit-dot {
+    position: absolute;
+    left: 50%;
+    top: -8px;
+    width: 16px;
+    height: 16px;
+    margin-left: -8px;
+    border-radius: 50%;
+  }
+  .bs-spin-5 {
+    animation: bs-spin 5s linear infinite;
+    animation-play-state: paused;
+  }
+  .bs-spin-8 {
+    animation: bs-spin 8s linear infinite;
+    animation-play-state: paused;
+  }
+  .bs-track[data-kind='xra'] .bs-track-icon:hover .bs-spin-5,
+  .bs-track[data-kind='xra'] .bs-track-icon:hover .bs-spin-8 {
+    animation-play-state: running;
+  }
+  .bs-track[data-kind='xra'] .bs-track-idle {
+    animation: bs-pulse 1.8s ease-in-out infinite;
+  }
+  .bs-track[data-kind='xra'] .bs-track-icon:hover .bs-track-idle {
+    animation: none;
+  }
+  .bs-track-note {
+    position: absolute;
+    left: calc(var(--x) + 22px);
+    top: calc(var(--y) - 26px);
+    pointer-events: none;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    background: var(--cseed-ink);
+    color: var(--cseed-white);
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 0;
+    padding: 0;
+    opacity: 0;
+    transition: opacity 150ms;
+  }
+  .bs-track-icon:hover .bs-track-note {
+    max-width: 560px;
+    padding: 0 22px;
+    opacity: 1;
+    transition:
+      max-width 500ms var(--ease-soft),
+      padding 500ms var(--ease-soft),
+      opacity 200ms;
+  }
+  .bs-track-note span {
+    font: 400 22px/1 var(--font-body);
+  }
+  .bs-track-label {
+    font: italic 700 42px/1.05 var(--font-mono);
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    text-align: center;
+  }
+  .bs-track-new {
+    position: absolute;
+    right: 0;
+    top: -30px;
+    z-index: 5;
+    pointer-events: none;
+    font: 400 34px/1 var(--font-hand);
+    letter-spacing: 0.05em;
+    color: var(--cseed-ink);
+    transform: rotate(10deg);
+    padding: 0 10px;
+    background: linear-gradient(transparent 50%, var(--cseed-seed) 50%, var(--cseed-seed) 90%, transparent 90%);
+  }
+
+  .bs-projects {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: 70px;
+    row-gap: 120px;
+  }
+  .bs-project {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+    cursor: pointer;
+  }
+  .bs-project-image {
+    aspect-ratio: 16 / 11;
+    background: var(--cseed-mist);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 600ms var(--ease-soft);
+  }
+  .bs-project:hover .bs-project-image {
+    background: var(--cseed-white);
+    transform: translateY(-10px);
+    box-shadow: 0 26px 50px -24px rgba(40, 34, 20, 0.3);
+  }
+  .bs-project-image span {
+    font: 400 18px/1 var(--font-mono);
+    color: var(--cseed-ink-soft);
+  }
+
+  /* Cut-out group photos sit on the page ground with no background of their own. */
+  .bs-group {
+    margin-top: 200px;
+    padding: 0 100px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr) minmax(0, 1fr);
+    gap: 30px;
+    align-items: end;
+    height: 620px;
+    margin-bottom: -2px;
+  }
+  .bs-group-slot {
+    width: 100%;
+    min-width: 0;
+    border: 1px dashed var(--cseed-ink-soft);
+    border-bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .bs-group-slot span {
+    font: 400 18px/1 var(--font-mono);
+    color: var(--cseed-ink-soft);
+  }
+</style>

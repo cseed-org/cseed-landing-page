@@ -1,0 +1,204 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import Reveal from '../components/core/Reveal.astro';
+
+const faq = [
+  ['do i need to sign up?', 'Nope. Just show up.'],
+  ['what should i bring?', 'A laptop and whatever you are working on.'],
+  ['do i need a project?', 'No. Come figure one out with us.'],
+];
+const units = ['days', 'hours', 'min', 'sec'];
+---
+
+<PageLayout title="saturdays — cseed">
+  <header class="sa-header">
+    <div class="sa-header-left">
+      <Reveal><div class="t-eyebrow">a weekly build sesh</div></Reveal>
+      <Reveal delay={120}><h1 class="t-serif" style="font-size:240px">saturdays</h1></Reveal>
+    </div>
+    <Reveal delay={240}>
+      <p class="sa-body" style="margin-bottom:30px; white-space:pre-line">
+        {'Bring what you are building.\nNo cohort, no pressure.'}
+      </p>
+    </Reveal>
+  </header>
+
+  <section class="sa-next" data-countdown>
+    <Reveal><div class="t-eyebrow" data-countdown-label>join the next saturday</div></Reveal>
+    <div class="sa-units">
+      {
+        units.map((k, i) => (
+          <Reveal delay={i * 100}>
+            <div class="sa-unit">
+              <div class="sa-unit-value" data-unit={k}>
+                00
+              </div>
+              <div class="sa-bar" />
+              <div class="t-eyebrow">{k}</div>
+            </div>
+          </Reveal>
+        ))
+      }
+    </div>
+    <div class="sa-facts">
+      <div class="sa-fact">
+        <span class="t-eyebrow" style="font-size:16px">when</span>
+        <span class="sa-fact-value" data-countdown-date>this saturday</span>
+      </div>
+      <div class="sa-fact">
+        <span class="t-eyebrow" style="font-size:16px">time</span>
+        <span class="sa-fact-value">1:00pm</span>
+      </div>
+      <div class="sa-fact">
+        <span class="t-eyebrow" style="font-size:16px">where</span>
+        <span class="sa-fact-value">@ building</span>
+      </div>
+    </div>
+    <div class="sa-hand">just show up :)</div>
+  </section>
+
+  <section class="sa-faq">
+    <Reveal><h2 class="t-serif" style="font-size:80px">quick q's</h2></Reveal>
+    <div class="sa-faq-list">
+      {
+        faq.map(([q, a], i) => (
+          <Reveal delay={i * 100}>
+            <div class="sa-faq-row">
+              <span class="sa-faq-q">{q}</span>
+              <p class="sa-body">{a}</p>
+            </div>
+          </Reveal>
+        ))
+      }
+    </div>
+  </section>
+
+  <div style="height:260px"></div>
+</PageLayout>
+
+<script>
+  function nextSaturday1pm(now: number) {
+    const d = new Date(now);
+    d.setHours(13, 0, 0, 0);
+    let add = (6 - d.getDay() + 7) % 7;
+    if (add === 0 && now > d.getTime() + 4 * 3600e3) add = 7;
+    d.setDate(d.getDate() + add);
+    return d;
+  }
+
+  const root = document.querySelector('[data-countdown]');
+  if (root) {
+    const label = root.querySelector('[data-countdown-label]')!;
+    const date = root.querySelector('[data-countdown-date]')!;
+    const cells = Object.fromEntries(
+      [...root.querySelectorAll<HTMLElement>('[data-unit]')].map((el) => [el.dataset.unit, el]),
+    );
+    const tick = () => {
+      const now = Date.now();
+      const target = nextSaturday1pm(now);
+      const diff = Math.max(0, target.getTime() - now);
+      const values: Record<string, number> = {
+        days: Math.floor(diff / 864e5),
+        hours: Math.floor(diff / 36e5) % 24,
+        min: Math.floor(diff / 6e4) % 60,
+        sec: Math.floor(diff / 1e3) % 60,
+      };
+      for (const [k, v] of Object.entries(values)) cells[k].textContent = String(v).padStart(2, '0');
+      label.textContent = diff === 0 ? 'happening now' : 'join the next saturday';
+      const dateLabel = target.toLocaleDateString('en-US', { month: 'long', day: 'numeric' }).toLowerCase();
+      date.textContent = `this saturday, ${dateLabel}`;
+    };
+    tick();
+    setInterval(tick, 1000);
+  }
+</script>
+
+<style>
+  .sa-body {
+    margin: 0;
+    font: 300 32px/1.5 var(--font-body);
+    color: var(--cseed-ink);
+    text-wrap: pretty;
+  }
+  .sa-header {
+    padding: 330px 100px 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+  }
+  .sa-header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+  .sa-next {
+    position: relative;
+    margin: 200px 100px 0;
+    padding: 110px 100px 120px;
+    background: var(--cseed-sun);
+  }
+  .sa-units {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 40px;
+    margin-top: 70px;
+  }
+  .sa-unit {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+  }
+  .sa-unit-value {
+    font: 400 260px/0.85 var(--font-display);
+    letter-spacing: -0.05em;
+    font-variant-numeric: tabular-nums;
+  }
+  .sa-bar {
+    height: 3px;
+    background: var(--cseed-ink);
+  }
+  .sa-facts {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 40px;
+    margin-top: 130px;
+  }
+  .sa-fact {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .sa-fact-value {
+    font: 400 56px/1.05 var(--font-display);
+    letter-spacing: -0.03em;
+  }
+  .sa-hand {
+    position: absolute;
+    right: 100px;
+    top: 100px;
+    font: 400 38px/1 var(--font-hand);
+    letter-spacing: 0.04em;
+    transform: rotate(-5deg);
+  }
+  .sa-faq {
+    padding: 240px 100px 0;
+    display: grid;
+    grid-template-columns: 520px minmax(0, 1fr);
+    column-gap: 120px;
+  }
+  .sa-faq-list {
+    display: flex;
+    flex-direction: column;
+  }
+  .sa-faq-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 60px;
+    padding: 44px 0;
+    border-top: 1px solid var(--cseed-ink);
+  }
+  .sa-faq-q {
+    font: 400 40px/1.2 var(--font-display);
+    letter-spacing: -0.02em;
+  }
+</style>

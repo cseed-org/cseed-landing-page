@@ -5,25 +5,35 @@ import DropdownNav from './DropdownNav.astro';
 
 /* Source node "nav bar" -- 2085x200, wordmark inset 41px, Playfair 80 items
    right-aligned, 1px black rule 182px down. Rendered here at a 100px band
-   (itemSize 38 / wordmarkSize 36) since it becomes a fixed, sticky-after-hero
-   bar -- same ratio LandingPage.jsx renders it at. */
+   (itemSize 38 / wordmarkSize 36) -- same ratio every source page renders it at. */
 const items = [
-  { label: 'programs', href: '#programs', children: ['buildspace', 'buildher', 'saturdays'] },
-  { label: 'about us', href: '#about' },
-  { label: 'join', href: '#join' },
+  {
+    label: 'programs',
+    href: '/#programs',
+    children: [
+      { label: 'buildspace', href: '/buildspace/' },
+      { label: 'buildher', href: '/join/' },
+      { label: 'saturdays', href: '/saturdays/' },
+    ],
+  },
+  { label: 'about us', href: '/about-us/' },
+  { label: 'join', href: '/join/' },
 ];
 const height = 100;
 ---
 
 <div class="nav-bar" style={`height:${height}px`}>
-  <a class="nav-bar-mark" href="#top" style={`height:${height}px`}>
+  <a class="nav-bar-mark" href="/" style={`height:${height}px`}>
     <Wordmark size={36} />
   </a>
   <div class="nav-bar-items" style={`height:${height}px`}>
     {
       items.map((item) => (
         <div class="nav-bar-item" style={`height:${height}px`}>
-          <a href={item.href} class:list={['nav-bar-link', { 'nav-bar-link--join': item.label === 'join' }]}>
+          <a
+            href={item.href}
+            class:list={['nav-bar-link', { 'nav-bar-link--join': item.label === 'join' }]}
+          >
             {item.label}
           </a>
           {item.children && (

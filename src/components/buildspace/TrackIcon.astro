@@ -1,0 +1,100 @@
+---
+/* The five cohort-06 track marks, transcribed from ui_kits/buildspace/BuildspacePage.jsx. */
+interface Props {
+  kind: 'hardware' | 'software' | 'xra' | 'wildcard' | 'creatives';
+}
+const { kind } = Astro.props;
+
+function star(n: number, ro: number, ri: number, rot = -90) {
+  return Array.from({ length: n * 2 }, (_, i) => {
+    const r = i % 2 ? ri : ro;
+    const a = ((rot + (i * 180) / n) * Math.PI) / 180;
+    return `${(r * Math.cos(a)).toFixed(1)},${(r * Math.sin(a)).toFixed(1)}`;
+  }).join(' ');
+}
+const wildcardRays = Array.from({ length: 8 }, (_, i) => i * 45);
+---
+
+<svg width="220" height="220" viewBox="-110 -110 220 220" aria-hidden="true">
+  {
+    kind === 'hardware' && (
+      <g>
+        <circle r="78" fill="#D66BFF" />
+        <g fill="#8A00C2">
+          <g transform="rotate(-42)">
+            <rect x="-5" y="-32" width="10" height="84" rx="4" />
+            <path d="M-14 -50 H14 L22 -42 V-34 H-14 Z" />
+          </g>
+          <g transform="rotate(42) scale(-1,1)">
+            <rect x="-5" y="-32" width="10" height="84" rx="4" />
+            <path d="M-14 -50 H14 L22 -42 V-34 H-14 Z" />
+          </g>
+        </g>
+      </g>
+    )
+  }
+  {
+    kind === 'wildcard' && (
+      <g>
+        {wildcardRays.map((deg) => (
+          <rect x="-13" y="-90" width="26" height="56" rx="4" fill="#FFE8A3" transform={`rotate(${deg})`} />
+        ))}
+        <rect x="-34" y="-34" width="68" height="68" rx="14" fill="#C99400" transform="rotate(12)" />
+        <g fill="#FFE8A3" transform="rotate(12)">
+          <circle cx="-15" cy="-15" r="7" />
+          <circle r="7" />
+          <circle cx="15" cy="15" r="7" />
+        </g>
+      </g>
+    )
+  }
+  {
+    kind === 'creatives' && (
+      <g>
+        <polygon points={star(8, 100, 48)} fill="#FFB8D0" />
+        <g
+          fill="none"
+          stroke="#FF0066"
+          stroke-width="8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          transform="translate(0 -2) scale(0.72)"
+        >
+          <path d="M-16 30 L-18 22 C-24 12, -34 4, -34 -12 C-34 -30, -22 -46, 0 -46 C22 -46, 34 -30, 34 -12 C34 4, 24 12, 18 22 L16 30 Z" />
+          <path d="M-14 40 H14 M-9 50 H9" />
+          <path d="M-8 22 L-8 2 L-14 -10 M8 22 L8 2 L14 -10" stroke-width="5.5" />
+        </g>
+      </g>
+    )
+  }
+  {
+    kind === 'software' && (
+      <g>
+        <rect x="-66" y="-66" width="132" height="132" rx="14" fill="#88D9BD" transform="rotate(45)" />
+        <g fill="#16A36F">
+          <path d="M-38 -30 H38 V18 H-38 Z M-30 -22 V10 H30 V-22 Z" fill-rule="evenodd" />
+          <path d="M-50 22 H50 L44 32 H-44 Z" />
+          <path
+            d="M-14 -12 L-22 -6 L-14 0 M14 -12 L22 -6 L14 0"
+            fill="none"
+            stroke="#16A36F"
+            stroke-width="4"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </g>
+      </g>
+    )
+  }
+  {
+    kind === 'xra' && (
+      <g>
+        <circle r="64" fill="none" stroke="#A9C7FF" stroke-width="30" />
+        <path
+          d="M0 -58 C 6 -14, 14 -6, 58 0 C 14 6, 6 14, 0 58 C -6 14, -14 6, -58 0 C -14 -6, -6 -14, 0 -58 Z"
+          fill="#2F5BFF"
+        />
+      </g>
+    )
+  }
+</svg>

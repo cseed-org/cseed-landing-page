@@ -7,6 +7,7 @@ interface Props {
   arrow?: boolean;
   arrowLength?: number;
   color?: string;
+  style?: string;
   class?: string;
 }
 
@@ -16,13 +17,14 @@ const {
   arrow = variant === 'default',
   arrowLength = 30.052,
   color,
+  style = '',
   class: className,
 } = Astro.props;
 const mono = variant === 'mono';
 const ink = color || (mono ? 'var(--link-on-photo)' : 'var(--link-ink)');
 ---
 
-<a class:list={['text-link', className]} data-variant={variant} href={href} style={`color:${ink}`}>
+<a class:list={['text-link', className]} data-variant={variant} href={href} style={`color:${ink}; ${style}`}>
   <span class="text-link-label" style={`background-image:linear-gradient(${ink}, ${ink})`}>
     <slot />
   </span>

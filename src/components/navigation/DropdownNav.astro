@@ -1,18 +1,22 @@
 ---
+interface Item {
+  label: string;
+  href: string;
+}
 interface Props {
-  items?: string[];
+  items: Item[];
   width?: number | string;
   class?: string;
 }
 
-const { items = ['buildspace', 'buildher', 'saturdays'], width = 703, class: className } = Astro.props;
+const { items, width = 703, class: className } = Astro.props;
 ---
 
 <div class:list={['dropdown-nav', className]} style={`width:${typeof width === 'number' ? width + 'px' : width}`}>
   {
     items.map((item) => (
-      <a class="dropdown-nav-item" href={`#${item}`}>
-        <span>{item}</span>
+      <a class="dropdown-nav-item" href={item.href}>
+        <span>{item.label}</span>
       </a>
     ))
   }

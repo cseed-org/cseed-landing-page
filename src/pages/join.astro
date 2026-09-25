@@ -1,0 +1,588 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import Reveal from '../components/core/Reveal.astro';
+import Rule from '../components/core/Rule.astro';
+import Field from '../components/join/Field.astro';
+import SelectField from '../components/join/SelectField.astro';
+import FormBlock from '../components/join/FormBlock.astro';
+import { ABOUT_MEMBERS } from '../data/community';
+
+const options = {
+  pronouns: ['she / her', 'he / him', 'they / them', 'she / they', 'he / they', 'prefer not to say'],
+  demographics: [
+    'American Indian or Alaska Native',
+    'Asian',
+    'Black or African American',
+    'Hispanic or Latino',
+    'Middle Eastern or North African',
+    'Native Hawaiian or Pacific Islander',
+    'White',
+    'two or more',
+    'prefer not to say',
+  ],
+  major: [
+    'Computer Science',
+    'Computer Engineering',
+    'Informatics',
+    'Electrical Engineering',
+    'Data Science',
+    'HCDE / Design',
+    'Business — Foster',
+    'Mathematics',
+    'Undeclared',
+    'Intended CSE',
+  ],
+};
+const heard = ['Instagram', 'A friend', 'Class announcement', 'RSO fair', 'Discord', 'Newsletter', 'Poster on campus', 'other...'];
+
+// Members wall, grouped by first letter (the source's `MembersWall letters`).
+const wall: { letter?: string; name?: string }[] = [];
+let last = '';
+[...ABOUT_MEMBERS]
+  .sort((x, y) => x.localeCompare(y))
+  .forEach((n) => {
+    const l = n[0].toUpperCase();
+    if (l !== last) {
+      last = l;
+      wall.push({ letter: l });
+    }
+    wall.push({ name: n });
+  });
+---
+
+<PageLayout title="join — cseed">
+  <div data-join>
+    <header class="jn-header" data-jn-rekey>
+      <div class="jn-header-left">
+        <Reveal><div class="t-eyebrow" data-jn-eyebrow>join cseed</div></Reveal>
+        <Reveal delay={120}><h1 class="t-serif" style="font-size:240px" data-jn-heading>become a member</h1></Reveal>
+      </div>
+      <Reveal delay={240}>
+        <div class="jn-header-right">
+          <p class="jn-sub" data-jn-sub>{"build things you imagine.\nbuild things that don't scale."}</p>
+          <button type="button" class="jn-step-btn" data-jn-start>
+            <span>become a member now!</span><span class="jn-step-arrow">→</span>
+          </button>
+        </div>
+      </Reveal>
+    </header>
+
+    <div style="padding:0 100px; margin-top:160px"><Rule width="100%" weight={0.5} animate /></div>
+
+    <form class="jn-form" data-jn-form hidden novalidate>
+      <div class="jn-track-clip">
+        <div class="jn-track" data-jn-track>
+          <div class="jn-panel" data-jn-panel>
+            <FormBlock num="01 / 03" title="about you">
+              <Field label="Name"><input class="jn-input" name="name" placeholder="First and last" /></Field>
+              <Field label="Preferred Name">
+                <input class="jn-input" name="pref" placeholder="What should we call you?" />
+              </Field>
+              <SelectField name="pronouns" label="Pronouns" options={options.pronouns} />
+              <Field label="Graduation Date"><input class="jn-input" name="grad" placeholder="e.g. June 2028" /></Field>
+              <SelectField
+                name="demo"
+                label="Demographics"
+                span={2}
+                help="Optional. Helps us understand who we are reaching."
+                options={options.demographics}
+              />
+              <SelectField name="major" label="Major or Intended Major" span={2} options={options.major} />
+            </FormBlock>
+          </div>
+
+          <div class="jn-panel" data-jn-panel>
+            <FormBlock num="02 / 03" title="reaching you">
+              <div data-jn-email="uw" style="grid-column: span 2">
+                <Field label="School Email">
+                  <input class="jn-input" type="email" name="uw" placeholder="netid@uw.edu" />
+                </Field>
+              </div>
+              <div data-jn-email="cse" style="grid-column: span 2" hidden>
+                <Field
+                  label="CSE Email"
+                  help="if ur an intended cse major, please go back and select Intended CSE"
+                >
+                  <input class="jn-input" type="email" name="cse" placeholder="netid@cs.washington.edu" />
+                </Field>
+              </div>
+            </FormBlock>
+          </div>
+
+          <div class="jn-panel" data-jn-panel>
+            <FormBlock num="03 / 03" title="the fun part">
+              <Field label="Tell us in a sentence why you want to be a part of CSEED!" span={2}>
+                <input class="jn-input" name="why" placeholder="One sentence is plenty." />
+              </Field>
+              <div class="jn-heard">
+                <span class="jn-heard-label">How did you hear about us?</span>
+                <span class="jn-heard-help">Select all that apply</span>
+                <div class="jn-chips">
+                  {
+                    heard.map((c) => (
+                      <button type="button" class="jn-chip" data-chip={c}>
+                        {c}
+                      </button>
+                    ))
+                  }
+                </div>
+                <input class="jn-input" data-jn-heard-other placeholder="where?" style="margin-top:30px; width:700px" hidden />
+              </div>
+              <div class="jn-more">
+                <Field
+                  label="Anything you want us to know?"
+                  help="Fun fact, accommodations, thoughts, something funny, projects you are working on..."
+                >
+                  <textarea class="jn-input" name="more" rows="4" placeholder="Type away." style="resize:vertical; display:block"
+                  ></textarea>
+                </Field>
+                <div class="jn-weird">be as weird as you like :)</div>
+              </div>
+            </FormBlock>
+          </div>
+        </div>
+      </div>
+
+      <div class="jn-controls">
+        <div class="jn-controls-left">
+          <button type="button" class="jn-back" data-jn-back hidden>← back</button>
+          <div class="jn-progress">
+            <div class="jn-bar" data-jn-bar></div>
+            <div class="jn-bar" data-jn-bar></div>
+            <div class="jn-bar" data-jn-bar></div>
+          </div>
+        </div>
+        <button type="submit" class="jn-step-btn">
+          <span data-jn-next-label>next</span><span class="jn-step-arrow">→</span>
+        </button>
+      </div>
+    </form>
+
+    <section class="jn-wall" data-jn-wall data-jn-rekey>
+      <div class="jn-wall-head">
+        <Reveal>
+          <div class="t-eyebrow"><span data-jn-count>{ABOUT_MEMBERS.length.toLocaleString('en-US')}</span> and counting</div>
+        </Reveal>
+        <Reveal delay={120}><h2 class="t-serif">members</h2></Reveal>
+      </div>
+      <Reveal mode="fade">
+        <div class="jn-members" data-jn-members>
+          {
+            wall.map((w) =>
+              w.letter ? (
+                <div class="jn-letter" data-letter>
+                  {w.letter}
+                </div>
+              ) : (
+                <div class="jn-member">{w.name}</div>
+              ),
+            )
+          }
+        </div>
+      </Reveal>
+    </section>
+
+    <div style="height:260px"></div>
+  </div>
+</PageLayout>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-join]')!;
+  const form = root.querySelector<HTMLFormElement>('[data-jn-form]')!;
+  const track = root.querySelector<HTMLElement>('[data-jn-track]')!;
+  const panels = [...root.querySelectorAll<HTMLElement>('[data-jn-panel]')];
+  const bars = [...root.querySelectorAll<HTMLElement>('[data-jn-bar]')];
+  const back = root.querySelector<HTMLElement>('[data-jn-back]')!;
+  const nextLabel = root.querySelector<HTMLElement>('[data-jn-next-label]')!;
+  const startBtn = root.querySelector<HTMLElement>('[data-jn-start]')!;
+  const wall = root.querySelector<HTMLElement>('[data-jn-wall]')!;
+  const members = root.querySelector<HTMLElement>('[data-jn-members]')!;
+  const count = root.querySelector<HTMLElement>('[data-jn-count]')!;
+  const baseNames = [...members.querySelectorAll('.jn-member')].map((el) => el.textContent!.trim());
+
+  let stage: 'intro' | 'form' | 'done' = 'intro';
+  let step = 0;
+
+  const copy = {
+    intro: ['join cseed', 'become a member', "build things you imagine.\nbuild things that don't scale."],
+    form: ['membership application', 'join cseed', "build things you imagine.\nbuild things that don't scale."],
+    done: ['application received', 'welcome in.', "You're on the wall now.\nWe'll be in touch soon."],
+  };
+
+  const top = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // The source re-keys the header and wall on every stage change, so their reveals replay.
+  function replayReveals(scope: Element) {
+    const els = scope.querySelectorAll('[data-reveal], [data-rule-animate]');
+    els.forEach((el) => el.classList.remove('is-shown'));
+    void (scope as HTMLElement).offsetWidth;
+    requestAnimationFrame(() => els.forEach((el) => el.classList.add('is-shown')));
+  }
+
+  function renderWall(highlight: string | null) {
+    const names = highlight ? [...baseNames, highlight] : baseNames;
+    const sorted = [...names].sort((x, y) => x.localeCompare(y));
+    const frag = document.createDocumentFragment();
+    let last = '';
+    for (const n of sorted) {
+      const l = n[0].toUpperCase();
+      if (l !== last) {
+        last = l;
+        const h = document.createElement('div');
+        h.className = 'jn-letter';
+        h.textContent = l;
+        frag.append(h);
+      }
+      const item = document.createElement('div');
+      item.className = 'jn-member';
+      if (n === highlight) {
+        const mark = document.createElement('span');
+        mark.className = 'jn-me';
+        mark.textContent = n;
+        item.append(mark);
+      } else {
+        item.textContent = n;
+      }
+      frag.append(item);
+    }
+    members.replaceChildren(frag);
+    count.textContent = names.length.toLocaleString('en-US');
+  }
+
+  function render(prevStage: string) {
+    const [eyebrow, heading, sub] = copy[stage];
+    root.querySelector('[data-jn-eyebrow]')!.textContent = eyebrow;
+    root.querySelector('[data-jn-heading]')!.textContent = heading;
+    root.querySelector('[data-jn-sub]')!.textContent = sub;
+    startBtn.hidden = stage !== 'intro';
+    form.hidden = stage !== 'form';
+    wall.hidden = stage === 'form';
+
+    track.style.transform = `translateX(-${step * 100}%)`;
+    panels.forEach((p, i) => {
+      p.classList.toggle('is-active', i === step);
+      p.inert = i !== step;
+      p.setAttribute('aria-hidden', String(i !== step));
+    });
+    back.hidden = step === 0;
+    bars.forEach((b, i) => {
+      b.style.width = i === step ? '60px' : '20px';
+      b.style.background = i <= step ? 'var(--cseed-ink)' : 'var(--cseed-mist)';
+    });
+    nextLabel.textContent = step < 2 ? 'next' : 'send application';
+
+    if (stage !== prevStage) {
+      root.querySelectorAll('[data-jn-rekey]').forEach(replayReveals);
+    }
+  }
+
+  function setStage(next: typeof stage) {
+    const prev = stage;
+    stage = next;
+    render(prev);
+  }
+
+  startBtn.addEventListener('click', () => {
+    step = 0;
+    setStage('form');
+    top();
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (step < 2) {
+      step += 1;
+      render(stage);
+    } else {
+      const fd = new FormData(form);
+      const me = String(fd.get('pref') || '').trim() || String(fd.get('name') || '').trim() || 'you';
+      renderWall(me);
+      setStage('done');
+    }
+    top();
+  });
+
+  back.addEventListener('click', () => {
+    step = Math.max(0, step - 1);
+    render(stage);
+    top();
+  });
+
+  // Custom selects.
+  const selects = [...root.querySelectorAll<HTMLElement>('[data-jn-select]')];
+  const values: Record<string, string> = {};
+
+  function syncEmailField() {
+    const isCS = values.major === 'Computer Science';
+    root.querySelector<HTMLElement>('[data-jn-email="cse"]')!.hidden = !isCS;
+    root.querySelector<HTMLElement>('[data-jn-email="uw"]')!.hidden = isCS;
+  }
+
+  selects.forEach((sel) => {
+    const name = sel.dataset.jnSelect!;
+    const btn = sel.querySelector<HTMLElement>('[data-jn-select-btn]')!;
+    const label = sel.querySelector<HTMLElement>('[data-jn-select-value]')!;
+    const other = sel.querySelector<HTMLInputElement>('[data-jn-select-other]')!;
+    const opts = [...sel.querySelectorAll<HTMLElement>('[data-value]')];
+
+    btn.addEventListener('click', () => sel.classList.toggle('is-open'));
+    opts.forEach((o) =>
+      o.addEventListener('click', () => {
+        values[name] = o.dataset.value!;
+        label.textContent = values[name];
+        sel.classList.add('has-value');
+        opts.forEach((x) => x.classList.toggle('is-active', x === o));
+        sel.classList.remove('is-open');
+        if (name === 'major') syncEmailField();
+      }),
+    );
+    sel.querySelector('[data-other]')!.addEventListener('click', () => {
+      values[name] = '';
+      btn.hidden = true;
+      other.hidden = false;
+      sel.classList.remove('is-open');
+      other.focus();
+      if (name === 'major') syncEmailField();
+    });
+    other.addEventListener('input', () => {
+      values[name] = other.value;
+      if (name === 'major') syncEmailField();
+    });
+  });
+
+  document.addEventListener('mousedown', (e) => {
+    selects.forEach((sel) => {
+      if (!sel.contains(e.target as Node)) sel.classList.remove('is-open');
+    });
+  });
+
+  // "How did you hear about us?" chips.
+  const heardOther = root.querySelector<HTMLInputElement>('[data-jn-heard-other]')!;
+  root.querySelectorAll<HTMLElement>('[data-chip]').forEach((chip) => {
+    chip.addEventListener('click', () => {
+      const on = chip.classList.toggle('is-on');
+      if (chip.dataset.chip === 'other...') {
+        heardOther.hidden = !on;
+        if (on) heardOther.focus();
+      }
+    });
+  });
+
+  render(stage);
+</script>
+
+<style is:global>
+  .jn-input {
+    appearance: none;
+    width: 100%;
+    box-sizing: border-box;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--cseed-ink);
+    border-radius: 0;
+    padding: 14px 0 18px;
+    font: 300 32px/1.3 var(--font-body);
+    color: var(--cseed-ink);
+    outline: none;
+  }
+  .jn-input::placeholder {
+    color: var(--cseed-ink-soft);
+    opacity: 0.7;
+  }
+  .jn-me {
+    background: var(--cseed-sun);
+    font-weight: 500;
+    padding: 0 6px;
+    margin: 0 -6px;
+  }
+</style>
+
+<style>
+  .jn-header {
+    padding: 330px 100px 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+  }
+  .jn-header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+  .jn-header-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 50px;
+    margin-bottom: 30px;
+  }
+  .jn-sub {
+    margin: 0;
+    font: 300 34px/1.5 var(--font-body);
+    color: var(--cseed-ink);
+    white-space: pre-line;
+    text-align: right;
+  }
+
+  .jn-step-btn {
+    appearance: none;
+    border: 0;
+    cursor: pointer;
+    background: var(--cseed-sun);
+    color: var(--cseed-ink);
+    padding: 30px 50px;
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    font: 400 38px/1 var(--font-display);
+    letter-spacing: -0.02em;
+    transition: all 400ms var(--ease-soft);
+  }
+  .jn-step-btn:hover {
+    background: var(--cseed-ink);
+    color: var(--cseed-white);
+  }
+  .jn-step-arrow {
+    display: inline-block;
+    transition: transform 400ms var(--ease-soft);
+  }
+  .jn-step-btn:hover .jn-step-arrow {
+    transform: translateX(8px);
+  }
+
+  .jn-form {
+    padding: 80px 0 0;
+  }
+  .jn-track-clip {
+    overflow-x: clip;
+    overflow-y: visible;
+  }
+  .jn-track {
+    display: flex;
+    align-items: flex-start;
+    transition: transform 900ms cubic-bezier(0.65, 0, 0.2, 1);
+  }
+  .jn-panel {
+    flex: 0 0 100%;
+    box-sizing: border-box;
+    padding: 0 100px 90px;
+    opacity: 0;
+    max-height: 1400px;
+    overflow: hidden;
+    transition: opacity 700ms var(--ease-soft);
+  }
+  .jn-panel.is-active {
+    opacity: 1;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .jn-heard {
+    grid-column: span 2;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .jn-heard-label {
+    font: 400 30px/1.2 var(--font-body);
+    color: var(--cseed-ink);
+  }
+  .jn-heard-help {
+    font: 300 20px/1.4 var(--font-body);
+    color: var(--cseed-ink-soft);
+  }
+  .jn-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 26px;
+  }
+  .jn-chip {
+    appearance: none;
+    cursor: pointer;
+    border-radius: 999px;
+    padding: 16px 30px;
+    border: 1px solid var(--cseed-ink);
+    background: transparent;
+    color: var(--cseed-ink);
+    font: 300 24px/1 var(--font-body);
+    transition: background 300ms var(--ease-soft);
+  }
+  .jn-chip:hover {
+    background: var(--cseed-white);
+  }
+  .jn-chip.is-on {
+    background: var(--cseed-sun);
+    font-weight: 500;
+  }
+  .jn-more {
+    grid-column: span 2;
+    position: relative;
+  }
+  .jn-weird {
+    position: absolute;
+    right: 0;
+    bottom: -64px;
+    font: 400 34px/1 var(--font-hand);
+    letter-spacing: 0.04em;
+    color: var(--cseed-ink);
+    transform: rotate(-4deg);
+  }
+
+  .jn-controls {
+    padding: 60px 100px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .jn-controls-left {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+  }
+  .jn-back {
+    appearance: none;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    font: 400 28px/1 var(--font-body);
+    color: var(--cseed-ink);
+    padding: 0;
+  }
+  .jn-progress {
+    display: flex;
+    gap: 12px;
+  }
+  .jn-bar {
+    height: 4px;
+    width: 20px;
+    background: var(--cseed-mist);
+    transition: all 600ms var(--ease-soft);
+  }
+
+  .jn-wall {
+    padding: 200px 100px 0;
+  }
+  .jn-wall-head {
+    display: flex;
+    flex-direction: column;
+    gap: 34px;
+    align-items: flex-end;
+    margin-bottom: 130px;
+  }
+  .jn-members {
+    column-count: 12;
+    column-gap: 28px;
+    font: 300 17px/1.75 var(--font-body);
+    color: var(--cseed-ink);
+    white-space: nowrap;
+  }
+  .jn-members :global(.jn-letter) {
+    font: 400 44px/1 var(--font-display);
+    padding: 18px 0 10px;
+    break-after: avoid;
+  }
+  .jn-members :global(.jn-member) {
+    break-inside: avoid;
+  }
+</style>

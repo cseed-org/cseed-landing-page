@@ -15,7 +15,7 @@ const programs = [
     name: 'buildspace',
     blurb: 'Make progress on that idea you keep\nthinking about, with a community\nbuilding alongside you.',
     link: 'find your cohort',
-    href: '../buildspace/',
+    href: '/buildspace/',
     photo: { slot: 'lp-buildspace', w: 920, h: 590, rotate: -1.2, position: 'center 30%', style: 'left:130px; top:555px' },
     copy: 'left:1150px; top:610px',
   },
@@ -25,7 +25,7 @@ const programs = [
     name: 'buildher',
     blurb: 'A welcoming community for women\nand non-binary people exploring STEM.',
     link: 'meet buildher',
-    href: '../join/',
+    href: '/join/',
     photo: null,
     copy: 'left:110px; top:1375px',
   },
@@ -35,7 +35,7 @@ const programs = [
     name: 'saturdays',
     blurb: 'Bring a project, a question, or just\nyourself. A weekly space to make\nthings and meet people.',
     link: 'see you saturday',
-    href: '../saturdays/',
+    href: '/saturdays/',
     photo: { slot: 'lp-saturdays', w: 1100, h: 530, rotate: -1.6, position: 'center', style: 'left:80px; top:1900px' },
     copy: 'left:1260px; top:1985px',
   },
@@ -53,13 +53,13 @@ const programs = [
         <path d="M40 40 C 170 30, 330 24, 470 22" stroke="#F5E530" stroke-width="7" stroke-linecap="round" fill="none" opacity=".75" pathLength="1" class="highlight-stroke-b" />
       </svg>
     </div>
-    <Reveal delay={150} class="programs-intro-rule-wrap">
+    <Reveal delay={150} style="align-self:stretch; display:flex; align-items:flex-end">
       <div class="programs-intro-rule"></div>
     </Reveal>
-    <Reveal delay={200} class="programs-intro-copy">
+    <Reveal delay={200}>
       <p class="programs-lede">{'We bring curious people together\nto build, design, and try something new.\nAll experience levels welcome.'}</p>
     </Reveal>
-    <Reveal delay={300} class="programs-eyebrow-wrap">
+    <Reveal delay={300} style="grid-column:1 / -1; margin-top:56px">
       <div class="programs-eyebrow">three ways to make yourself at home</div>
     </Reveal>
   </div>
@@ -69,7 +69,7 @@ const programs = [
       <>
         {p.photo && (
           <Reveal mode="fade" style={`position:absolute; ${p.photo.style}`}>
-            <Polaroid slot={p.photo.slot} w={p.photo.w} h={p.photo.h} rotate={p.photo.rotate} position={p.photo.position} />
+            <Polaroid photoId={p.photo.slot} w={p.photo.w} h={p.photo.h} rotate={p.photo.rotate} position={p.photo.position} />
           </Reveal>
         )}
         <div class="program-copy" style={`position:absolute; ${p.copy}`} id={p.name}>
@@ -84,7 +84,9 @@ const programs = [
           </Reveal>
           <Reveal delay={360}>
             <div class="program-link">
-              <TextLink href={p.href} arrowLength={22}>{p.link}</TextLink>
+              <TextLink href={p.href} arrowLength={22} style="font:400 26px/1 var(--font-body); gap:12px">
+                {p.link}
+              </TextLink>
             </div>
           </Reveal>
         </div>
@@ -92,12 +94,11 @@ const programs = [
     ))
   }
 
-  {/* buildher's two photos sit outside the [n].photo single-slot shape above */}
   <Reveal mode="fade" style="position:absolute; left:965px; top:1225px">
-    <Polaroid slot="lp-buildher-wide" w={740} h={560} rotate={-1.5} position="center 20%" />
+    <Polaroid photoId="lp-buildher-wide" w={740} h={560} rotate={-1.5} position="center 20%" />
   </Reveal>
   <Reveal mode="fade" delay={180} style="position:absolute; left:1680px; top:1375px; z-index:2">
-    <Polaroid slot="lp-buildher-tall" w={290} h={440} rotate={2.2} position="22% center" z={2} />
+    <Polaroid photoId="lp-buildher-tall" w={290} h={440} rotate={2.2} position="22% center" z={2} />
   </Reveal>
 </div>
 
@@ -150,32 +151,21 @@ const programs = [
   .highlight-stroke.is-shown path {
     stroke-dashoffset: 0;
   }
-  .programs-collage :global(.programs-intro-rule-wrap) {
-    align-self: stretch;
-    display: flex;
-    align-items: flex-end;
-  }
   .programs-intro-rule {
     width: 1px;
     height: 250px;
     background: var(--cseed-ink);
     margin-bottom: 14px;
   }
-  .programs-intro-copy {
-    padding-bottom: 14px;
-  }
   .programs-lede {
     margin: 0;
+    padding-bottom: 14px;
     font-family: var(--font-body);
     font-weight: 300;
     font-size: 34px;
     line-height: 1.5;
     color: var(--cseed-ink);
     white-space: pre-line;
-  }
-  .programs-eyebrow-wrap {
-    grid-column: 1 / -1;
-    margin-top: 56px;
   }
   .programs-eyebrow {
     padding-left: 6px;
@@ -209,8 +199,5 @@ const programs = [
   }
   .program-link {
     margin-top: 34px;
-  }
-  .program-link :global(.text-link) {
-    font-size: 26px;
   }
 </style>

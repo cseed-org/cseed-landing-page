@@ -2,9 +2,30 @@
 import Wordmark from '../core/Wordmark.astro';
 
 const columns = [
-  { title: 'programs', links: ['buildspace', 'buildher', 'saturdays'] },
-  { title: 'cseed', links: ['about us', 'join', 'sponsors'] },
-  { title: 'connect', links: ['instagram', 'linkedin', 'email us'] },
+  {
+    title: 'programs',
+    links: [
+      ['buildspace', '/buildspace/'],
+      ['buildher', '/join/'],
+      ['saturdays', '/saturdays/'],
+    ],
+  },
+  {
+    title: 'cseed',
+    links: [
+      ['about us', '/about-us/'],
+      ['join', '/join/'],
+      ['sponsors', '/#sponsors'],
+    ],
+  },
+  {
+    title: 'connect',
+    links: [
+      ['instagram', '#'],
+      ['linkedin', '#'],
+      ['email us', '#'],
+    ],
+  },
 ];
 ---
 
@@ -19,9 +40,9 @@ const columns = [
         columns.map((col) => (
           <div class="site-footer-column">
             <span class="site-footer-column-title">{col.title}</span>
-            {col.links.map((link) => (
-              <a class="site-footer-link" href="#">
-                {link}
+            {col.links.map(([label, href]) => (
+              <a class="site-footer-link" href={href}>
+                {label}
               </a>
             ))}
           </div>

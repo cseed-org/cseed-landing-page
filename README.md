@@ -1,24 +1,29 @@
-# cseed landing page
+# cseed website
 
-The public marketing site for **cseed**, a student-run community that helps builders turn ideas into
-impact. A single static [Astro](https://astro.build) page, built to match the `cseed Design System`
-(claude.ai/design project `3791785c-c2a3-433c-a867-ce4c93168d27`, `ui_kits/landing-page`) exactly: a
-full-bleed photo hero, a Playfair Display / Poppins / Ubuntu / Anonymous Pro editorial type system,
-hairline rules, no cards or shadows, and a polaroid-style photo collage introducing the three
-programs (**buildspace**, **buildher**, **saturdays**).
+The public site for **cseed**: a static [Astro](https://astro.build) build of the **cseed Design
+System** project on claude.ai/design (`3791785c-c2a3-433c-a867-ce4c93168d27`). Every page is a direct
+port of one of that project's `ui_kits/`, with the same sections, copy, colors, type, and spacing.
 
-No production photography or sponsor logo files were supplied with the design, so every photo plate
-and sponsor lockup renders as a plain placeholder (see `.ph` in `src/styles/global.css`, and
-`SponsorLogo.astro`) sized exactly where the real asset would go.
+| Route          | Source ui_kit              | What's on it                                                        |
+| -------------- | -------------------------- | ------------------------------------------------------------------- |
+| `/`            | `ui_kits/landing-page`     | Photo hero, programs collage, community band, partners, footer      |
+| `/about-us/`   | `ui_kits/about-us`         | Stats, "build things you imagine.", meet-the-team wall               |
+| `/buildspace/` | `ui_kits/buildspace`       | Animated "join cohort 6." space scene, tracks, past projects         |
+| `/join/`       | `ui_kits/join`             | Become-a-member intro, 3-step application, 1,040-name members wall   |
+| `/saturdays/`  | `ui_kits/saturdays`        | Live countdown to next Saturday 1pm, FAQ                             |
 
-## Launching the landing page
+No real photography, sponsor logos, or team headshots were supplied with the design, so those render
+as placeholders sized exactly where the real assets go. Team names, projects, and the members list
+are the design's own placeholder data (`src/data/community.ts`).
+
+## Launching the site
 
 ```bash
 npm install
 npm run dev
 ```
 
-Then open **http://localhost:4321**.
+Then open **http://localhost:4321**. All five pages are linked from the nav and footer.
 
 | Command            | What it does                                            |
 | ------------------- | -------------------------------------------------------- |
@@ -26,66 +31,50 @@ Then open **http://localhost:4321**.
 | `npm run build`     | Production build into `dist/`                             |
 | `npm run preview`   | Serve the built `dist/` locally, to check the real output |
 | `npm run check`     | Typecheck `.astro` and `.ts` files                        |
-| `npm run lint`      | Prettier in check mode                                    |
-| `npm run format`    | Prettier, writing changes                                 |
 
-There is no backend, API, or environment variable to configure.
+There is no backend. The join application runs entirely in the browser and does not send anything
+anywhere yet — submitting it just shows the "welcome in." state with your name on the wall.
 
-## How the page is built
+## How it's built
 
-The source design is authored as a **fixed 2083px canvas** (a direct export of the Figma file behind
-it), not a fluid responsive layout — every component uses the design's literal pixel positions and
-sizes. To reproduce that faithfully, the whole page is wrapped in one `.canvas` element that gets
-scaled as a single unit via CSS `zoom: min(1, viewportWidth / 2083)`, computed in an inline script in
-`BaseLayout.astro`. That's also why the nav bar is `position: fixed` and only fades in once you've
-scrolled roughly halfway down the hero — same behavior as the source prototype.
+The source design is authored on a **fixed 2083px canvas**, not a fluid layout. To reproduce it
+exactly, each page lives inside one `.canvas` element that's scaled as a single unit with CSS
+`zoom: min(1, viewportWidth / 2083)` (see the script in `src/layouts/BaseLayout.astro`). That's the
+same approach the source prototypes use.
 
-Everything else is static markup with scoped `<style>` blocks — **no client-side framework**. The
-handful of interactive behaviors from the source (scroll-triggered fade-ups, the nav's fixed/hidden
-state, in-page anchor scrolling) are handled by one small vanilla-JS script in `BaseLayout.astro`;
-hover states (link underlines, arrow nudges, dropdown reveal) are plain CSS `:hover`.
+There's no client-side framework. Pages are static Astro markup with scoped styles; hover states are
+plain CSS. The interactive bits the source implements in React are small vanilla-JS scripts:
+
+- `BaseLayout.astro`: canvas zoom, scroll-in reveals, the landing page's nav fading in after the hero,
+  smooth in-page anchor scrolling
+- `join.astro`: the stepped application, custom dropdowns, chips, and adding you to the members wall
+- `saturdays.astro`: the countdown timer
+- `about-us.astro` / `buildspace.astro`: the cursor-following "linkedin ↗" and track-note tooltips
 
 ## Where things go
 
 ```
-.
-├── public/
-│   ├── favicon.svg
-│   └── robots.txt
-│
-├── src/
-│   ├── components/
-│   │   ├── core/            Arrow, BodyText, ProgramImage, Reveal, Rule,
-│   │   │                    SectionHeading, SponsorLogo, TextLink, Wordmark
-│   │   ├── navigation/       NavBar, DropdownNav
-│   │   ├── sections/         Hero, MissionPrompt, SponsorStrip
-│   │   └── landing/          ProgramsCollage, CommunityBand, Footer, Polaroid
-│   │                         (page-specific compositions, same split as the source ui_kit)
-│   │
-│   ├── layouts/
-│   │   └── BaseLayout.astro  <head>, global stylesheet, the shared zoom/reveal/nav script
-│   │
-│   ├── pages/
-│   │   └── index.astro       The landing page itself -- one route: `/`
-│   │
-│   └── styles/
-│       ├── global.css        Reset, placeholder-image utility, reveal/rule animation classes
-│       └── tokens/            colors.css, typography.css, layout.css, motion.css, fonts.css --
-│                              ported 1:1 from the design system
-│
-├── astro.config.mjs
-└── dist/                      Build output. Generated -- do not edit or commit.
+src/
+├── components/
+│   ├── core/          Arrow, BodyText, ProgramImage, Reveal, Rule, SectionHeading,
+│   │                  SponsorLogo, TextLink, Wordmark (the design system's core set)
+│   ├── navigation/    NavBar, DropdownNav
+│   ├── sections/      Hero, MissionPrompt, SponsorStrip
+│   ├── landing/       ProgramsCollage, CommunityBand, Polaroid, Footer (Footer is shared by every page)
+│   ├── buildspace/    TrackIcon (the five cohort-06 track marks)
+│   └── join/          Field, SelectField, FormBlock
+├── data/
+│   └── community.ts   Team, stats, and the seeded members list
+├── layouts/
+│   ├── BaseLayout.astro   <head>, global styles, shared page script
+│   └── PageLayout.astro   Fixed nav + footer shell used by every page except `/`
+├── pages/             index, about-us, buildspace, join, saturdays -- one file per route
+└── styles/
+    ├── global.css     Reset, placeholders, shared type classes, reveal animations
+    └── tokens/        colors, typography, layout, motion, fonts -- ported 1:1 from the design system
 ```
-
-## Design source
-
-This is a direct build of `ui_kits/landing-page/index.html` (and its `LandingPage.jsx`,
-`ProgramsCollage.jsx`, `CommunityBand.jsx`, `Footer.jsx`) from the **cseed Design System** project on
-claude.ai/design. Same sections, same copy, same colors, same type scale, same layout tokens. The
-`Lede.jsx` file in that ui_kit is loaded but never rendered by the actual page and was not ported here
-for the same reason.
 
 ## Deploying
 
-`npm run build` produces a fully static `dist/` folder that can be served by any static host
-(Cloudflare Pages, Netlify, Vercel, GitHub Pages, etc.) -- there's nothing else to provision.
+`npm run build` produces a fully static `dist/` folder that any static host can serve (Cloudflare
+Pages, Netlify, Vercel, GitHub Pages).

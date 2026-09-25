@@ -1,6 +1,6 @@
 ---
 interface Props {
-  width?: number;
+  width?: number | string;
   weight?: number;
   color?: string;
   vertical?: boolean;
@@ -21,7 +21,10 @@ const {
   class: className,
 } = Astro.props;
 
-const size = vertical ? `width:${weight}px; height:${length ?? width}px` : `width:${width}px; height:${weight}px`;
+const px = (v: number | string) => (typeof v === 'number' ? `${v}px` : v);
+const size = vertical
+  ? `width:${weight}px; height:${px(length ?? width)}`
+  : `width:${px(width)}; height:${weight}px`;
 ---
 
 <div
