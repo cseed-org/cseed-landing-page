@@ -3,9 +3,7 @@ import PageLayout from '../layouts/PageLayout.astro';
 import Reveal from '../components/core/Reveal.astro';
 import Rule from '../components/core/Rule.astro';
 import TextLink from '../components/core/TextLink.astro';
-import { ABOUT_TEAM, ABOUT_STATS } from '../data/community';
-
-const people = ABOUT_TEAM.flatMap((g) => g.members.map(([n]) => n));
+import { TEAM, ABOUT_STATS } from '../data/community';
 ---
 
 <PageLayout title="about us — cseed">
@@ -47,12 +45,12 @@ const people = ABOUT_TEAM.flatMap((g) => g.members.map(([n]) => n));
     </div>
     <div class="ab-wall">
       {
-        people.map((name, i) => (
+        TEAM.map(({ name, photo }, i) => (
           <Reveal mode="fade" delay={(i % 5) * 80}>
             <div class="ab-person">
               <a class="team-photo" href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer" aria-label={`${name} on LinkedIn`}>
                 <div class="team-photo-slot">
-                  <span>photo</span>
+                  <img src={photo} alt={name} width="720" height="900" loading="lazy" decoding="async" />
                 </div>
                 <div class="team-photo-pill">
                   <span>linkedin ↗</span>
@@ -165,10 +163,11 @@ const people = ABOUT_TEAM.flatMap((g) => g.members.map(([n]) => n));
     justify-content: center;
     background: var(--cseed-mist);
   }
-  .team-photo-slot span {
-    font: 400 18px/1 var(--font-mono);
-    color: var(--cseed-ink-soft);
-    letter-spacing: 0.04em;
+  .team-photo-slot img {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: cover;
   }
   .team-photo-pill {
     position: absolute;

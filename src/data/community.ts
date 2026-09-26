@@ -1,53 +1,20 @@
-// Placeholder people data, transcribed from the design's ui_kits/about-us/AboutParts.jsx.
+// The cseed team shown on /about-us/. Headshots live in public/images/team/<slug>.webp.
+export const TEAM: { name: string; photo: string }[] = [
+  ['Adam Esayas', 'adam-esayas'],
+  ['Angela Wu', 'angela-wu'],
+  ['Avi Agola', 'avi-agola'],
+  ['Ishaan Awasthi', 'ishaan-awasthi'],
+  ['Maia Womack', 'maia-womack'],
+  ['Maya Ma', 'maya-ma'],
+  ['Nel Alaimaleata', 'nel-alaimaleata'],
+  ['Shiloh Dhasan', 'shiloh-dhasan'],
+  ['Shuhui Yang', 'shuhui-yang'],
+  ['Surya Duraivenkatesh', 'surya-duraivenkatesh'],
+  ['Talal Kheiry', 'talal-kheiry'],
+  ['Victoria Tchervenski', 'victoria-tchervenski'],
+].map(([name, slug]) => ({ name, photo: `/images/team/${slug}.webp` }));
 
-export const ABOUT_TEAM: { key: string; tag: string; members: [string, string][] }[] = [
-  {
-    key: 'general',
-    tag: 'the general team',
-    members: [
-      ['Maya Chen', 'president'],
-      ['Jordan Reyes', 'vice president'],
-      ['Priya Patel', 'operations'],
-      ['Sam Okafor', 'events'],
-      ['Lena Park', 'finance'],
-      ['Theo Russo', 'outreach'],
-    ],
-  },
-  {
-    key: 'design',
-    tag: 'design + media',
-    members: [
-      ['Ava Lindqvist', 'design lead'],
-      ['Noah Kim', 'designer'],
-      ['Isla Moreno', 'media lead'],
-      ['Kai Tanaka', 'photographer'],
-    ],
-  },
-  {
-    key: 'buildspace',
-    tag: 'buildspace',
-    members: [
-      ['Ethan Wright', 'lead'],
-      ['Zara Ahmed', 'lead'],
-      ['Leo Novak', 'mentor'],
-      ['Mia Santos', 'mentor'],
-      ['Omar Haddad', 'mentor'],
-      ['Ruby Clarke', 'coordinator'],
-    ],
-  },
-  {
-    key: 'buildher',
-    tag: 'buildher',
-    members: [
-      ['Nina Osei', 'lead'],
-      ['Chloe Martin', 'lead'],
-      ['Hana Suzuki', 'workshops'],
-      ['Grace Liu', 'community'],
-    ],
-  },
-];
-
-// Same seeded generator as the source, so the wall lists the same 1,040 names.
+// Placeholder members wall, same seeded generator as the source, so the wall lists the same 1,040 names.
 export const ABOUT_MEMBERS: string[] = (() => {
   const f =
     'Aaron Abby Adam Aiden Aisha Alex Ali Amara Amir Ana Ben Bella Cam Carlos Cleo Dana Dev Diego Eli Ella Emma Eric Eva Finn Gabe Gia Hugo Ian Ivy Jack Jade Jay Jin June Kara Leah Liam Lila Luca Luna Max Mei Milo Nadia Nate Nora Olive Owen Pia Quinn Raj Rosa Ryan Sara Sofia Tara Tom Uma Vera Will Yara Zoe'.split(

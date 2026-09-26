@@ -12,9 +12,10 @@ port of one of that project's `ui_kits/`, with the same sections, copy, colors, 
 | `/join/`       | `ui_kits/join`             | Become-a-member intro, 3-step application, 1,040-name members wall   |
 | `/saturdays/`  | `ui_kits/saturdays`        | Live countdown to next Saturday 1pm, FAQ                             |
 
-No real photography, sponsor logos, or team headshots were supplied with the design, so those render
-as placeholders sized exactly where the real assets go. Team names, projects, and the members list
-are the design's own placeholder data (`src/data/community.ts`).
+Real assets so far: the hero photo, the partner logos (`public/images/sponsors/`) and the team
+headshots (`public/images/team/`, listed in `src/data/community.ts`). Everything else that needs a
+photo (programs collage, community band, projects) is still a placeholder sized exactly where the real
+image goes. Past projects and the 1,040-name members wall are the design's own placeholder data.
 
 ## Launching the site
 
