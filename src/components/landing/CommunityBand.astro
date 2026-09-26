@@ -9,14 +9,21 @@ import Reveal from '../core/Reveal.astro';
 
 <div class="community-band" id="join">
   <Reveal style="margin-left:83px; margin-top:128px">
-    <SectionHeading align="left" width={1400}>come as you are. make something yours.</SectionHeading>
+    <SectionHeading align="left" width={1400}>come as you are. make something yours.</SectionHeading
+    >
   </Reveal>
   <Reveal delay={120} style="margin-left:83px; margin-top:-32px">
     <TextLink href="/join/" arrowLength={39.408}>join cseed</TextLink>
   </Reveal>
   <Reveal delay={240} mode="fade" style="margin-top:104px; padding-left:47px">
     <div class="community-photos">
-      <div class="community-photo ph-light community-photo--wide"></div>
+      <img
+        class="community-photo community-photo--wide"
+        src="/images/community-wide.webp"
+        alt="cseed members posing together on a pier overlooking Elliott Bay"
+        width="1344"
+        height="644"
+      />
       <div class="community-photo ph-light community-photo--tall"></div>
     </div>
   </Reveal>
@@ -32,6 +39,8 @@ import Reveal from '../core/Reveal.astro';
   }
   .community-photo {
     flex: none;
+    display: block;
+    object-fit: cover;
   }
   .community-photo--wide {
     width: 1344px;
