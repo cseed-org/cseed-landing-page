@@ -2,10 +2,11 @@
 import PageLayout from '../layouts/PageLayout.astro';
 import Reveal from '../components/core/Reveal.astro';
 
-const faq = [
-  ['do i need to sign up?', 'Nope. Just show up.'],
-  ['what should i bring?', 'A laptop and whatever you are working on.'],
-  ['do i need a project?', 'No. Come figure one out with us.'],
+const faq: { q: string; a: string; link?: { label: string; href: string } }[] = [
+  { q: 'do i need to sign up?', a: 'Nope. Just show up.' },
+  { q: 'what should i bring?', a: 'A laptop and whatever you are working on.' },
+  { q: 'do i need a project?', a: 'No. Come figure one out with us.' },
+  { q: 'do i need to be a member?', a: "Yes! It's super easy:", link: { label: 'join here', href: '/join/' } },
 ];
 const units = ['days', 'hours', 'min', 'sec'];
 ---
@@ -61,11 +62,21 @@ const units = ['days', 'hours', 'min', 'sec'];
     <Reveal><h2 class="t-serif" style="font-size:80px">quick q's</h2></Reveal>
     <div class="sa-faq-list">
       {
-        faq.map(([q, a], i) => (
+        faq.map(({ q, a, link }, i) => (
           <Reveal delay={i * 100}>
             <div class="sa-faq-row">
               <span class="sa-faq-q">{q}</span>
-              <p class="sa-body">{a}</p>
+              <p class="sa-body">
+                {a}
+                {link && (
+                  <>
+                    {' '}
+                    <a class="sa-highlight" href={link.href}>
+                      {link.label}
+                    </a>
+                  </>
+                )}
+              </p>
             </div>
           </Reveal>
         ))
@@ -196,6 +207,18 @@ const units = ['days', 'hours', 'min', 'sec'];
     gap: 60px;
     padding: 44px 0;
     border-top: 1px solid var(--cseed-ink);
+  }
+  /* Same yellow marker as the nav's "join". */
+  .sa-highlight {
+    color: var(--cseed-ink);
+    padding: 0 6px;
+    margin: 0 -2px;
+    background: linear-gradient(transparent 42%, var(--cseed-sun) 42%, var(--cseed-sun) 92%, transparent 92%);
+    transition: opacity var(--dur-hover) var(--ease-soft);
+  }
+  .sa-highlight:hover {
+    color: var(--cseed-ink);
+    opacity: 0.62;
   }
   .sa-faq-q {
     font: 400 40px/1.2 var(--font-display);
