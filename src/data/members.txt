@@ -1,0 +1,13 @@
+# cseed members list
+#
+# One name per line. Lines starting with "#" (like these) are ignored, and
+# blank lines are ignored too, so it's safe to leave notes for yourself.
+#
+# The site reads this file at build time, then alphabetizes the names and
+# groups them by first letter for the members wall on /join/ (and the
+# member count on /about-us/) automatically -- just paste names in below,
+# one per line, and rebuild/redeploy.
+#
+# Until real names are pasted in here, the site falls back to the
+# placeholder generated list (src/data/community.ts) so the wall still has
+# something to show.

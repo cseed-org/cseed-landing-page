@@ -6,13 +6,15 @@ interface Props {
   label: string;
   help?: string;
   span?: number;
+  optional?: boolean;
+  required?: boolean;
   options: string[];
 }
-const { name, label, help, span = 1, options } = Astro.props;
+const { name, label, help, span = 1, optional = false, required = false, options } = Astro.props;
 ---
 
 <div class="jn-select" data-jn-select={name} style={`grid-column: span ${span}`}>
-  <Field label={label} help={help}>
+  <Field label={label} help={help} optional={optional} required={required}>
     <button type="button" class="jn-input jn-select-btn" data-jn-select-btn>
       <span data-jn-select-value>select...</span>
       <span class="jn-caret">▾</span>
@@ -80,6 +82,8 @@ const { name, label, help, span = 1, options } = Astro.props;
     display: flex;
     flex-direction: column;
     padding: 12px 0 16px;
+    max-height: 480px;
+    overflow-y: auto;
   }
   .jn-option {
     appearance: none;

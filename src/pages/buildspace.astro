@@ -18,6 +18,63 @@ const details = [
   ['the gear', 'Access to the software and hardware you need to try it.'],
 ];
 
+// Scattered polaroid photo collage between the intro and the four detail tiles -- position
+// (l/t), size (w/h) and tilt (r, in degrees) straight from the design system's layout. Real
+// photos are matched to whichever frame's aspect ratio fits them best; the rest stay
+// placeholders until there are more photos to drop in.
+const introPhotos: {
+  id: string;
+  l: number;
+  t: number;
+  w: number;
+  h: number;
+  r: number;
+  src?: string;
+  alt?: string;
+}[] = [
+  {
+    id: 'bs-intro-1',
+    l: 0,
+    t: 90,
+    w: 520,
+    h: 620,
+    r: -4,
+    src: '/images/buildspace/intro-hardware-build.webp',
+    alt: 'Members building an RC car chassis with Raspberry Pis and laptops at a build night',
+  },
+  {
+    id: 'bs-intro-2',
+    l: 490,
+    t: 0,
+    w: 480,
+    h: 360,
+    r: 3,
+    src: '/images/buildspace/intro-demo-day.webp',
+    alt: 'The whole buildspace cohort celebrating at demo day',
+  },
+  {
+    id: 'bs-intro-3',
+    l: 560,
+    t: 400,
+    w: 400,
+    h: 380,
+    r: -2,
+    src: '/images/buildspace/intro-laptops.webp',
+    alt: 'Members working together on laptops during a build night',
+  },
+  { id: 'bs-intro-4', l: 1010, t: 60, w: 380, h: 500, r: 5 },
+  {
+    id: 'bs-intro-5',
+    l: 1420,
+    t: 180,
+    w: 460,
+    h: 560,
+    r: -3,
+    src: '/images/buildspace/intro-thankyou-card.webp',
+    alt: 'A handwritten thank-you card from the buildspace cohort 2 team',
+  },
+];
+
 const projects: [string, string, string, number][] = [
   ['plantpal', 'A sensor that texts you when your plants are thirsty.', 'Maya Chen', 5],
   ['study buddy', 'Matches classmates into study groups by schedule.', 'Leo Novak', 5],
@@ -31,7 +88,13 @@ const projects: [string, string, string, number][] = [
 const tracks = [
   { kind: 'hardware', label: 'hardware', ring: '#B45CE0', dot: 215 },
   { kind: 'software', label: 'software', ring: '#16A36F', dot: 35 },
-  { kind: 'xra', label: 'extended reality', ring: '#2F5BFF', dot: 0, note: 'build with computer vision, AR and VR' },
+  {
+    kind: 'xra',
+    label: 'extended reality',
+    ring: '#2F5BFF',
+    dot: 0,
+    note: 'build with computer vision, AR and VR',
+  },
   { kind: 'creatives', label: 'creatives', ring: '#FF0066', dot: 140 },
 ] as const;
 ---
@@ -42,7 +105,9 @@ const tracks = [
     <div class="bs-space-vignette" aria-hidden="true"></div>
     <div class="bs-space-copy">
       <Reveal delay={150}>
-        <h2 class="t-serif" style="font-size:240px; color:var(--cseed-white)">join<br />cohort 6.</h2>
+        <h2 class="t-serif" style="font-size:240px; color:var(--cseed-white)">
+          join<br />cohort 6.
+        </h2>
       </Reveal>
       <Reveal delay={300}>
         <p class="bs-body" style="color:var(--cseed-white); margin-top:60px; width:720px">
@@ -81,40 +146,61 @@ const tracks = [
   </section>
 
   <section class="bs-section">
-    <Reveal><div class="t-eyebrow">buildspace</div></Reveal>
-    <Reveal delay={120}>
-      <h1 class="t-serif" style="font-size:200px; margin-top:40px">
-        What do you <span class="bs-dream"
-          >dream<svg viewBox="-50 -50 100 100" aria-hidden="true"
-            ><path
-              d="M0 -48 C 5 -12, 12 -5, 48 0 C 12 5, 5 12, 0 48 C -5 12, -12 5, -48 0 C -12 -5, -5 -12, 0 -48 Z"
-              fill="#E0636F"></path></svg
-          ></span
-        ><br />of making?
-      </h1>
-    </Reveal>
     <div class="bs-intro">
-      <Reveal delay={200}>
-        <p class="bs-body bs-lead">
-          Maybe it’s useful. Maybe it’s weird. Maybe it’s still just a half-formed thought you keep coming back to.
-        </p>
+      <Reveal delay={120}>
+        <h1 class="t-serif" style="font-size:170px">
+          What do you <span class="bs-dream"
+            >dream<svg viewBox="-50 -50 100 100" aria-hidden="true"
+              ><path
+                d="M0 -48 C 5 -12, 12 -5, 48 0 C 12 5, 5 12, 0 48 C -5 12, -12 5, -48 0 C -12 -5, -5 -12, 0 -48 Z"
+                fill="#E0636F"></path></svg
+            ></span
+          ><br />of making?
+        </h1>
       </Reveal>
-      <Reveal delay={320}>
+      <Reveal delay={260}>
         <div class="bs-intro-right">
-          <p class="bs-body bs-lead">Buildspace is a place to follow that thought.</p>
-          <p class="bs-body">
-            Meet people who think differently than you. Learn new skills. Get guidance from mentors. Find the resources
-            to try something you’ve never made before.
+          <p class="bs-body bs-intro-copy">
+            Buildspace is a place to follow that half-formed thought.
           </p>
-          <p class="bs-motto"><span>Build things that don’t scale.</span></p>
+          <p class="bs-motto">
+            <span class="bs-motto-highlight">Build things that don’t scale.</span>
+          </p>
         </div>
       </Reveal>
     </div>
-    <div class="bs-details">
+
+    <div class="bs-photo-collage">
+      {
+        introPhotos.map((p, i) => (
+          <Reveal delay={i * 110} style={`position:absolute; left:${p.l}px; top:${p.t}px`}>
+            <div class="bs-photo-frame" style={`transform:rotate(${p.r}deg)`}>
+              {p.src ? (
+                <img
+                  class="bs-photo-img"
+                  src={p.src}
+                  alt={p.alt}
+                  width={p.w}
+                  height={p.h}
+                  style={`width:${p.w}px; height:${p.h}px`}
+                />
+              ) : (
+                <div class="bs-photo-slot" style={`width:${p.w}px; height:${p.h}px`}>
+                  <span>photo</span>
+                </div>
+              )}
+            </div>
+          </Reveal>
+        ))
+      }
+    </div>
+
+    <div class="bs-details" data-bs-details>
       {
         details.map(([k, v], i) => (
           <Reveal delay={i * 120}>
-            <div class="bs-detail">
+            <div class="bs-detail" data-bs-detail>
+              <div class="bs-detail-highlight" aria-hidden="true" />
               <Rule width="100%" weight={1} animate delay={i * 120} />
               <div class="bs-detail-title">{k}</div>
               <p class="bs-body" style="font-size:26px">
@@ -131,15 +217,19 @@ const tracks = [
   <div class="bs-explode" data-explode>
     <section class="bs-explode-block" data-explode-block>
       <div class="bs-explode-copy">
-        <Reveal><h2 class="t-serif" style="font-size:130px">Experimenting<br />is empowering.</h2></Reveal>
+        <Reveal
+          ><h2 class="t-serif" style="font-size:130px">
+            Experimenting<br />is empowering.
+          </h2></Reveal
+        >
         <Reveal delay={150}><div class="bs-explode-tag">Explore. Experiment. Explode.</div></Reveal>
       </div>
       <img
         class="bs-cutout"
-        src="/images/buildspace/experiment-cutout.webp"
-        alt="Two cseed members smiling together"
-        width="739"
-        height="474"
+        src="/images/buildspace/explode-cutout.webp"
+        alt="A cseed member presenting a hardware project"
+        width="1342"
+        height="1172"
       />
     </section>
   </div>
@@ -177,7 +267,6 @@ const tracks = [
                   <div>{w}</div>
                 ))}
               </div>
-              {t.kind === 'xra' && <div class="bs-track-new">new track!</div>}
             </div>
           </Reveal>
         ))
@@ -224,10 +313,8 @@ const tracks = [
 <script>
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ---------- Track hover: cursor-following note, one-time xra pulse ---------- */
+  /* ---------- Track hover: cursor-following note ---------- */
   document.querySelectorAll<HTMLElement>('[data-track-hover]').forEach((el) => {
-    // The extended reality pulse is a "hover me" hint; once hovered, it stays still.
-    el.addEventListener('mouseenter', () => el.classList.add('was-hovered'), { once: true });
     el.addEventListener('mousemove', (e) => {
       const r = el.getBoundingClientRect();
       const z = r.width / el.offsetWidth || 1;
@@ -236,12 +323,359 @@ const tracks = [
     });
   });
 
+  /* ---------- Details tiles: auto-cycling yellow highlight ---------- */
+  function cycleDetails(container: HTMLElement) {
+    const tiles = [...container.querySelectorAll<HTMLElement>('[data-bs-detail]')];
+    if (!tiles.length || reduceMotion) return; // keep it static for reduced-motion users
+
+    const HOLD = 2000; // how long each tile stays highlighted, in ms
+    let i = 0;
+    let visible = true;
+    let timer = 0;
+
+    function tick() {
+      if (!visible || document.hidden) {
+        timer = 0;
+        return;
+      }
+      tiles.forEach((t, idx) => t.classList.toggle('is-highlighted', idx === i));
+      i = (i + 1) % tiles.length;
+      timer = window.setTimeout(tick, HOLD);
+    }
+
+    new IntersectionObserver((es) => {
+      visible = es.some((e) => e.isIntersecting);
+      if (visible && !document.hidden && !timer) tick();
+    }).observe(container);
+
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && visible && !timer) tick();
+    });
+  }
+  const detailsEl = document.querySelector<HTMLElement>('[data-bs-details]');
+  if (detailsEl) cycleDetails(detailsEl);
+
+  /* ---------- Hero starfield: WebGL Galaxy shader, ported 1:1 from the cseed Design ----------
+     System's Galaxy component (ui_kits/buildspace/Galaxy.jsx -- "after React Bits 'Galaxy'",
+     raw WebGL, no dependency). Same shaders, same setup, same defaults; only the React-specific
+     bits (useRef/useEffect) are swapped for direct DOM calls to match this file's style. The
+     canvas-2D `starfield` below is that same component's own bundled fallback for browsers
+     without WebGL -- it stays a fallback here too, unchanged in role. */
+  const GALAXY_VERT = `
+attribute vec2 position;
+varying vec2 vUv;
+void main() { vUv = position * 0.5 + 0.5; gl_Position = vec4(position, 0.0, 1.0); }
+`;
+
+  const GALAXY_FRAG = `
+precision highp float;
+uniform float uTime;
+uniform vec3 uResolution;
+uniform vec2 uFocal;
+uniform vec2 uRotation;
+uniform float uStarSpeed;
+uniform float uDensity;
+uniform float uHueShift;
+uniform float uSpeed;
+uniform vec2 uMouse;
+uniform float uGlowIntensity;
+uniform float uSaturation;
+uniform bool uMouseRepulsion;
+uniform float uTwinkleIntensity;
+uniform float uRotationSpeed;
+uniform float uRepulsionStrength;
+uniform float uMouseActiveFactor;
+uniform float uAutoCenterRepulsion;
+uniform bool uTransparent;
+uniform bool uUsePalette;
+uniform vec3 uPalA;
+uniform vec3 uPalB;
+uniform vec3 uPalC;
+uniform float uPalLighten;
+varying vec2 vUv;
+
+#define NUM_LAYER 4.0
+#define STAR_COLOR_CUTOFF 0.2
+#define MAT45 mat2(0.7071, -0.7071, 0.7071, 0.7071)
+#define PERIOD 3.0
+
+float Hash21(vec2 p) { p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
+float tri(float x) { return abs(fract(x) * 2.0 - 1.0); }
+float tris(float x) { float t = fract(x); return 1.0 - smoothstep(0.0, 1.0, abs(2.0 * t - 1.0)); }
+float trisn(float x) { float t = fract(x); return 2.0 * (1.0 - smoothstep(0.0, 1.0, abs(2.0 * t - 1.0))) - 1.0; }
+vec3 hsv2rgb(vec3 c) { vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0); vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www); return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y); }
+
+float Star(vec2 uv, float flare) {
+  float d = length(uv);
+  float m = (0.05 * uGlowIntensity) / d;
+  float rays = smoothstep(0.0, 1.0, 1.0 - abs(uv.x * uv.y * 1000.0));
+  m += rays * flare * uGlowIntensity;
+  uv *= MAT45;
+  rays = smoothstep(0.0, 1.0, 1.0 - abs(uv.x * uv.y * 1000.0));
+  m += rays * 0.3 * flare * uGlowIntensity;
+  m *= smoothstep(1.0, 0.2, d);
+  return m;
+}
+
+vec3 StarLayer(vec2 uv) {
+  vec3 col = vec3(0.0);
+  vec2 gv = fract(uv) - 0.5;
+  vec2 id = floor(uv);
+  for (int y = -1; y <= 1; y++) {
+    for (int x = -1; x <= 1; x++) {
+      vec2 offset = vec2(float(x), float(y));
+      vec2 si = id + offset;
+      float seed = Hash21(si);
+      float size = fract(seed * 345.32);
+      float glossLocal = tri(uStarSpeed / (PERIOD * seed + 1.0));
+      float flareSize = smoothstep(0.9, 1.0, size) * glossLocal;
+      float red = smoothstep(STAR_COLOR_CUTOFF, 1.0, Hash21(si + 1.0)) + STAR_COLOR_CUTOFF;
+      float blu = smoothstep(STAR_COLOR_CUTOFF, 1.0, Hash21(si + 3.0)) + STAR_COLOR_CUTOFF;
+      float grn = min(red, blu) * seed;
+      vec3 base = vec3(red, grn, blu);
+      float hue = atan(base.g - base.r, base.b - base.r) / (2.0 * 3.14159) + 0.5;
+      hue = fract(hue + uHueShift / 360.0);
+      float sat = length(base - vec3(dot(base, vec3(0.299, 0.587, 0.114)))) * uSaturation;
+      float val = max(max(base.r, base.g), base.b);
+      base = hsv2rgb(vec3(hue, sat, val));
+      if (uUsePalette) {
+        float pt = Hash21(si + 7.0);
+        vec3 pc = pt < 0.5 ? mix(uPalA, uPalB, pt * 2.0) : mix(uPalB, uPalC, pt * 2.0 - 1.0);
+        base = mix(pc, vec3(1.0), uPalLighten) * (0.85 + 0.3 * val);
+      }
+      vec2 pad = vec2(tris(seed * 34.0 + uTime * uSpeed / 10.0), tris(seed * 38.0 + uTime * uSpeed / 30.0)) - 0.5;
+      float star = Star(gv - offset - pad, flareSize);
+      float twinkle = trisn(uTime * uSpeed + seed * 6.2831) * 0.5 + 1.0;
+      twinkle = mix(1.0, twinkle, uTwinkleIntensity);
+      star *= twinkle;
+      col += star * size * base;
+    }
+  }
+  return col;
+}
+
+void main() {
+  vec2 focalPx = uFocal * uResolution.xy;
+  vec2 uv = (vUv * uResolution.xy - focalPx) / uResolution.y;
+  vec2 mouseNorm = uMouse - vec2(0.5);
+  if (uAutoCenterRepulsion > 0.0) {
+    float centerDist = length(uv);
+    uv += normalize(uv) * (uAutoCenterRepulsion / (centerDist + 0.1)) * 0.05;
+  } else if (uMouseRepulsion) {
+    vec2 mousePosUV = (uMouse * uResolution.xy - focalPx) / uResolution.y;
+    float mouseDist = length(uv - mousePosUV);
+    uv += normalize(uv - mousePosUV) * (uRepulsionStrength / (mouseDist + 0.1)) * 0.05 * uMouseActiveFactor;
+  } else {
+    uv += mouseNorm * 0.1 * uMouseActiveFactor;
+  }
+  float a = uTime * uRotationSpeed;
+  uv = mat2(cos(a), -sin(a), sin(a), cos(a)) * uv;
+  uv = mat2(uRotation.x, -uRotation.y, uRotation.y, uRotation.x) * uv;
+  vec3 col = vec3(0.0);
+  for (float i = 0.0; i < 1.0; i += 1.0 / NUM_LAYER) {
+    float depth = fract(i + uStarSpeed * uSpeed);
+    float scale = mix(20.0 * uDensity, 0.5 * uDensity, depth);
+    float fade = depth * smoothstep(1.0, 0.9, depth);
+    col += StarLayer(uv * scale + i * 453.32) * fade;
+  }
+  if (uTransparent) {
+    float alpha = min(smoothstep(0.0, 0.3, length(col)), 1.0);
+    gl_FragColor = vec4(col, alpha);
+  } else {
+    gl_FragColor = vec4(col, 1.0);
+  }
+}
+`;
+
+  interface GalaxyOptions {
+    focal?: [number, number];
+    rotation?: [number, number];
+    starSpeed?: number;
+    density?: number;
+    hueShift?: number;
+    speed?: number;
+    mouseInteraction?: boolean;
+    glowIntensity?: number;
+    saturation?: number;
+    mouseRepulsion?: boolean;
+    repulsionStrength?: number;
+    twinkleIntensity?: number;
+    rotationSpeed?: number;
+    autoCenterRepulsion?: number;
+    transparent?: boolean;
+    palette?: [string, string, string] | null;
+    paletteLighten?: number;
+  }
+
+  // Returns false (no canvas appended) when WebGL isn't available, so the caller can fall back
+  // to the canvas-2D version below -- exactly what the source component does internally.
+  function galaxyWebGL(ctn: HTMLElement, opts: GalaxyOptions = {}): boolean {
+    const {
+      focal = [0.5, 0.5],
+      rotation = [1.0, 0.0],
+      starSpeed = 0.5,
+      density = 1,
+      hueShift = 140,
+      speed = 1.0,
+      mouseInteraction = true,
+      glowIntensity = 0.3,
+      saturation = 0.0,
+      mouseRepulsion = true,
+      repulsionStrength = 2,
+      twinkleIntensity = 0.3,
+      rotationSpeed = 0.1,
+      autoCenterRepulsion = 0,
+      transparent = true,
+      palette = null,
+      paletteLighten = 0.7,
+    } = opts;
+
+    const canvas = document.createElement('canvas');
+    const gl = (canvas.getContext('webgl', {
+      alpha: transparent,
+      premultipliedAlpha: false,
+      antialias: false,
+    }) || canvas.getContext('experimental-webgl')) as WebGLRenderingContext | null;
+    if (!gl) return false;
+    canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;display:block';
+    ctn.appendChild(canvas);
+
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const sh = (type: number, src: string) => {
+      const s = gl.createShader(type)!;
+      gl.shaderSource(s, src);
+      gl.compileShader(s);
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(s));
+      return s;
+    };
+    const prog = gl.createProgram()!;
+    gl.attachShader(prog, sh(gl.VERTEX_SHADER, GALAXY_VERT));
+    gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, GALAXY_FRAG));
+    gl.linkProgram(prog);
+    gl.useProgram(prog);
+
+    const buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    const posLoc = gl.getAttribLocation(prog, 'position');
+    gl.enableVertexAttribArray(posLoc);
+    gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
+
+    const U = (n: string) => gl.getUniformLocation(prog, n);
+    const uNames = [
+      'uTime',
+      'uResolution',
+      'uFocal',
+      'uRotation',
+      'uStarSpeed',
+      'uDensity',
+      'uHueShift',
+      'uSpeed',
+      'uMouse',
+      'uGlowIntensity',
+      'uSaturation',
+      'uMouseRepulsion',
+      'uTwinkleIntensity',
+      'uRotationSpeed',
+      'uRepulsionStrength',
+      'uMouseActiveFactor',
+      'uAutoCenterRepulsion',
+      'uTransparent',
+    ] as const;
+    const u: Record<(typeof uNames)[number], WebGLUniformLocation | null> = {} as never;
+    uNames.forEach((n) => {
+      u[n] = U(n);
+    });
+
+    gl.uniform2fv(u.uFocal, focal);
+    gl.uniform2fv(u.uRotation, rotation);
+    gl.uniform1f(u.uDensity, density);
+    gl.uniform1f(u.uHueShift, hueShift);
+    gl.uniform1f(u.uSpeed, speed);
+    gl.uniform1f(u.uGlowIntensity, glowIntensity);
+    gl.uniform1f(u.uSaturation, saturation);
+    gl.uniform1i(u.uMouseRepulsion, mouseRepulsion ? 1 : 0);
+    gl.uniform1f(u.uTwinkleIntensity, twinkleIntensity);
+    gl.uniform1f(u.uRotationSpeed, rotationSpeed);
+    gl.uniform1f(u.uRepulsionStrength, repulsionStrength);
+    gl.uniform1f(u.uAutoCenterRepulsion, autoCenterRepulsion);
+    gl.uniform1i(u.uTransparent, transparent ? 1 : 0);
+
+    const hx = (h: string) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16) / 255);
+    gl.uniform1i(U('uUsePalette'), palette ? 1 : 0);
+    if (palette) {
+      gl.uniform3fv(U('uPalA'), hx(palette[0]));
+      gl.uniform3fv(U('uPalB'), hx(palette[1]));
+      gl.uniform3fv(U('uPalC'), hx(palette[2]));
+      gl.uniform1f(U('uPalLighten'), paletteLighten);
+    }
+    if (transparent) {
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+      gl.clearColor(0, 0, 0, 0);
+    } else {
+      gl.clearColor(0, 0, 0, 1);
+    }
+
+    const resize = () => {
+      canvas.width = ctn.offsetWidth;
+      canvas.height = ctn.offsetHeight;
+      gl.viewport(0, 0, canvas.width, canvas.height);
+      gl.uniform3f(u.uResolution, canvas.width, canvas.height, canvas.width / canvas.height);
+    };
+    resize();
+    new ResizeObserver(resize).observe(ctn);
+
+    const target = { x: 0.5, y: 0.5, a: 0 };
+    const smooth = { x: 0.5, y: 0.5, a: 0 };
+    const onMove = (e: PointerEvent) => {
+      const r = ctn.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width;
+      const y = 1 - (e.clientY - r.top) / r.height;
+      const inside = x >= 0 && x <= 1 && y >= 0 && y <= 1;
+      if (inside) {
+        target.x = x;
+        target.y = y;
+      }
+      target.a = inside ? 1 : 0;
+    };
+    if (mouseInteraction) window.addEventListener('pointermove', onMove, { passive: true });
+
+    let raf = 0;
+    let visible = true;
+    new IntersectionObserver((es) => {
+      visible = es.some((e) => e.isIntersecting);
+      if (visible && !raf) raf = requestAnimationFrame(frame);
+    }).observe(ctn);
+
+    function frame(t: number) {
+      raf = 0;
+      if (!reduce) {
+        gl!.uniform1f(u.uTime, t * 0.001);
+        gl!.uniform1f(u.uStarSpeed, (t * 0.001 * starSpeed) / 10);
+      }
+      smooth.x += (target.x - smooth.x) * 0.05;
+      smooth.y += (target.y - smooth.y) * 0.05;
+      smooth.a += (target.a - smooth.a) * 0.05;
+      gl!.uniform2f(u.uMouse, smooth.x, smooth.y);
+      gl!.uniform1f(u.uMouseActiveFactor, smooth.a);
+      gl!.clear(gl!.COLOR_BUFFER_BIT);
+      gl!.drawArrays(gl!.TRIANGLES, 0, 3);
+      if (visible && !document.hidden) raf = requestAnimationFrame(frame);
+    }
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && visible && !raf) raf = requestAnimationFrame(frame);
+    });
+    raf = requestAnimationFrame(frame);
+    return true;
+  }
+
   /* ---------- Hero starfield: the design's canvas-2D Galaxy fallback ---------- */
   function starfield(ctn: HTMLElement) {
     const o = {
       palette: ['#6F6BD6', '#9A5FB4', '#D65F7A'],
       paletteLighten: 0.72,
-      density: 2.8,
+      density: 1.5,
       starSpeed: 0.5,
       speed: 1,
       twinkleIntensity: 0.3,
@@ -353,8 +787,24 @@ const tracks = [
     });
     raf = requestAnimationFrame(frame);
   }
+  // Exact props from the source's <Galaxy> usage in SpaceCohort (BuildspacePage.jsx). The WebGL
+  // shader is the real hero; the canvas-2D version only runs when WebGL truly isn't available --
+  // same fallback boundary the source component draws itself.
   const galaxy = document.querySelector<HTMLElement>('[data-galaxy]');
-  if (galaxy) starfield(galaxy);
+  if (galaxy) {
+    const ok = galaxyWebGL(galaxy, {
+      mouseRepulsion: true,
+      mouseInteraction: true,
+      repulsionStrength: 0.6,
+      density: 1.5,
+      glowIntensity: 0.5,
+      saturation: 0.8,
+      hueShift: 240,
+      palette: ['#6F6BD6', '#9A5FB4', '#D65F7A'],
+      paletteLighten: 0.72,
+    });
+    if (!ok) starfield(galaxy);
+  }
 
   /* ---------- Explode easter egg (ui_kits/buildspace/Explode.jsx) ---------- */
   function explode(wrap: HTMLElement, clicksNeeded = 3, overflowTop = 240) {
@@ -415,7 +865,16 @@ const tracks = [
           const b = P(i + 1, j);
           const c = P(i + 1, j + 1);
           const d = P(i, j + 1);
-          const tris = (i + j) % 2 ? [[a, b, c], [a, c, d]] : [[a, b, d], [b, c, d]];
+          const tris =
+            (i + j) % 2
+              ? [
+                  [a, b, c],
+                  [a, c, d],
+                ]
+              : [
+                  [a, b, d],
+                  [b, c, d],
+                ];
           for (const t of tris) {
             const cx = (t[0][0] + t[1][0] + t[2][0]) / 3;
             const cy = (t[0][1] + t[1][1] + t[2][1]) / 3;
@@ -469,10 +928,16 @@ const tracks = [
         }
         layer.remove();
         block.style.visibility = '';
-        block.animate([{ opacity: 0, transform: 'scale(0.96)' }, { opacity: 1, transform: 'none' }], {
-          duration: 700,
-          easing: 'cubic-bezier(.2,.8,.2,1)',
-        });
+        block.animate(
+          [
+            { opacity: 0, transform: 'scale(0.96)' },
+            { opacity: 1, transform: 'none' },
+          ],
+          {
+            duration: 700,
+            easing: 'cubic-bezier(.2,.8,.2,1)',
+          },
+        );
         busy = false;
       };
       requestAnimationFrame(tick);
@@ -483,15 +948,6 @@ const tracks = [
 </script>
 
 <style is:global>
-  @keyframes bs-pulse {
-    0%,
-    100% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.09);
-    }
-  }
   @keyframes bs-spin {
     to {
       transform: rotate(360deg);
@@ -578,32 +1034,67 @@ const tracks = [
     width: 0.4em;
     height: 0.4em;
   }
+  /* Re-synced from the cseed Design System's latest BuildspacePage.jsx: flexible headline
+     column + a fixed 560px copy column, bottom-aligned. */
   .bs-intro {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    column-gap: 160px;
-    margin-top: 130px;
-  }
-  .bs-lead {
-    font-size: 40px;
-    line-height: 1.4;
+    grid-template-columns: minmax(0, 1fr) 560px;
+    column-gap: 120px;
+    align-items: end;
+    margin-top: 40px;
   }
   .bs-intro-right {
     display: flex;
     flex-direction: column;
-    gap: 40px;
+    gap: 30px;
+    padding-bottom: 24px;
+  }
+  .bs-intro-copy {
+    font-size: 36px;
+    line-height: 1.4;
   }
   .bs-motto {
     margin: 0;
     font: italic 400 44px/1.2 var(--font-display);
     color: var(--cseed-ink);
   }
-  .bs-motto span {
+  .bs-motto-highlight {
     padding: 0 8px;
     margin: 0 -8px;
-    background: linear-gradient(transparent 50%, var(--cseed-sun) 50%, var(--cseed-sun) 92%, transparent 92%);
-    box-decoration-break: clone;
-    -webkit-box-decoration-break: clone;
+    background: linear-gradient(
+      transparent 50%,
+      var(--cseed-sun) 50%,
+      var(--cseed-sun) 92%,
+      transparent 92%
+    );
+  }
+
+  /* Scattered polaroid photo collage, straight from the design's absolute layout. */
+  .bs-photo-collage {
+    position: relative;
+    height: 820px;
+    margin-top: 70px;
+  }
+  .bs-photo-frame {
+    padding: 18px;
+    background: var(--cseed-white);
+    box-shadow:
+      0 14px 34px -16px rgba(40, 34, 20, 0.28),
+      0 2px 6px rgba(40, 34, 20, 0.06);
+  }
+  .bs-photo-img {
+    display: block;
+    object-fit: cover;
+  }
+  .bs-photo-slot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px dashed var(--cseed-ink-soft);
+  }
+  .bs-photo-slot span {
+    font: 400 18px/1 var(--font-mono);
+    color: var(--cseed-ink-soft);
   }
   .bs-details {
     display: grid;
@@ -612,9 +1103,32 @@ const tracks = [
     margin-top: 180px;
   }
   .bs-detail {
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: 26px;
+    transform: translateY(0);
+    transition: transform 500ms var(--ease-soft);
+  }
+  .bs-detail.is-highlighted {
+    transform: translateY(-16px);
+  }
+  /* The auto-cycling yellow box behind the highlighted tile -- bleeds past the text on
+     every side, sits behind it (z-index -1), and never affects layout/gaps. */
+  .bs-detail-highlight {
+    position: absolute;
+    inset: -20px -24px -26px;
+    z-index: -1;
+    background: var(--cseed-sun);
+    opacity: 0;
+    transform: scale(0.94);
+    transition:
+      opacity 450ms var(--ease-soft),
+      transform 450ms var(--ease-soft);
+  }
+  .bs-detail.is-highlighted .bs-detail-highlight {
+    opacity: 1;
+    transform: scale(1);
   }
   .bs-detail-title {
     font: 400 48px/1 var(--font-display);
@@ -649,13 +1163,13 @@ const tracks = [
     text-transform: uppercase;
     letter-spacing: 0.01em;
   }
-  /* Cutout stands on the block's bottom edge (design: right 80, bottom 0). This photo is
-     landscape, so it's sized to clear the heading rather than the design's 760px height. */
+  /* Cutout stands on the block's bottom edge (right 80, bottom 0), at the design's own
+     760px height -- tall enough that it rises up out of the yellow block on purpose. */
   .bs-cutout {
     position: absolute;
     right: 80px;
     bottom: 0;
-    height: 560px;
+    height: 760px;
     width: auto;
     max-width: none;
     display: block;
@@ -721,12 +1235,6 @@ const tracks = [
   .bs-track[data-kind='xra'] .bs-track-icon:hover .bs-spin-8 {
     animation-play-state: running;
   }
-  .bs-track[data-kind='xra'] .bs-track-idle {
-    animation: bs-pulse 1.8s ease-in-out infinite;
-  }
-  .bs-track[data-kind='xra'] .bs-track-icon.was-hovered .bs-track-idle {
-    animation: none;
-  }
   .bs-track-note {
     position: absolute;
     left: calc(var(--x) + 22px);
@@ -762,20 +1270,6 @@ const tracks = [
     text-transform: uppercase;
     text-align: center;
   }
-  .bs-track-new {
-    position: absolute;
-    right: 0;
-    top: -30px;
-    z-index: 5;
-    pointer-events: none;
-    font: 400 34px/1 var(--font-hand);
-    letter-spacing: 0.05em;
-    color: var(--cseed-ink);
-    transform: rotate(10deg);
-    padding: 0 10px;
-    background: linear-gradient(transparent 50%, var(--cseed-seed) 50%, var(--cseed-seed) 90%, transparent 90%);
-  }
-
   /* projects */
   .bs-projects {
     display: grid;
