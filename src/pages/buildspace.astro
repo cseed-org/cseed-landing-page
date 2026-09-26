@@ -228,6 +228,8 @@ const tracks = [
 
 <script>
   document.querySelectorAll<HTMLElement>('[data-track-hover]').forEach((el) => {
+    // The extended reality pulse is a "hover me" hint; once hovered, it stays still.
+    el.addEventListener('mouseenter', () => el.classList.add('was-hovered'), { once: true });
     el.addEventListener('mousemove', (e) => {
       const r = el.getBoundingClientRect();
       const z = r.width / el.offsetWidth || 1;
@@ -438,7 +440,7 @@ const tracks = [
   .bs-track[data-kind='xra'] .bs-track-idle {
     animation: bs-pulse 1.8s ease-in-out infinite;
   }
-  .bs-track[data-kind='xra'] .bs-track-icon:hover .bs-track-idle {
+  .bs-track[data-kind='xra'] .bs-track-icon.was-hovered .bs-track-idle {
     animation: none;
   }
   .bs-track-note {
