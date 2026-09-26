@@ -5,10 +5,17 @@ import Rule from '../components/core/Rule.astro';
 import TextLink from '../components/core/TextLink.astro';
 import TrackIcon from '../components/buildspace/TrackIcon.astro';
 
+const facts = [
+  ['duration', '6 weeks'],
+  ['Priority Application Deadline', 'October 7th, 2026'],
+  ['Final Application Deadline', 'October 9th, 2026'],
+];
+
 const details = [
-  ['format', 'Six weeks, one build night a week, in person.'],
-  ['who it is for', 'Anyone with an idea they have not started yet.'],
-  ['what you leave with', 'Something you made, and people who watched you make it.'],
+  ['six weeks', 'One build night a week, in person, start to demo.'],
+  ['new skills', 'Learn by making, with mentors in the room.'],
+  ['real connections', 'People who think differently than you, building next to you.'],
+  ['the gear', 'Access to the software and hardware you need to try it.'],
 ];
 
 const projects: [string, string, string, number][] = [
@@ -20,62 +27,20 @@ const projects: [string, string, string, number][] = [
   ['potluck', 'Plan shared dinners without the group chat chaos.', 'Ruby Clarke', 3],
 ];
 
-// Same seeded starfield as the source: three box-shadow layers of 1px stars.
-const stars = (() => {
-  let s = 11;
-  const r = () => {
-    s = (s * 9301 + 49297) % 233280;
-    return s / 233280;
-  };
-  const layer = (n: number, size: number, a: number) =>
-    Array.from(
-      { length: n },
-      () => `${Math.round(r() * 2083)}px ${Math.round(r() * 1500)}px 0 ${size}px rgba(255,255,255,${a})`,
-    ).join(',');
-  return [layer(220, 0, 0.55), layer(90, 0.6, 0.8), layer(24, 1.2, 1)];
-})();
-
-const rings = [
-  { d: 1100, dur: 140, dot: 0, color: 'transparent', reverse: false },
-  { d: 780, dur: 90, dot: 12, color: 'var(--cseed-white)', reverse: true },
-  { d: 480, dur: 48, dot: 22, color: 'var(--cseed-sun)', reverse: false },
-];
-
+// `dot` is where each track's orbit dot sits, in degrees clockwise from the top.
 const tracks = [
-  { kind: 'hardware', label: 'hardware', ring: '#B45CE0', orbit: 55 },
-  { kind: 'software', label: 'software', ring: '#16A36F', orbit: 215 },
-  { kind: 'xra', label: 'extended reality', ring: '#2F5BFF', note: 'build with computer vision, AR and VR', orbit: 320 },
-  { kind: 'wildcard', label: 'wildcard', ring: '#E0A800', orbit: 140 },
-  { kind: 'creatives', label: 'creatives', ring: '#FF0066', orbit: 265 },
+  { kind: 'hardware', label: 'hardware', ring: '#B45CE0', dot: 215 },
+  { kind: 'software', label: 'software', ring: '#16A36F', dot: 35 },
+  { kind: 'xra', label: 'extended reality', ring: '#2F5BFF', dot: 0, note: 'build with computer vision, AR and VR' },
+  { kind: 'wildcard', label: 'wildcard', ring: '#E0A800', dot: 290 },
+  { kind: 'creatives', label: 'creatives', ring: '#FF0066', dot: 140 },
 ] as const;
 ---
 
 <PageLayout title="buildspace — cseed">
   <section class="bs-space" id="cohort">
-    {
-      stars.map((sh, i) => (
-        <div
-          class="bs-stars"
-          style={`box-shadow:${sh}; ${i ? `animation:bs-twinkle ${5 + i * 3}s ease-in-out infinite alternate` : ''}`}
-        />
-      ))
-    }
-    <div class="bs-orbits">
-      {
-        rings.map((ring) => (
-          <div
-            class="bs-ring"
-            style={`width:${ring.d}px; height:${ring.d}px; margin-left:${-ring.d / 2}px; margin-top:${-ring.d / 2}px; animation:bs-orbit ${ring.dur}s linear infinite${ring.reverse ? ' reverse' : ''}`}
-          >
-            <div
-              class="bs-ring-dot"
-              style={`top:${-ring.dot / 2}px; width:${ring.dot}px; height:${ring.dot}px; margin-left:${-ring.dot / 2}px; background:${ring.color}; box-shadow:0 0 ${ring.dot * 2}px ${ring.color}`}
-            />
-          </div>
-        ))
-      }
-      <div class="bs-sun"></div>
-    </div>
+    <div class="bs-galaxy" data-galaxy aria-hidden="true"></div>
+    <div class="bs-space-vignette" aria-hidden="true"></div>
     <div class="bs-space-copy">
       <Reveal delay={150}>
         <h2 class="t-serif" style="font-size:240px; color:var(--cseed-white)">join<br />cohort 6.</h2>
@@ -88,13 +53,9 @@ const tracks = [
       <Reveal delay={450}>
         <div class="bs-cohort-facts">
           {
-            [
-              ['duration', '6 weeks'],
-              ['applications', 'open now'],
-              ['launch', 'date tbd'],
-            ].map(([k, v]) => (
+            facts.map(([k, v]) => (
               <div class="bs-cohort-fact">
-                <span class="bs-mono" style="font-size:18px; opacity:0.7">
+                <span class="bs-mono" style="font-size:18px; opacity:0.75">
                   {k}
                 </span>
                 <span class="bs-mono" style="font-size:30px">
@@ -121,16 +82,32 @@ const tracks = [
   </section>
 
   <section class="bs-section">
-    <Reveal><div class="t-eyebrow">01 / the six-week cohort</div></Reveal>
+    <Reveal><div class="t-eyebrow">buildspace</div></Reveal>
+    <Reveal delay={120}>
+      <h1 class="t-serif" style="font-size:200px; margin-top:40px">
+        What do you <span class="bs-dream"
+          >dream<svg viewBox="-50 -50 100 100" aria-hidden="true"
+            ><path
+              d="M0 -48 C 5 -12, 12 -5, 48 0 C 12 5, 5 12, 0 48 C -5 12, -12 5, -48 0 C -12 -5, -5 -12, 0 -48 Z"
+              fill="#E0636F"></path></svg
+          ></span
+        ><br />of making?
+      </h1>
+    </Reveal>
     <div class="bs-intro">
-      <Reveal delay={120}><h1 class="t-serif" style="font-size:240px">buildspace</h1></Reveal>
-      <Reveal delay={240}>
-        <div style="display:flex; flex-direction:column; gap:44px; padding-bottom:30px">
-          <p class="bs-body" style="white-space:pre-line">
-            {
-              'Learn new skills, make connections,\nand build with mentor support and\naccess to software and hardware.\nDesigners, artists, engineers,\nentrepreneurs, visionaries, and\npeople with good vibes.\nAll experience levels welcome.'
-            }
+      <Reveal delay={200}>
+        <p class="bs-body bs-lead">
+          Maybe it’s useful. Maybe it’s weird. Maybe it’s still just a half-formed thought you keep coming back to.
+        </p>
+      </Reveal>
+      <Reveal delay={320}>
+        <div class="bs-intro-right">
+          <p class="bs-body bs-lead">Buildspace is a place to follow that thought.</p>
+          <p class="bs-body">
+            Meet people who think differently than you. Learn new skills. Get guidance from mentors. Find the resources
+            to try something you’ve never made before.
           </p>
+          <p class="bs-motto"><span>Build things that don’t scale.</span></p>
         </div>
       </Reveal>
     </div>
@@ -140,8 +117,8 @@ const tracks = [
           <Reveal delay={i * 120}>
             <div class="bs-detail">
               <Rule width="100%" weight={1} animate delay={i * 120} />
-              <div class="t-eyebrow">{k}</div>
-              <p class="bs-body" style="font-size:30px">
+              <div class="bs-detail-title">{k}</div>
+              <p class="bs-body" style="font-size:26px">
                 {v}
               </p>
             </div>
@@ -150,6 +127,19 @@ const tracks = [
       }
     </div>
   </section>
+
+  <!-- Easter egg: click the block three times and it shatters, then reassembles. -->
+  <div class="bs-explode" data-explode>
+    <section class="bs-explode-block" data-explode-block>
+      <div class="bs-explode-copy">
+        <Reveal><h2 class="t-serif" style="font-size:130px">Experimenting<br />is empowering.</h2></Reveal>
+        <Reveal delay={150}><div class="bs-explode-tag">Explore. Experiment. Explode.</div></Reveal>
+      </div>
+      <div class="bs-cutout" role="img" aria-label="A cseed member presenting a hardware project">
+        <span>cutout photo</span>
+      </div>
+    </section>
+  </div>
 
   <section class="bs-section">
     <div class="bs-head" style="margin-bottom:140px">
@@ -163,8 +153,10 @@ const tracks = [
             <div class="bs-track" data-kind={t.kind}>
               <div class="bs-track-icon" data-track-hover>
                 <div class="bs-track-ring" style={`border-color:${t.ring}`} />
-                <div class="bs-track-orbit bs-spin-5" style={`animation-delay:${-(t.orbit / 360) * 5}s`}>
-                  <div class="bs-track-orbit-dot" style={`background:${t.ring}`} />
+                <div class="bs-track-orbit" style={`transform:rotate(${t.dot}deg)`}>
+                  <div class="bs-track-orbit bs-spin-5">
+                    <div class="bs-track-orbit-dot" style={`background:${t.ring}`} />
+                  </div>
                 </div>
                 <div class="bs-track-idle">
                   <div class="bs-spin-8">
@@ -227,6 +219,9 @@ const tracks = [
 </PageLayout>
 
 <script>
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- Track hover: cursor-following note, one-time xra pulse ---------- */
   document.querySelectorAll<HTMLElement>('[data-track-hover]').forEach((el) => {
     // The extended reality pulse is a "hover me" hint; once hovered, it stays still.
     el.addEventListener('mouseenter', () => el.classList.add('was-hovered'), { once: true });
@@ -237,22 +232,254 @@ const tracks = [
       el.style.setProperty('--y', `${(e.clientY - r.top) / z}px`);
     });
   });
+
+  /* ---------- Hero starfield: the design's canvas-2D Galaxy fallback ---------- */
+  function starfield(ctn: HTMLElement) {
+    const o = {
+      palette: ['#6F6BD6', '#9A5FB4', '#D65F7A'],
+      paletteLighten: 0.72,
+      density: 1.5,
+      starSpeed: 0.5,
+      speed: 1,
+      twinkleIntensity: 0.3,
+      rotationSpeed: 0.1,
+      repulsionStrength: 0.6,
+      glowIntensity: 0.5,
+    };
+    const canvas = document.createElement('canvas');
+    canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;display:block';
+    ctn.appendChild(canvas);
+    const ctx = canvas.getContext('2d')!;
+    const pal = o.palette.map((h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16)));
+    const L = o.paletteLighten;
+    const col = (t: number) => {
+      const [a, b] = t < 0.5 ? [pal[0], pal[1]] : [pal[1], pal[2]];
+      const f = t < 0.5 ? t * 2 : t * 2 - 1;
+      return a.map((v, i) => Math.round((v + (b[i] - v) * f) * (1 - L) + 255 * L));
+    };
+    type Star = { a: number; r: number; z: number; s: number; c: number[]; ph: number };
+    let W = 0;
+    let H = 0;
+    let stars: Star[] = [];
+    const build = () => {
+      W = ctn.offsetWidth;
+      H = ctn.offsetHeight;
+      canvas.width = W;
+      canvas.height = H;
+      const n = Math.round(((W * H) / 2600) * o.density);
+      stars = Array.from({ length: n }, () => ({
+        a: Math.random() * Math.PI * 2,
+        r: Math.sqrt(Math.random()),
+        z: Math.random(),
+        s: Math.random(),
+        c: col(Math.random()),
+        ph: Math.random() * 6.283,
+      }));
+    };
+    build();
+    new ResizeObserver(build).observe(ctn);
+
+    const m = { x: 0, y: 0, a: 0, ta: 0 };
+    window.addEventListener(
+      'pointermove',
+      (e) => {
+        const r = ctn.getBoundingClientRect();
+        const z = r.width / W || 1;
+        m.x = (e.clientX - r.left) / z;
+        m.y = (e.clientY - r.top) / z;
+        m.ta = m.x >= 0 && m.y >= 0 && m.x <= W && m.y <= H ? 1 : 0;
+      },
+      { passive: true },
+    );
+
+    let raf = 0;
+    let visible = true;
+    const t0 = performance.now();
+    new IntersectionObserver((es) => {
+      visible = es.some((e) => e.isIntersecting);
+      if (visible && !raf) raf = requestAnimationFrame(frame);
+    }).observe(ctn);
+
+    function frame(now: number) {
+      raf = 0;
+      const t = reduceMotion ? 0 : (now - t0) / 1000;
+      m.a += (m.ta - m.a) * 0.05;
+      ctx.clearRect(0, 0, W, H);
+      const cx = W / 2;
+      const cy = H / 2;
+      const R = Math.hypot(cx, cy);
+      const rot = t * o.rotationSpeed * 0.5;
+      for (const s of stars) {
+        const depth = (s.z + t * o.starSpeed * o.speed * 0.02) % 1;
+        const rr = s.r * R * (0.35 + depth * 0.9);
+        let x = cx + Math.cos(s.a + rot) * rr;
+        let y = cy + Math.sin(s.a + rot) * rr;
+        if (m.a > 0.01) {
+          const dx = x - m.x;
+          const dy = y - m.y;
+          const d = Math.hypot(dx, dy) || 1;
+          const p = ((o.repulsionStrength * 60) / (d / 100 + 0.4)) * m.a;
+          x += (dx / d) * Math.min(p, 120);
+          y += (dy / d) * Math.min(p, 120);
+        }
+        const fade = depth * Math.min(1, (1 - depth) * 10);
+        const tw = 1 - o.twinkleIntensity * 0.5 * (1 + Math.sin(t * 2 + s.ph));
+        const al = fade * tw;
+        if (al < 0.02) continue;
+        const size = (0.4 + s.s * s.s * 1.8) * (0.5 + depth);
+        const [r, g, b] = s.c;
+        ctx.fillStyle = `rgba(${r},${g},${b},${al})`;
+        ctx.beginPath();
+        ctx.arc(x, y, size, 0, 6.283);
+        ctx.fill();
+        if (s.s > 0.93) {
+          const fl = size * 9 * o.glowIntensity * 2;
+          ctx.fillStyle = `rgba(${r},${g},${b},${al * 0.14})`;
+          ctx.beginPath();
+          ctx.arc(x, y, size * 3.2, 0, 6.283);
+          ctx.fill();
+          ctx.fillStyle = `rgba(${r},${g},${b},${al * 0.55})`;
+          ctx.fillRect(x - fl, y - 0.5, fl * 2, 1);
+          ctx.fillRect(x - 0.5, y - fl, 1, fl * 2);
+        }
+      }
+      if (visible && !document.hidden && !reduceMotion) raf = requestAnimationFrame(frame);
+    }
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && visible && !raf) raf = requestAnimationFrame(frame);
+    });
+    raf = requestAnimationFrame(frame);
+  }
+  const galaxy = document.querySelector<HTMLElement>('[data-galaxy]');
+  if (galaxy) starfield(galaxy);
+
+  /* ---------- Explode easter egg (ui_kits/buildspace/Explode.jsx) ---------- */
+  function explode(wrap: HTMLElement, clicksNeeded = 3, overflowTop = 240) {
+    const block = wrap.querySelector<HTMLElement>('[data-explode-block]')!;
+    let clicks = 0;
+    let busy = false;
+
+    block.addEventListener('click', (e) => {
+      if (busy) return;
+      clicks += 1;
+      if (clicks < clicksNeeded) {
+        const a = 3 + clicks * 3;
+        block.animate(
+          [
+            { transform: 'none' },
+            { transform: `translate(${-a}px, ${a * 0.4}px) rotate(-0.4deg)` },
+            { transform: `translate(${a}px, ${-a * 0.3}px) rotate(0.5deg)` },
+            { transform: `translate(${-a * 0.5}px, 0)` },
+            { transform: 'none' },
+          ],
+          { duration: 360, easing: 'ease-out' },
+        );
+        return;
+      }
+      clicks = 0;
+      busy = true;
+
+      const W = block.offsetWidth;
+      const H = block.offsetHeight;
+      const r = block.getBoundingClientRect();
+      const z = r.width / W || 1;
+      const ox = (e.clientX - r.left) / z;
+      const oy = (e.clientY - r.top) / z;
+      const cols = 8;
+      const rows = 6;
+      const top = -overflowTop;
+      const cw = W / cols;
+      const ch = (H - top) / rows;
+      const pts: number[][] = [];
+      for (let j = 0; j <= rows; j++)
+        for (let i = 0; i <= cols; i++) {
+          const edge = i === 0 || j === 0 || i === cols || j === rows;
+          pts.push([
+            i * cw + (edge ? 0 : (Math.random() - 0.5) * cw * 0.7),
+            top + j * ch + (edge ? 0 : (Math.random() - 0.5) * ch * 0.7),
+          ]);
+        }
+      const P = (i: number, j: number) => pts[j * (cols + 1) + i];
+
+      const layer = document.createElement('div');
+      layer.setAttribute('aria-hidden', 'true');
+      layer.style.cssText = `position:absolute;left:0;top:0;width:${W}px;height:${H}px;pointer-events:none;z-index:20`;
+      const pieces: { el: HTMLElement; vx: number; vy: number; vr: number; vz: number }[] = [];
+
+      for (let j = 0; j < rows; j++)
+        for (let i = 0; i < cols; i++) {
+          const a = P(i, j);
+          const b = P(i + 1, j);
+          const c = P(i + 1, j + 1);
+          const d = P(i, j + 1);
+          const tris = (i + j) % 2 ? [[a, b, c], [a, c, d]] : [[a, b, d], [b, c, d]];
+          for (const t of tris) {
+            const cx = (t[0][0] + t[1][0] + t[2][0]) / 3;
+            const cy = (t[0][1] + t[1][1] + t[2][1]) / 3;
+            const dx = cx - ox;
+            const dy = cy - oy;
+            const dist = Math.hypot(dx, dy) || 1;
+            const force = 900 + 1400 * Math.exp(-dist / 500) + Math.random() * 500;
+            const el = document.createElement('div');
+            el.style.cssText = `position:absolute;left:0;top:0;width:${W}px;height:${H}px;will-change:transform,opacity;transform-origin:${cx}px ${cy}px;clip-path:polygon(${t.map(([x, y]) => `${x}px ${y}px`).join(',')})`;
+            const copy = block.cloneNode(true) as HTMLElement;
+            copy.removeAttribute('data-explode-block');
+            copy.style.cssText = 'position:absolute;inset:0;margin:0;visibility:visible';
+            copy.querySelectorAll('[data-reveal]').forEach((n) => {
+              n.classList.add('is-shown');
+              (n as HTMLElement).style.transition = 'none';
+            });
+            el.append(copy);
+            layer.append(el);
+            pieces.push({
+              el,
+              vx: (dx / dist) * force,
+              vy: (dy / dist) * force - 700 - Math.random() * 500,
+              vr: (Math.random() - 0.5) * 720,
+              vz: Math.random() * 0.6,
+            });
+          }
+        }
+
+      wrap.append(layer);
+      block.style.visibility = 'hidden';
+
+      const DUR = reduceMotion ? 0.6 : 1.9;
+      const G = 2600;
+      let start: number | null = null;
+      const tick = (now: number) => {
+        if (start == null) start = now;
+        const t = (now - start) / 1000;
+        for (const p of pieces) {
+          if (reduceMotion) {
+            p.el.style.opacity = String(Math.max(0, 1 - t / DUR));
+            continue;
+          }
+          const x = p.vx * t;
+          const y = p.vy * t + 0.5 * G * t * t;
+          p.el.style.transform = `translate(${x}px, ${y}px) rotate(${p.vr * t}deg) scale(${1 - p.vz * Math.min(1, t)})`;
+          p.el.style.opacity = String(Math.max(0, 1 - Math.max(0, t - 1.1) / (DUR - 1.1)));
+        }
+        if (t < DUR) {
+          requestAnimationFrame(tick);
+          return;
+        }
+        layer.remove();
+        block.style.visibility = '';
+        block.animate([{ opacity: 0, transform: 'scale(0.96)' }, { opacity: 1, transform: 'none' }], {
+          duration: 700,
+          easing: 'cubic-bezier(.2,.8,.2,1)',
+        });
+        busy = false;
+      };
+      requestAnimationFrame(tick);
+    });
+  }
+  const explodeWrap = document.querySelector<HTMLElement>('[data-explode]');
+  if (explodeWrap) explode(explodeWrap);
 </script>
 
 <style is:global>
-  @keyframes bs-orbit {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-  @keyframes bs-twinkle {
-    from {
-      opacity: 1;
-    }
-    to {
-      opacity: 0.35;
-    }
-  }
   @keyframes bs-pulse {
     0%,
     100% {
@@ -282,54 +509,29 @@ const tracks = [
     text-transform: uppercase;
   }
 
+  /* hero */
   .bs-space {
     position: relative;
     height: 1500px;
     overflow: hidden;
     color: var(--cseed-white);
+    background: #000;
+  }
+  .bs-galaxy {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .bs-space-vignette {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
     background: radial-gradient(
-      ellipse 70% 60% at 72% 48%,
-      oklch(0.26 0.06 270) 0%,
-      oklch(0.14 0.03 270) 45%,
-      oklch(0.08 0.01 270) 100%
+      ellipse 55% 60% at 22% 52%,
+      rgba(0, 0, 0, 0.78) 0%,
+      rgba(0, 0, 0, 0.5) 55%,
+      rgba(0, 0, 0, 0) 100%
     );
-  }
-  .bs-stars {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 1px;
-    height: 1px;
-    border-radius: 50%;
-  }
-  .bs-orbits {
-    position: absolute;
-    left: 1500px;
-    top: 750px;
-    width: 0;
-    height: 0;
-  }
-  .bs-ring {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.14);
-  }
-  .bs-ring-dot {
-    position: absolute;
-    left: 50%;
-    border-radius: 50%;
-  }
-  .bs-sun {
-    position: absolute;
-    left: -60px;
-    top: -60px;
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, oklch(0.93 0.14 95), var(--cseed-sun) 45%, oklch(0.6 0.12 70));
-    box-shadow: 0 0 120px oklch(0.85 0.15 90 / 0.45);
   }
   .bs-space-copy {
     position: relative;
@@ -340,7 +542,7 @@ const tracks = [
   }
   .bs-cohort-facts {
     display: grid;
-    grid-template-columns: repeat(3, 250px);
+    grid-template-columns: 220px 420px 420px;
     gap: 50px;
     margin-top: 110px;
   }
@@ -352,26 +554,68 @@ const tracks = [
     padding-top: 22px;
   }
 
+  /* intro */
   .bs-section {
     padding: 240px 100px 0;
   }
+  .bs-dream {
+    position: relative;
+    display: inline-block;
+    font-style: italic;
+    padding: 0 0.08em 0.06em 0.02em;
+    background: linear-gradient(90deg, #6f6bd6 0%, #9a5fb4 50%, #d65f7a 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .bs-dream svg {
+    position: absolute;
+    right: -0.32em;
+    top: -0.12em;
+    width: 0.4em;
+    height: 0.4em;
+  }
   .bs-intro {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    column-gap: 120px;
-    align-items: end;
-    margin-top: 40px;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 160px;
+    margin-top: 130px;
+  }
+  .bs-lead {
+    font-size: 40px;
+    line-height: 1.4;
+  }
+  .bs-intro-right {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+  .bs-motto {
+    margin: 0;
+    font: italic 400 44px/1.2 var(--font-display);
+    color: var(--cseed-ink);
+  }
+  .bs-motto span {
+    padding: 0 8px;
+    margin: 0 -8px;
+    background: linear-gradient(transparent 50%, var(--cseed-sun) 50%, var(--cseed-sun) 92%, transparent 92%);
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
   }
   .bs-details {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 80px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 60px;
     margin-top: 180px;
   }
   .bs-detail {
     display: flex;
     flex-direction: column;
-    gap: 30px;
+    gap: 26px;
+  }
+  .bs-detail-title {
+    font: 400 48px/1 var(--font-display);
+    letter-spacing: -0.03em;
   }
   .bs-head {
     display: flex;
@@ -379,6 +623,49 @@ const tracks = [
     gap: 34px;
   }
 
+  /* "Experimenting is empowering." */
+  .bs-explode {
+    position: relative;
+    margin: 340px 100px 0;
+  }
+  .bs-explode-block {
+    position: relative;
+    background: var(--cseed-sun);
+    padding: 130px 100px 140px;
+    min-height: 620px;
+    box-sizing: border-box;
+  }
+  .bs-explode-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+    max-width: 1000px;
+  }
+  .bs-explode-tag {
+    font: italic 700 40px/1 var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+  }
+  /* Placeholder for assets/buildspace-experiment-cutout-v3.png (873x860), drawn at 760px tall. */
+  .bs-cutout {
+    position: absolute;
+    right: 80px;
+    bottom: 0;
+    height: 760px;
+    width: 772px;
+    border: 1px dashed var(--cseed-ink-soft);
+    border-bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+  .bs-cutout span {
+    font: 400 18px/1 var(--font-mono);
+    color: var(--cseed-ink-soft);
+  }
+
+  /* tracks */
   .bs-tracks {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -492,6 +779,7 @@ const tracks = [
     background: linear-gradient(transparent 50%, var(--cseed-seed) 50%, var(--cseed-seed) 90%, transparent 90%);
   }
 
+  /* projects */
   .bs-projects {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
