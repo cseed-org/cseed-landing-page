@@ -238,7 +238,7 @@ const tracks = [
     const o = {
       palette: ['#6F6BD6', '#9A5FB4', '#D65F7A'],
       paletteLighten: 0.72,
-      density: 1.5,
+      density: 2.8,
       starSpeed: 0.5,
       speed: 1,
       twinkleIntensity: 0.3,
@@ -324,9 +324,9 @@ const tracks = [
         }
         const fade = depth * Math.min(1, (1 - depth) * 10);
         const tw = 1 - o.twinkleIntensity * 0.5 * (1 + Math.sin(t * 2 + s.ph));
-        const al = fade * tw;
+        const al = Math.min(1, fade * tw * 1.5);
         if (al < 0.02) continue;
-        const size = (0.4 + s.s * s.s * 1.8) * (0.5 + depth);
+        const size = (0.55 + s.s * s.s * 2.1) * (0.5 + depth);
         const [r, g, b] = s.c;
         ctx.fillStyle = `rgba(${r},${g},${b},${al})`;
         ctx.beginPath();
