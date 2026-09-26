@@ -42,11 +42,11 @@ const rings = [
 ];
 
 const tracks = [
-  { kind: 'hardware', label: 'hardware', ring: '#B45CE0' },
-  { kind: 'software', label: 'software', ring: '#16A36F' },
-  { kind: 'xra', label: 'extended reality', ring: '#2F5BFF', note: 'build with computer vision, AR and VR' },
-  { kind: 'wildcard', label: 'wildcard', ring: '#E0A800' },
-  { kind: 'creatives', label: 'creatives', ring: '#FF0066' },
+  { kind: 'hardware', label: 'hardware', ring: '#B45CE0', orbit: 55 },
+  { kind: 'software', label: 'software', ring: '#16A36F', orbit: 215 },
+  { kind: 'xra', label: 'extended reality', ring: '#2F5BFF', note: 'build with computer vision, AR and VR', orbit: 320 },
+  { kind: 'wildcard', label: 'wildcard', ring: '#E0A800', orbit: 140 },
+  { kind: 'creatives', label: 'creatives', ring: '#FF0066', orbit: 265 },
 ] as const;
 ---
 
@@ -161,7 +161,7 @@ const tracks = [
             <div class="bs-track" data-kind={t.kind}>
               <div class="bs-track-icon" data-track-hover>
                 <div class="bs-track-ring" style={`border-color:${t.ring}`} />
-                <div class="bs-track-orbit bs-spin-5">
+                <div class="bs-track-orbit bs-spin-5" style={`animation-delay:${-(t.orbit / 360) * 5}s`}>
                   <div class="bs-track-orbit-dot" style={`background:${t.ring}`} />
                 </div>
                 <div class="bs-track-idle">
