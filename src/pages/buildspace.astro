@@ -135,9 +135,13 @@ const tracks = [
         <Reveal><h2 class="t-serif" style="font-size:130px">Experimenting<br />is empowering.</h2></Reveal>
         <Reveal delay={150}><div class="bs-explode-tag">Explore. Experiment. Explode.</div></Reveal>
       </div>
-      <div class="bs-cutout" role="img" aria-label="A cseed member presenting a hardware project">
-        <span>cutout photo</span>
-      </div>
+      <img
+        class="bs-cutout"
+        src="/images/buildspace/experiment-cutout.webp"
+        alt="Two cseed members smiling together"
+        width="739"
+        height="474"
+      />
     </section>
   </div>
 
@@ -646,23 +650,17 @@ const tracks = [
     text-transform: uppercase;
     letter-spacing: 0.01em;
   }
-  /* Placeholder for assets/buildspace-experiment-cutout-v3.png (873x860), drawn at 760px tall. */
+  /* Cutout stands on the block's bottom edge (design: right 80, bottom 0). This photo is
+     landscape, so it's sized to clear the heading rather than the design's 760px height. */
   .bs-cutout {
     position: absolute;
     right: 80px;
     bottom: 0;
-    height: 760px;
-    width: 772px;
-    border: 1px dashed var(--cseed-ink-soft);
-    border-bottom: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    height: 560px;
+    width: auto;
+    max-width: none;
+    display: block;
     pointer-events: none;
-  }
-  .bs-cutout span {
-    font: 400 18px/1 var(--font-mono);
-    color: var(--cseed-ink-soft);
   }
 
   /* tracks */
