@@ -44,7 +44,7 @@ const units = ['days', 'hours', 'min', 'sec'];
     <div class="sa-facts">
       <div class="sa-fact">
         <span class="t-eyebrow" style="font-size:16px">when</span>
-        <span class="sa-fact-value" data-countdown-date>this saturday</span>
+        <span class="sa-fact-value">saturday, october 17</span>
       </div>
       <div class="sa-fact">
         <span class="t-eyebrow" style="font-size:16px">time</span>
@@ -52,7 +52,7 @@ const units = ['days', 'hours', 'min', 'sec'];
       </div>
       <div class="sa-fact">
         <span class="t-eyebrow" style="font-size:16px">where</span>
-        <span class="sa-fact-value">@ building</span>
+        <span class="sa-fact-value">@ tbd</span>
       </div>
     </div>
     <div class="sa-hand">just show up :)</div>
@@ -88,26 +88,17 @@ const units = ['days', 'hours', 'min', 'sec'];
 </PageLayout>
 
 <script>
-  function nextSaturday1pm(now: number) {
-    const d = new Date(now);
-    d.setHours(13, 0, 0, 0);
-    let add = (6 - d.getDay() + 7) % 7;
-    if (add === 0 && now > d.getTime() + 4 * 3600e3) add = 7;
-    d.setDate(d.getDate() + add);
-    return d;
-  }
+  // Next session: October 17, 1:00pm Seattle time.
+  const TARGET = new Date('2026-10-17T13:00:00-07:00').getTime();
 
   const root = document.querySelector('[data-countdown]');
   if (root) {
     const label = root.querySelector('[data-countdown-label]')!;
-    const date = root.querySelector('[data-countdown-date]')!;
     const cells = Object.fromEntries(
       [...root.querySelectorAll<HTMLElement>('[data-unit]')].map((el) => [el.dataset.unit, el]),
     );
     const tick = () => {
-      const now = Date.now();
-      const target = nextSaturday1pm(now);
-      const diff = Math.max(0, target.getTime() - now);
+      const diff = Math.max(0, TARGET - Date.now());
       const values: Record<string, number> = {
         days: Math.floor(diff / 864e5),
         hours: Math.floor(diff / 36e5) % 24,
@@ -116,8 +107,6 @@ const units = ['days', 'hours', 'min', 'sec'];
       };
       for (const [k, v] of Object.entries(values)) cells[k].textContent = String(v).padStart(2, '0');
       label.textContent = diff === 0 ? 'happening now' : 'join the next saturday';
-      const dateLabel = target.toLocaleDateString('en-US', { month: 'long', day: 'numeric' }).toLowerCase();
-      date.textContent = `this saturday, ${dateLabel}`;
     };
     tick();
     setInterval(tick, 1000);
