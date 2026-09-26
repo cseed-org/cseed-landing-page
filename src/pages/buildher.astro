@@ -1,0 +1,445 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import Reveal from '../components/core/Reveal.astro';
+import Rule from '../components/core/Rule.astro';
+import TextLink from '../components/core/TextLink.astro';
+import Lilypad from '../components/buildher/Lilypad.astro';
+
+const pillars = [
+  {
+    kind: 'community' as const,
+    title: 'networking & community',
+    body: 'Casual, fun events to meet women and non-binary builders across the community.',
+    tilt: -1.8,
+    photo: '/images/buildher/matcha4.webp',
+    alt: 'buildher members together at a social',
+  },
+  {
+    kind: 'building' as const,
+    title: 'building',
+    body: 'Hands-on sessions and workshops where you make something alongside people doing the same.',
+    tilt: 1.4,
+    photo: '/images/buildher/launchpad.webp',
+    alt: 'a hardware project being built at buildher',
+  },
+  {
+    kind: 'mentorship' as const,
+    title: 'mentorship',
+    body: 'Time with mentors who have been there, for the questions that do not fit in a workshop.',
+    tilt: -0.6,
+    photo: '/images/buildher/mochi.webp',
+    alt: 'the buildher mochis & mentors event',
+  },
+];
+
+// Launchpad
+const launchFacts = [
+  ['when', 'every spring quarter'],
+  ['duration', '6 weeks'],
+  ['applications', 'open yearly'],
+];
+---
+
+<PageLayout title="buildher — cseed">
+  <header class="bh-header">
+    <div class="bh-garden" aria-hidden="true">
+      <div class="bh-float bh-f1 bh-draggable"><Lilypad variant="flower" size={78} /></div>
+      <div class="bh-float bh-f2 bh-draggable"><Lilypad variant="leaf" size={104} rotate={-14} notch={140} /></div>
+      <div class="bh-float bh-f3 bh-draggable"><Lilypad variant="flower" size={54} /></div>
+      <div class="bh-float bh-f4 bh-draggable"><Lilypad variant="leaf" size={72} rotate={22} notch={20} /></div>
+    </div>
+    <div class="bh-drag-hint" data-drag-hint>drag me!</div>
+    <div class="bh-header-left">
+      <Reveal><div class="t-eyebrow">a community to build in</div></Reveal>
+      <Reveal delay={120}><h1 class="t-serif bh-title" style="font-size:168px">buildher</h1></Reveal>
+      <Reveal delay={220}><div class="bh-tagline">grow together</div></Reveal>
+    </div>
+    <Reveal delay={300}>
+      <p class="bh-body" style="margin-bottom:30px; white-space:pre-line">
+        {'A safe and inclusive environment for women and\nnon-binary students to build, learn and network.'}
+      </p>
+    </Reveal>
+  </header>
+
+  <section class="bh-section">
+    <Rule width="100%" weight={0.5} animate class="bh-rule" />
+    <div class="bh-head" style="margin:70px 0 120px">
+      <Reveal><div class="t-eyebrow">01 / what we do</div></Reveal>
+      <Reveal delay={120}><h2 class="t-serif">general events</h2></Reveal>
+    </div>
+    <div class="bh-events">
+      {
+        pillars.map((p, i) => (
+          <Reveal delay={i * 130}>
+            <div
+              class="bh-event"
+              style={`--tilt:${p.tilt}deg; --tape:${[-4, 3, -2][i]}deg; ${i === 1 ? 'margin-top:52px;' : ''}`}
+            >
+              <div class="bh-event-photo">
+                <img src={p.photo} alt={p.alt} />
+              </div>
+              <h3 class="bh-event-title">{p.title}</h3>
+              <p class="bh-body" style="font-size:21px">{p.body}</p>
+            </div>
+          </Reveal>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="bh-launch">
+    <div class="bh-launch-inner">
+      <div class="bh-launch-copy">
+        <div class="bh-hand">build your project :)</div>
+        <Reveal><div class="t-eyebrow">02 / the yearly cohort</div></Reveal>
+        <Reveal delay={150}>
+          <h2 class="bh-launch-title">launchpad</h2>
+        </Reveal>
+        <Reveal delay={300}>
+          <p class="bh-body" style="margin-top:36px; max-width:760px">
+            Our once-a-year cohort: six weeks to take an idea from nothing to something,
+            with a room of women and non-binary builders shipping alongside you. Same shape
+            as a buildspace cohort, built for this community.
+          </p>
+        </Reveal>
+        <Reveal delay={450}>
+          <div class="bh-launch-facts">
+            {
+              launchFacts.map(([k, v]) => (
+                <div class="bh-launch-fact">
+                  <span class="t-eyebrow" style="font-size:16px">{k}</span>
+                  <span class="bh-fact-value">{v}</span>
+                </div>
+              ))
+            }
+          </div>
+        </Reveal>
+        <Reveal delay={600}>
+          <div style="margin-top:70px">
+            <TextLink href="/join/" arrowLength={26} style="font:400 34px/1 var(--font-body); gap:14px">
+              apply for launchpad
+            </TextLink>
+          </div>
+        </Reveal>
+      </div>
+
+      <div class="bh-scene">
+        <svg class="bh-water" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <path
+            d="M50,4 C77,3 95,21 95,45 C95,70 85,94 56,96 C30,98 7,83 5,55 C3,30 24,5 50,4 Z"
+            fill="var(--bh-water)"
+          />
+          <path
+            d="M50,15 C71,14 84,28 84,47 C84,66 76,83 55,85 C34,87 17,74 16,53 C15,33 30,16 50,15 Z"
+            fill="var(--bh-water-hi)"
+            opacity="0.4"
+          />
+          <g fill="none" stroke="#CDE7EC" stroke-width="0.7" opacity="0.55" stroke-linecap="round">
+            <path d="M28 44 C 40 41, 52 47, 64 43" />
+            <path d="M26 62 C 42 57, 58 64, 74 59" />
+            <path d="M42 78 C 54 75, 66 80, 76 76" />
+          </g>
+        </svg>
+
+        <div class="bh-scene-item bh-si-photo1 bh-float bh-f1">
+          <Reveal mode="fade"><Lilypad variant="photo" src="/images/buildher/multimodal.webp" size={404} rotate={-5} notch={320} /></Reveal>
+        </div>
+        <div class="bh-scene-item bh-si-photo2 bh-float bh-f2">
+          <Reveal mode="fade" delay={150}><Lilypad variant="photo" src="/images/buildher/matcha2.webp" size={360} rotate={7} notch={205} /></Reveal>
+        </div>
+        <div class="bh-scene-item bh-si-lily1 bh-float bh-f4"><Lilypad variant="flower" tone="pink" size={88} /></div>
+        <div class="bh-scene-item bh-si-lily2 bh-float bh-f2"><Lilypad variant="flower" tone="pink" size={60} /></div>
+      </div>
+    </div>
+  </section>
+
+  <div style="height:220px"></div>
+</PageLayout>
+
+<style>
+  .bh-body {
+    margin: 0;
+    font: 300 34px/1.5 var(--font-body);
+    color: var(--cseed-ink);
+    text-wrap: pretty;
+  }
+
+  /* ---- header ---- */
+  .bh-header {
+    position: relative;
+    padding: 330px 100px 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+  }
+  .bh-header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+  .bh-title {
+    background: linear-gradient(transparent 66%, rgba(245, 209, 64, 0.5) 66%, rgba(245, 209, 64, 0.5) 90%, transparent 90%);
+    width: fit-content;
+    padding-right: 8px;
+  }
+  .bh-tagline {
+    font: 400 46px/1 var(--font-hand);
+    letter-spacing: 0.03em;
+    color: var(--cseed-ink);
+    transform: rotate(-3deg);
+    padding-left: 12px;
+  }
+  .bh-garden {
+    position: absolute;
+    top: 150px;
+    right: 90px;
+    width: 620px;
+    height: 320px;
+    pointer-events: none;
+    z-index: 5;
+  }
+  .bh-garden .bh-float { position: absolute; }
+  .bh-garden .bh-f1 { top: 40px; right: 380px; }
+  .bh-garden .bh-f2 { top: 120px; right: 250px; }
+  .bh-garden .bh-f3 { top: 8px; right: 150px; }
+  .bh-garden .bh-f4 { top: 150px; right: 60px; }
+  /* the header pads/lilies can be picked up and rearranged */
+  .bh-draggable {
+    pointer-events: auto;
+    cursor: grab;
+    touch-action: none;
+  }
+  .bh-draggable.is-dragging {
+    cursor: grabbing;
+  }
+  /* tiny hint that the pads/lilies are draggable; disappears after the first drag */
+  .bh-drag-hint {
+    position: absolute;
+    top: 236px;
+    right: 150px;
+    z-index: 6;
+    white-space: nowrap;
+    font: 400 23px/1 var(--font-hand);
+    color: var(--cseed-ink-soft);
+    transform: rotate(-6deg);
+    animation: bh-bob 4.5s var(--ease-inout) infinite alternate;
+    transition: opacity 400ms var(--ease-soft);
+    pointer-events: none;
+  }
+  .bh-drag-hint.is-hidden {
+    animation: none;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* ---- section scaffold ---- */
+  /* A hairline rule (not a colour block) marks the shift from the header. */
+  .bh-section {
+    padding: 150px 100px 60px;
+  }
+  .bh-head {
+    display: flex;
+    flex-direction: column;
+    gap: 34px;
+  }
+
+  /* ---- general events: scrapbook polaroids ---- */
+  .bh-events {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 48px;
+    align-items: start;
+  }
+  .bh-event {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 16px 16px 24px;
+    background: #fffdf7; /* warm photo-paper white */
+    border-radius: 3px;
+    box-shadow:
+      0 16px 34px -18px rgba(40, 34, 20, 0.34),
+      0 2px 6px rgba(40, 34, 20, 0.09);
+    transform: rotate(var(--tilt));
+    transition:
+      transform 600ms var(--ease-soft),
+      box-shadow 600ms var(--ease-soft);
+  }
+  .bh-event:hover {
+    transform: rotate(0deg) translateY(-12px);
+    box-shadow:
+      0 30px 56px -22px rgba(40, 34, 20, 0.4),
+      0 4px 12px rgba(40, 34, 20, 0.1);
+  }
+  /* a strip of washi tape holding each polaroid up, lapping onto the photo */
+  .bh-event::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    width: 150px;
+    height: 46px;
+    z-index: 3;
+    transform: translateX(-50%) rotate(var(--tape, -3deg));
+    background: rgba(245, 209, 64, 0.5);
+    box-shadow: 0 1px 2px rgba(40, 34, 20, 0.08);
+  }
+  .bh-event-photo {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: var(--cseed-mist);
+  }
+  .bh-event-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 700ms var(--ease-soft);
+  }
+  .bh-event:hover .bh-event-photo img {
+    transform: scale(1.04);
+  }
+  .bh-event-title {
+    margin: 22px 8px 8px;
+    font: 400 40px/1 var(--font-hand);
+    letter-spacing: 0.01em;
+    color: var(--cseed-ink);
+  }
+  .bh-event .bh-body {
+    padding: 0 8px;
+    line-height: 1.45;
+  }
+
+  /* ---- launchpad ---- */
+  .bh-launch {
+    --bh-water: #2e6e7e;
+    --bh-water-hi: #4c8a9a;
+    --bh-lily-deep: #d97e98;
+    position: relative;
+    margin-top: 200px;
+    padding: 40px 100px 0;
+  }
+  .bh-launch-inner {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 60px;
+    align-items: center;
+  }
+  .bh-launch-copy {
+    position: relative;
+  }
+  .bh-launch-title {
+    margin: 30px 0 0;
+    font: italic 400 150px/0.95 var(--font-display);
+    letter-spacing: -0.04em;
+    color: var(--bh-lily-deep);
+  }
+  .bh-launch-facts {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 36px;
+    margin-top: 70px;
+    max-width: 720px;
+  }
+  .bh-launch-fact {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    border-top: 1px solid var(--cseed-ink);
+    padding-top: 20px;
+  }
+  .bh-fact-value {
+    font: 400 46px/1.05 var(--font-display);
+    letter-spacing: -0.03em;
+  }
+  .bh-hand {
+    position: absolute;
+    top: -8px;
+    right: 10px;
+    font: 400 36px/1 var(--font-hand);
+    letter-spacing: 0.04em;
+    color: var(--bh-lily-deep);
+    transform: rotate(-6deg);
+  }
+
+  .bh-scene {
+    position: relative;
+    height: 780px;
+  }
+  .bh-water {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 20px 34px rgba(40, 34, 20, 0.14));
+  }
+  .bh-scene-item {
+    position: absolute;
+  }
+  .bh-si-photo1 { left: 10px; top: 40px; z-index: 3; }
+  .bh-si-photo2 { right: 8px; top: 356px; z-index: 3; }
+  .bh-si-lily1 { right: 120px; top: 96px; z-index: 5; }
+  .bh-si-lily2 { left: 150px; bottom: 80px; z-index: 5; }
+
+  .bh-float { animation: bh-bob 6s var(--ease-inout) infinite alternate; }
+  .bh-f1 { animation-duration: 6.4s; }
+  .bh-f2 { animation-duration: 7.6s; animation-delay: -1.4s; }
+  .bh-f3 { animation-duration: 5.4s; animation-delay: -0.8s; }
+  .bh-f4 { animation-duration: 8.2s; animation-delay: -2.1s; }
+  .bh-drift { animation: bh-bob 7s var(--ease-inout) infinite alternate; }
+  .bh-d1 { animation-duration: 7.5s; }
+  .bh-d2 { animation-duration: 6.6s; animation-delay: -1.2s; }
+  .bh-d3 { animation-duration: 8s; animation-delay: -2s; }
+
+  @keyframes bh-bob {
+    from { transform: translateY(3px); }
+    to { transform: translateY(-9px); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bh-float, .bh-drift { animation: none; }
+  }
+</style>
+
+<script>
+  const zoomOf = (el: HTMLElement) => {
+    const r = el.getBoundingClientRect();
+    return r.width / el.offsetWidth || 1;
+  };
+  document.querySelectorAll<HTMLElement>('.bh-draggable').forEach((el) => {
+    let sx = 0, sy = 0, ox = 0, oy = 0, z = 1, dragging = false;
+    el.addEventListener('pointerdown', (e) => {
+      dragging = true;
+      el.setPointerCapture(e.pointerId);
+      el.classList.add('is-dragging');
+      document.querySelector('[data-drag-hint]')?.classList.add('is-hidden'); // dismiss the hint once they try it
+      el.style.animation = 'none'; // stop the bob while held
+      z = zoomOf(el);
+      ox = el.offsetLeft;
+      oy = el.offsetTop;
+      el.style.left = ox + 'px';
+      el.style.top = oy + 'px';
+      el.style.right = 'auto';
+      el.style.bottom = 'auto';
+      sx = e.clientX;
+      sy = e.clientY;
+      e.preventDefault();
+    });
+    el.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      el.style.left = ox + (e.clientX - sx) / z + 'px';
+      el.style.top = oy + (e.clientY - sy) / z + 'px';
+    });
+    const end = () => {
+      if (!dragging) return;
+      dragging = false;
+      el.classList.remove('is-dragging');
+    };
+    el.addEventListener('pointerup', end);
+    el.addEventListener('pointercancel', end);
+  });
+</script>

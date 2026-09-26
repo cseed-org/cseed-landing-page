@@ -32,7 +32,6 @@ const tracks = [
   { kind: 'hardware', label: 'hardware', ring: '#B45CE0', dot: 215 },
   { kind: 'software', label: 'software', ring: '#16A36F', dot: 35 },
   { kind: 'xra', label: 'extended reality', ring: '#2F5BFF', dot: 0, note: 'build with computer vision, AR and VR' },
-  { kind: 'wildcard', label: 'wildcard', ring: '#E0A800', dot: 290 },
   { kind: 'creatives', label: 'creatives', ring: '#FF0066', dot: 140 },
 ] as const;
 ---
@@ -666,7 +665,7 @@ const tracks = [
   /* tracks */
   .bs-tracks {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 40px;
   }
   .bs-track {

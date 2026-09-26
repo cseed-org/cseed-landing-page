@@ -28,7 +28,7 @@ const { display = 'good people. curious ideas.', cta = 'scroll down' } = Astro.p
   </div>
   <h1 class="hero-display">{display}</h1>
   <div class="hero-cta">
-    <TextLink variant="mono" href="#programs" style="font-size:65px">{cta}</TextLink>
+    <TextLink variant="mono" href="#programs" style="font-size:44px">{cta}</TextLink>
   </div>
 </section>
 
@@ -92,5 +92,14 @@ const { display = 'good people. curious ideas.', cta = 'scroll down' } = Astro.p
     bottom: 132px;
     text-align: center;
     animation: cseed-fade-up var(--dur-hero) var(--ease-soft) 760ms both;
+  }
+  /* smaller CTA with a thin underline tucked close to "scroll down" */
+  .hero-cta :global(.text-link) {
+    line-height: 1;
+  }
+  .hero-cta :global(.text-link-label) {
+    background-size: 100% 0.75px;
+    line-height: 1;
+    padding-bottom: 4px;
   }
 </style>

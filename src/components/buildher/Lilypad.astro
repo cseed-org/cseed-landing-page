@@ -1,0 +1,163 @@
+---
+/*
+ * Lilypad — a pond motif for buildher's community section. Three variants:
+ *   - 'leaf'   : a decorative lilypad with veins
+ *   - 'flower' : a water lily with pointed petals and a brand-yellow center
+ *   - 'photo'  : a photo cut into the lilypad silhouette (photo placeholder)
+ * The pad is a circle with a slim wedge notch, built as a polygon so the
+ * geometry stays correct wherever the notch points.
+ */
+interface Props {
+  size?: number;
+  rotate?: number;
+  notch?: number;
+  variant?: 'leaf' | 'flower' | 'photo';
+  tone?: 'white' | 'pink';
+  label?: string;
+  src?: string; 
+  gray?: boolean; 
+  class?: string;
+  style?: string;
+  z?: number;
+}
+const {
+  size = 260,
+  rotate = 0,
+  notch = 305,
+  variant = 'leaf',
+  tone = 'white',
+  label = 'photo',
+  src,
+  gray = false,
+  class: className,
+  style = '',
+  z,
+} = Astro.props;
+
+const petalOuter = tone === 'pink' ? '#F2AFC1' : '#F3F1E8';
+const petalInner = tone === 'pink' ? '#F8CEDA' : '#FFFFFF';
+const petalStroke = tone === 'pink' ? '#E79BB0' : '#E7E5DC';
+
+const cx = 50;
+const cy = 50;
+const r = 47;
+const phi = 15; 
+const rDip = r * 0.62;
+const rad = (d: number) => (d * Math.PI) / 180;
+const pt = (deg: number, rr = r): [number, number] => [
+  +(cx + rr * Math.cos(rad(deg))).toFixed(2),
+  +(cy + rr * Math.sin(rad(deg))).toFixed(2),
+];
+
+const start = notch + phi;
+const end = notch + 360 - phi;
+const steps = 60;
+const arc = Array.from({ length: steps + 1 }, (_, i) => pt(start + ((end - start) * i) / steps));
+const dip = pt(notch, rDip);
+const padPath = `M${dip[0]},${dip[1]} ` + arc.map(([x, y]) => `L${x},${y}`).join(' ') + ' Z';
+
+const veins = Array.from({ length: 5 }, (_, i) => pt(start + ((end - start) * (i + 1)) / 6, r - 6));
+
+const petalAngles = (n: number, offset: number) => Array.from({ length: n }, (_, i) => (i * 360) / n + offset);
+const uid = 'lp-' + Math.random().toString(36).slice(2, 8);
+---
+
+<figure
+  class:list={['lilypad', className]}
+  style={`width:${size}px; height:${size}px; --lp-rot:${rotate}deg; ${z !== undefined ? `z-index:${z};` : ''} ${style}`}
+  aria-hidden={variant !== 'photo' ? 'true' : undefined}
+>
+  <svg viewBox="0 0 100 100" width="100%" height="100%">
+    <defs>
+      <clipPath id={uid}><path d={padPath} /></clipPath>
+      <radialGradient id={`${uid}-g`} cx="40%" cy="36%" r="80%">
+        <stop offset="0%" stop-color="#9DBE77" />
+        <stop offset="55%" stop-color="#799A5C" />
+        <stop offset="100%" stop-color="#5C7846" />
+      </radialGradient>
+    </defs>
+
+    {
+      variant === 'flower' ? (
+        <g>
+          {petalAngles(9, 20).map((deg) => (
+            <path
+              d="M50,50 C39,33 40,15 50,7 C60,15 61,33 50,50 Z"
+              fill={petalOuter}
+              stroke={petalStroke}
+              stroke-width="0.5"
+              transform={`rotate(${deg} 50 50)`}
+            />
+          ))}
+          {petalAngles(7, 0).map((deg) => (
+            <path d="M50,50 C42,35 43,22 50,14 C57,22 58,35 50,50 Z" fill={petalInner} transform={`rotate(${deg} 50 50)`} />
+          ))}
+          <circle cx="50" cy="50" r="9.5" fill="var(--cseed-sun)" />
+          <circle cx="50" cy="50" r="5" fill="#E4B62C" />
+        </g>
+      ) : (
+        <g>
+          {variant === 'leaf' && <path d={padPath} fill={`url(#${uid}-g)`} />}
+          {variant === 'photo' && (
+            <>
+              {/* a green pad slightly larger than the photo = the lilypad rim / border it sits on */}
+              <path
+                d={padPath}
+                transform="translate(50 50) scale(1.09) translate(-50 -50)"
+                fill={`url(#${uid}-g)`}
+                stroke="#4E663C"
+                stroke-width="1"
+                stroke-opacity="0.6"
+              />
+              <g clip-path={`url(#${uid})`}>
+                {src ? (
+                  <image
+                    href={src}
+                    x="0"
+                    y="0"
+                    width="100"
+                    height="100"
+                    preserveAspectRatio="xMidYMid slice"
+                    style={gray ? 'filter:grayscale(1) contrast(1.05)' : undefined}
+                  />
+                ) : (
+                  <>
+                    <rect x="0" y="0" width="100" height="100" fill="var(--cseed-mist)" />
+                    <text x="50" y="52" text-anchor="middle" class="lilypad-label">{label}</text>
+                  </>
+                )}
+              </g>
+            </>
+          )}
+          {variant === 'leaf' &&
+            veins.map(([x, y]) => (
+              <line x1={cx} y1={cy} x2={x} y2={y} stroke="#526B3C" stroke-width="0.7" stroke-linecap="round" opacity="0.4" />
+            ))}
+          {variant === 'leaf' && (
+            <path d={padPath} fill="none" stroke="#526B3C" stroke-width="1.2" opacity="0.85" />
+          )}
+        </g>
+      )
+    }
+  </svg>
+</figure>
+
+<style>
+  .lilypad {
+    margin: 0;
+    transform: rotate(var(--lp-rot));
+    filter: drop-shadow(0 10px 18px rgba(40, 34, 20, 0.16));
+    transition:
+      transform 700ms var(--ease-soft),
+      filter 700ms var(--ease-soft);
+  }
+  .lilypad svg {
+    display: block;
+    overflow: visible;
+  }
+  .lilypad-label {
+    font: 400 5.5px/1 var(--font-mono);
+    letter-spacing: 0.18em;
+    fill: var(--cseed-ink-soft);
+  }
+</style>
