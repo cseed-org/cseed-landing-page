@@ -2,18 +2,14 @@
 import Reveal from '../core/Reveal.astro';
 
 interface Props {
-  num: string;
   title: string;
 }
-const { num, title } = Astro.props;
+const { title } = Astro.props;
 ---
 
 <section class="jn-block">
   <Reveal>
-    <div class="jn-block-head">
-      <div class="t-eyebrow">{num}</div>
-      <h2 class="t-serif" style="font-size:80px">{title}</h2>
-    </div>
+    <h2 class="t-serif jn-block-title">{title}</h2>
   </Reveal>
   <Reveal delay={120}>
     <div class="jn-block-fields"><slot /></div>
@@ -21,18 +17,19 @@ const { num, title } = Astro.props;
 </section>
 
 <style>
+  /* The source frames (Figma "Join — Form 1/2/3") centre the step title over a
+     full-width field panel, instead of the 520px serif side-column this block
+     used to carry. */
   .jn-block {
-    display: grid;
-    grid-template-columns: 520px minmax(0, 1fr);
-    column-gap: 120px;
-    padding-top: 70px;
+    padding-top: 40px;
   }
-  .jn-block-head {
-    display: flex;
-    flex-direction: column;
-    gap: 26px;
+  .jn-block-title {
+    font-size: 96px;
+    text-align: center;
   }
   .jn-block-fields {
+    max-width: 1500px;
+    margin: 110px auto 0;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     column-gap: 80px;

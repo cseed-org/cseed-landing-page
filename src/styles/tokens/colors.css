@@ -7,6 +7,10 @@
   --cseed-white: #ffffff;
   --cseed-seed: #f5e530; /* wordmark on photo */
   --cseed-sun: #f5d140; /* hero display line */
+  /* The cool notes in the join marquee -- the one place the palette needed them. */
+  --cseed-sky: #4f78b5;
+  --cseed-sky-soft: #9db6d6;
+  --cseed-sage: #6a9a51;
 
   /* semantic aliases */
   --surface-page: var(--cseed-paper);
@@ -16,6 +20,7 @@
   --text-muted: var(--cseed-ink-soft);
   --text-on-photo: var(--cseed-white);
   --text-display-hero: var(--cseed-sun);
+  --text-ghost: var(--cseed-sky-soft); /* the faded outer copies in the join marquee */
   --text-wordmark-photo: var(--cseed-seed);
   --text-wordmark-page: var(--cseed-ink);
   --rule-ink: var(--cseed-ink);

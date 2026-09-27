@@ -1,26 +1,20 @@
 ---
 import PageLayout from '../layouts/PageLayout.astro';
 import Reveal from '../components/core/Reveal.astro';
-import Rule from '../components/core/Rule.astro';
 import Field from '../components/join/Field.astro';
 import SelectField from '../components/join/SelectField.astro';
 import FormBlock from '../components/join/FormBlock.astro';
+import JoinMarquee from '../components/join/JoinMarquee.astro';
+import Rule from '../components/core/Rule.astro';
 import { ABOUT_MEMBERS } from '../data/community';
+import codeOfConduct from '../data/code-of-conduct.md?raw';
 
 // Graduation term/year list -- generated so it's never out of date, instead of hand-maintained.
 const gradTerms = ['Winter', 'Spring', 'Summer', 'Autumn'];
-const gradStartYear = new Date().getFullYear();
+const gradStartYear = new Date().getUTCFullYear();
 const graduationOptions = Array.from({ length: 6 }, (_, i) => gradStartYear + i).flatMap((y) =>
   gradTerms.map((t) => `${t} ${y}`),
 );
-
-// Majors whose members should give us their CSE email instead of their general UW email.
-const CSE_EMAIL_MAJORS = [
-  'Computer Science',
-  'Computer Engineering',
-  'Electrical Engineering',
-  'Intended CSE',
-];
 
 const options = {
   graduation: graduationOptions,
@@ -59,6 +53,26 @@ const heard = [
   'other...',
 ];
 
+// The last step is the member agreement, so it has to say what the code of conduct
+// actually says. Both the belief line and the principles are read out of the markdown
+// the /code-of-conduct/ page renders, rather than restated here and left to drift.
+// The file is checked in with CRLF endings, so normalise before matching on newlines.
+const cocRaw = codeOfConduct.replace(/\r\n/g, '\n');
+function cocSection(heading: string): string {
+  const parts = cocRaw.split(`\n## ${heading}\n`);
+  return parts.length > 1 ? parts[1].split('\n## ')[0] : '';
+}
+const unbold = (t: string) => t.replace(/\*\*/g, '').replace(/\s+/g, ' ').trim();
+
+const cocBelief = unbold(cocSection('Our Core Belief').match(/\*\*(.+?)\*\*/s)?.[1] ?? '');
+const cocPrinciples = [
+  ...cocSection('Principles and Values').matchAll(/^- \*\*(.+?)\*\*\n +- (.+)$/gm),
+].map((m) => ({ name: unbold(m[1]), detail: unbold(m[2]) }));
+
+// The hero blurb, from the source frame. Keep in sync with `copy.intro` in the script below.
+const INTRO_BLURB =
+  "Fill out one short form and you're in. No application, no dues, no prior startup experience — just a room full of people at UW who like building things.";
+
 // Members wall, grouped by first letter (the source's `MembersWall letters`).
 const wall: { letter?: string; name?: string }[] = [];
 let last = '';
@@ -77,182 +91,240 @@ let last = '';
 <PageLayout title="join — cseed" compactFooter>
   <div class="jn-shrink" data-join>
     <header class="jn-header" data-jn-rekey>
-      <div class="jn-header-left">
-        <Reveal><div class="t-eyebrow" data-jn-eyebrow>join cseed</div></Reveal>
-        <Reveal delay={120}
-          ><h1 class="t-serif" style="font-size:240px" data-jn-heading>become a member</h1></Reveal
-        >
-      </div>
+      <JoinMarquee />
+      <div class="jn-hand jn-hand-majors">open to all majors!</div>
+      <Reveal delay={120}>
+        <h1 class="t-serif jn-heading" data-jn-heading>become a member</h1>
+      </Reveal>
       <Reveal delay={240}>
-        <div class="jn-header-right">
-          <p class="jn-sub" data-jn-sub>
-            {"build things you imagine.\nbuild things that don't scale."}
-          </p>
+        <p class="jn-sub" data-jn-sub>{INTRO_BLURB}</p>
+      </Reveal>
+      <Reveal delay={360}>
+        <div class="jn-cta" data-jn-cta>
+          <div class="jn-hand jn-hand-weekly">we meet every week</div>
           <button type="button" class="jn-step-btn" data-jn-start>
             <span>become a member now!</span><span class="jn-step-arrow">→</span>
           </button>
+          <div class="jn-hand jn-hand-quick">takes about 2 minutes!</div>
         </div>
       </Reveal>
     </header>
 
-    <div style="padding:0 100px; margin-top:160px"><Rule width="100%" weight={0.5} animate /></div>
-
     <form class="jn-form" data-jn-form hidden novalidate>
-      <div class="jn-track-clip">
-        <div class="jn-track" data-jn-track>
-          <div class="jn-panel" data-jn-panel>
-            <FormBlock num="01 / 03" title="about you">
-              <Field label="Name" required
-                ><input class="jn-input" name="name" placeholder="First and last" required /></Field
-              >
-              <Field label="Preferred Name" optional>
-                <input class="jn-input" name="pref" placeholder="What should we call you?" />
+      <div class="jn-trap" aria-hidden="true" inert>
+        <label>Leave this empty<input name="website" tabindex="-1" autocomplete="off" /></label>
+      </div>
+      <div class="jn-form-head">
+        <div class="jn-progress">
+          <div class="jn-bar" data-jn-bar></div>
+          <div class="jn-bar" data-jn-bar></div>
+          <div class="jn-bar" data-jn-bar></div>
+        </div>
+        <div class="t-eyebrow" data-jn-step-label>step 1 of 3</div>
+      </div>
+      <div class="jn-track" data-jn-track>
+        <div class="jn-panel" data-jn-panel>
+          <FormBlock title="about you">
+            <Field label="First Name" required>
+              <input class="jn-input" name="first_name" autocomplete="given-name" required />
+            </Field>
+            <Field label="Last Name" required>
+              <input class="jn-input" name="last_name" autocomplete="family-name" required />
+            </Field>
+            <Field label="Preferred Name" optional>
+              <input class="jn-input" name="pref" placeholder="What should we call you?" />
+            </Field>
+            <Field label="Pronouns" optional>
+              <input class="jn-input" name="pronouns" />
+            </Field>
+            <SelectField
+              name="campus"
+              allowOther={false}
+              label="Campus"
+              options={['Seattle', 'Bothell', 'Tacoma']}
+              optional
+            />
+            <SelectField
+              name="grad"
+              allowOther={false}
+              label="Graduation Date"
+              options={options.graduation}
+              required
+            />
+            <SelectField
+              name="major"
+              label="Major or Intended Major"
+              options={options.major}
+              required
+            />
+            <SelectField
+              name="demo"
+              label="Demographics"
+              span={2}
+              optional
+              options={options.demographics}
+            />
+            <div data-jn-email="uw" style="grid-column: span 2">
+              <Field label="School Email" required>
+                <input class="jn-input" type="email" name="uw" placeholder="netid@uw.edu" />
               </Field>
-              <SelectField
-                name="grad"
-                label="Graduation Date"
-                options={options.graduation}
-                required
-              />
-              <SelectField
-                name="demo"
-                label="Demographics"
-                span={2}
-                optional
-                options={options.demographics}
-              />
-              <SelectField
-                name="major"
-                label="Major or Intended Major"
-                span={2}
-                options={options.major}
-                required
-              />
-            </FormBlock>
-          </div>
-
-          <div class="jn-panel" data-jn-panel>
-            <FormBlock num="02 / 03" title="reaching you">
-              <div data-jn-email="uw" style="grid-column: span 2">
-                <Field label="School Email" required>
-                  <input class="jn-input" type="email" name="uw" placeholder="netid@uw.edu" />
-                </Field>
-              </div>
-              <div data-jn-email="cse" style="grid-column: span 2" hidden>
-                <Field
-                  label="CSE Email"
-                  required
-                  help="Engineering/CS majors: use your CSE email, not your general UW email."
-                >
-                  <input
-                    class="jn-input"
-                    type="email"
-                    name="cse"
-                    placeholder="netid@cs.washington.edu"
-                  />
-                </Field>
-              </div>
-            </FormBlock>
-          </div>
-
-          <div class="jn-panel" data-jn-panel>
-            <FormBlock num="03 / 03" title="the fun part">
+            </div>
+            <div data-jn-email="cse" style="grid-column: span 2" hidden>
               <Field
-                label="Tell us in a sentence why you want to be a part of CSEED!"
-                span={2}
+                label="CSE Email"
                 required
+                help="Engineering/CS majors: use your CSE email, not your general UW email."
               >
-                <input class="jn-input" name="why" placeholder="One sentence is plenty." required />
-              </Field>
-              <div class="jn-heard">
-                <span class="jn-heard-label">How did you hear about us?</span>
-                <span class="jn-heard-help">Select all that apply</span>
-                <div class="jn-chips">
-                  {
-                    heard.map((c) => (
-                      <button type="button" class="jn-chip" data-chip={c}>
-                        {c}
-                      </button>
-                    ))
-                  }
-                </div>
                 <input
                   class="jn-input"
-                  data-jn-heard-other
-                  placeholder="where?"
-                  style="margin-top:30px; width:700px"
-                  hidden
+                  type="email"
+                  name="cse"
+                  placeholder="netid@cs.washington.edu"
                 />
+              </Field>
+            </div>
+          </FormBlock>
+        </div>
+
+        <div class="jn-panel" data-jn-panel>
+          <FormBlock title="why cseed">
+            <Field
+              label="Tell us in a sentence why you want to be a part of CSEED!"
+              span={2}
+              required
+            >
+              <input class="jn-input" name="why" placeholder="One sentence is plenty." required />
+            </Field>
+            <div class="jn-heard">
+              <span class="jn-heard-label">How did you hear about us?</span>
+              <span class="jn-heard-help">Select all that apply</span>
+              <div class="jn-chips">
+                {
+                  heard.map((c) => (
+                    <button type="button" class="jn-chip" data-chip={c}>
+                      {c}
+                    </button>
+                  ))
+                }
               </div>
-              <div class="jn-more">
-                <Field
-                  label="Anything you want us to know?"
-                  optional
-                  help="Fun fact, accommodations, thoughts, something funny, projects you are working on..."
-                >
-                  <textarea
-                    class="jn-input"
-                    name="more"
-                    rows="4"
-                    placeholder="Type away."
-                    style="resize:vertical; display:block"></textarea>
-                </Field>
-                <div class="jn-weird">be as weird as you like :)</div>
-              </div>
-              <label class="jn-consent" style="grid-column: span 2">
-                <input type="checkbox" class="jn-checkbox" name="photoConsent" />
-                <span>
-                  I allow photos and video of me to be taken at cseed events and used publicly
-                  (digital release). See our <a href="/code-of-conduct/">code of conduct</a>.
-                </span>
-              </label>
-            </FormBlock>
-          </div>
+              <input
+                class="jn-input"
+                data-jn-heard-other
+                placeholder="where?"
+                style="margin-top:30px; width:700px"
+                hidden
+              />
+            </div>
+            <div class="jn-more">
+              <Field
+                label="Anything you want us to know?"
+                optional
+                help="Fun fact, accommodations, thoughts, something funny, projects you are working on..."
+              >
+                <textarea
+                  class="jn-input"
+                  name="more"
+                  rows="4"
+                  placeholder="Type away."
+                  style="resize:vertical; display:block"></textarea>
+              </Field>
+              <div class="jn-weird">be as weird as you like :)</div>
+            </div>
+          </FormBlock>
+        </div>
+
+        <div class="jn-panel" data-jn-panel>
+          <FormBlock title="the agreement">
+            <div class="jn-coc">
+              <p class="jn-coc-lead">{cocBelief}</p>
+              <ul class="jn-coc-list">
+                {
+                  cocPrinciples.map((pr) => (
+                    <li class="jn-coc-item">
+                      <span class="jn-coc-name">{pr.name}</span>
+                      <span class="jn-coc-detail">{pr.detail}</span>
+                    </li>
+                  ))
+                }
+              </ul>
+              <p class="jn-coc-more">
+                That is the short version. The whole thing lives on the <a
+                  href="/code-of-conduct/"
+                  target="_blank"
+                  rel="noopener">member code of conduct</a
+                > page.
+              </p>
+            </div>
+            <label class="jn-consent" data-jn-required style="grid-column: span 2">
+              <input type="checkbox" class="jn-checkbox" name="coc" />
+              <span>
+                I have read the cseed member code of conduct and agree to hold myself to it.
+                <span class="jn-req">*</span>
+              </span>
+            </label>
+            <label class="jn-consent" style="grid-column: span 2; margin-top: 34px">
+              <input type="checkbox" class="jn-checkbox" name="photoConsent" />
+              <span>
+                I allow photos and video of me to be taken at cseed events and used publicly
+                (digital release).
+              </span>
+            </label>
+          </FormBlock>
         </div>
       </div>
 
+      <div
+        data-jn-verification
+        hidden
+        style="display:flex; justify-content:center; margin-top:30px"
+      >
+        <div data-jn-turnstile></div>
+      </div>
+      <p data-jn-status role="status" aria-live="polite" class="jn-submit-status" hidden></p>
       <div class="jn-controls">
-        <div class="jn-controls-left">
-          <button type="button" class="jn-back" data-jn-back hidden>← back</button>
-          <div class="jn-progress">
-            <div class="jn-bar" data-jn-bar></div>
-            <div class="jn-bar" data-jn-bar></div>
-            <div class="jn-bar" data-jn-bar></div>
-          </div>
-        </div>
+        <button type="button" class="jn-back" data-jn-back hidden>← back</button>
         <button type="submit" class="jn-step-btn">
           <span data-jn-next-label>next</span><span class="jn-step-arrow">→</span>
         </button>
       </div>
     </form>
 
-    <section class="jn-wall" data-jn-wall data-jn-rekey>
-      <div class="jn-wall-head">
-        <Reveal>
-          <div class="t-eyebrow">
-            <span data-jn-count>{ABOUT_MEMBERS.length.toLocaleString('en-US')}</span> and counting
+    <div class="jn-bleed" data-jn-wall data-jn-rekey>
+      <Rule width="100%" weight={1} animate />
+      <section class="jn-wall">
+        <div class="jn-wall-head">
+          <Reveal>
+            <div class="t-eyebrow">
+              <span data-jn-count>{ABOUT_MEMBERS.length.toLocaleString('en-US')}</span> and counting
+            </div>
+          </Reveal>
+          <Reveal delay={120}>
+            <h2 class="t-serif">our <span class="jn-mark">wonderful</span> members</h2>
+          </Reveal>
+          <Reveal delay={240}>
+            <p class="jn-wall-sub">everyone who has ever signed up, in no particular order</p>
+          </Reveal>
+        </div>
+        <div class="jn-hand jn-hand-growing">and still growing!</div>
+        <div class="jn-hand jn-hand-build">come build with us</div>
+        <Reveal mode="fade">
+          <div class="jn-members" data-jn-members>
+            {
+              wall.map((w) =>
+                w.letter ? (
+                  <div class="jn-letter" data-letter>
+                    {w.letter}
+                  </div>
+                ) : (
+                  <div class="jn-member">{w.name}</div>
+                ),
+              )
+            }
           </div>
         </Reveal>
-        <Reveal delay={120}><h2 class="t-serif">members</h2></Reveal>
-      </div>
-      <Reveal mode="fade">
-        <div class="jn-members" data-jn-members>
-          {
-            wall.map((w) =>
-              w.letter ? (
-                <div class="jn-letter" data-letter>
-                  {w.letter}
-                </div>
-              ) : (
-                <div class="jn-member">{w.name}</div>
-              ),
-            )
-          }
-        </div>
-      </Reveal>
-    </section>
-
-    <div style="height:260px"></div>
+        <div style="height:260px"></div>
+      </section>
+    </div>
   </div>
 </PageLayout>
 
@@ -265,6 +337,11 @@ let last = '';
   const back = root.querySelector<HTMLElement>('[data-jn-back]')!;
   const nextLabel = root.querySelector<HTMLElement>('[data-jn-next-label]')!;
   const startBtn = root.querySelector<HTMLElement>('[data-jn-start]')!;
+  const heading = root.querySelector<HTMLElement>('[data-jn-heading]')!;
+  const subline = root.querySelector<HTMLElement>('[data-jn-sub]')!;
+  // The two handwritten notes flank the button, so the whole cluster hides together.
+  const ctaWrap = root.querySelector<HTMLElement>('[data-jn-cta]')!;
+  const stepLabel = root.querySelector<HTMLElement>('[data-jn-step-label]')!;
   const wall = root.querySelector<HTMLElement>('[data-jn-wall]')!;
   const members = root.querySelector<HTMLElement>('[data-jn-members]')!;
   const count = root.querySelector<HTMLElement>('[data-jn-count]')!;
@@ -273,22 +350,14 @@ let last = '';
   let stage: 'intro' | 'form' | 'done' = 'intro';
   let step = 0;
 
+  // Intro and form read the same, so starting the application changes nothing above
+  // the fold -- only the form underneath appears. Keep in sync with INTRO_BLURB above.
+  const BLURB =
+    "Fill out one short form and you're in. No application, no dues, no prior startup experience — just a room full of people at UW who like building things.";
   const copy = {
-    intro: [
-      'join cseed',
-      'become a member',
-      "build things you imagine.\nbuild things that don't scale.",
-    ],
-    form: [
-      'membership application',
-      'join cseed',
-      "build things you imagine.\nbuild things that don't scale.",
-    ],
-    done: [
-      'application received',
-      'welcome in.',
-      "You're on the wall now.\nWe'll be in touch soon.",
-    ],
+    intro: ['become a member', BLURB],
+    form: ['become a member', BLURB],
+    done: ['welcome in.', "You're on the wall now.\nWe'll be in touch soon."],
   };
 
   const top = () => window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -331,29 +400,40 @@ let last = '';
     count.textContent = names.length.toLocaleString('en-US');
   }
 
+  // Only the active step is in flow; the track is sized to it so the form grows and
+  // shrinks with the step instead of always reserving room for the longest one.
+  function syncHeight() {
+    if (form.hidden) return;
+    track.style.height = `${panels[step].offsetHeight}px`;
+  }
+
   function render(prevStage: string) {
-    const [eyebrow, heading, sub] = copy[stage];
-    root.querySelector('[data-jn-eyebrow]')!.textContent = eyebrow;
-    root.querySelector('[data-jn-heading]')!.textContent = heading;
-    root.querySelector('[data-jn-sub]')!.textContent = sub;
-    startBtn.hidden = stage !== 'intro';
+    const [head, sub] = copy[stage];
+    heading.textContent = head;
+    subline.textContent = sub;
+    ctaWrap.hidden = stage !== 'intro';
     form.hidden = stage !== 'form';
     wall.hidden = stage === 'form';
 
-    track.style.transform = `translateX(-${step * 100}%)`;
     panels.forEach((p, i) => {
       p.classList.toggle('is-active', i === step);
       p.inert = i !== step;
       p.setAttribute('aria-hidden', String(i !== step));
     });
+    syncHeight();
     back.hidden = step === 0;
     bars.forEach((b, i) => {
       b.style.width = i === step ? '60px' : '20px';
       b.style.background = i <= step ? 'var(--cseed-ink)' : 'var(--cseed-mist)';
     });
-    nextLabel.textContent = step < 2 ? 'next' : 'send application';
+    // The source frames name the step you are moving to, rather than just "next".
+    const nextNames = ['next — why cseed', 'next — the agreement', 'send application'];
+    nextLabel.textContent = nextNames[step];
+    stepLabel.textContent = `step ${step + 1} of 3`;
+    verification.hidden = step !== 2;
+    if (stage === 'form' && step === 2) void loadVerification();
 
-    if (stage !== prevStage) {
+    if (stage !== prevStage && (stage === 'done' || prevStage === 'done')) {
       root.querySelectorAll('[data-jn-rekey]').forEach(replayReveals);
     }
   }
@@ -367,7 +447,6 @@ let last = '';
   startBtn.addEventListener('click', () => {
     step = 0;
     setStage('form');
-    top();
   });
 
   // A required field is "ok" if it's not currently hidden (e.g. the UW/CSE email swap) and
@@ -376,13 +455,46 @@ let last = '';
     if (label.closest('[hidden]')) return true;
     const selectWrap = label.closest<HTMLElement>('[data-jn-select]');
     if (selectWrap) return !!values[selectWrap.dataset.jnSelect!]?.trim();
+    // The code-of-conduct agreement on the last step is a checkbox, not a value.
+    const box = label.querySelector<HTMLInputElement>('input[type="checkbox"]');
+    if (box) return box.checked;
     const input = label.querySelector<HTMLInputElement | HTMLTextAreaElement>('input, textarea');
+    if (input?.name === 'uw') return /^[^@\s]+@uw\.edu$/i.test(input.value);
+    if (input?.name === 'cse') return /^[^@\s]+@cs\.washington\.edu$/i.test(input.value);
     return !!input?.value.trim();
   }
 
   function validateStep(i: number): boolean {
+    let textOk = true;
+    for (const input of panels[i].querySelectorAll<HTMLInputElement | HTMLTextAreaElement>(
+      'input:not([type="checkbox"]), textarea',
+    )) {
+      if (input.closest('[hidden]')) continue;
+      const invalid =
+        /[<>\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f-\u009f\u200b\u202a-\u202e\u2066-\u2069\ufeff]/u.test(
+          input.value,
+        );
+      input.value = input.value.normalize('NFC').replace(/\r\n?/g, '\n').trim();
+      if (input.name !== 'more') input.value = input.value.replace(/\s+/gu, ' ');
+      if (input.name === 'uw' || input.name === 'cse') input.value = input.value.toLowerCase();
+      const tooLong = input.maxLength >= 0 && input.value.length > input.maxLength;
+      input.setCustomValidity(
+        invalid
+          ? 'Use plain text without markup or control characters.'
+          : tooLong
+            ? `Use at most ${input.maxLength} characters.`
+            : '',
+      );
+      input.setAttribute('aria-invalid', String(invalid || tooLong));
+      const select = input.closest<HTMLElement>('[data-jn-select]');
+      if (select && !input.hidden) values[select.dataset.jnSelect!] = input.value;
+      if (invalid || tooLong) {
+        if (textOk) input.reportValidity();
+        textOk = false;
+      }
+    }
     const required = [...panels[i].querySelectorAll<HTMLElement>('[data-jn-required]')];
-    let ok = true;
+    let ok = textOk;
     required.forEach((label) => {
       const valid = fieldOk(label);
       label.classList.toggle('is-invalid', !valid);
@@ -396,20 +508,210 @@ let last = '';
     return ok;
   }
 
-  form.addEventListener('submit', (e) => {
+  const submitButton = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+  const submitStatus = form.querySelector<HTMLElement>('[data-jn-status]')!;
+  const verification = form.querySelector<HTMLElement>('[data-jn-verification]')!;
+  type Turnstile = {
+    render: (el: HTMLElement, options: Record<string, unknown>) => string;
+    reset: (id: string) => void;
+  };
+  const turnstileWindow = window as typeof window & { turnstile?: Turnstile };
+  let token = '';
+  let widget: string | undefined;
+  let loadingVerification = false;
+  function verificationStatus(message: string) {
+    token = '';
+    submitStatus.hidden = false;
+    submitStatus.textContent = message;
+  }
+  async function loadVerification() {
+    if (widget !== undefined || loadingVerification) return;
+    const sitekey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
+    if (!sitekey) {
+      verificationStatus('Membership submissions are not available yet. Please try again later.');
+      return;
+    }
+    loadingVerification = true;
+    try {
+      if (!turnstileWindow.turnstile)
+        await new Promise<void>((resolve, reject) => {
+          const script = document.createElement('script');
+          const timeout = window.setTimeout(() => {
+            script.remove();
+            reject(new Error('timeout'));
+          }, 12000);
+          script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+          script.async = true;
+          script.onload = () => {
+            clearTimeout(timeout);
+            resolve();
+          };
+          script.onerror = () => {
+            clearTimeout(timeout);
+            script.remove();
+            reject(new Error('load'));
+          };
+          document.head.append(script);
+        });
+      widget = turnstileWindow.turnstile!.render(
+        form.querySelector<HTMLElement>('[data-jn-turnstile]')!,
+        {
+          sitekey,
+          action: 'membership',
+          callback: (value: string) => {
+            token = value;
+            submitStatus.hidden = true;
+          },
+          'expired-callback': () =>
+            verificationStatus('Verification expired. Please verify again before sending.'),
+          'error-callback': () =>
+            verificationStatus('Verification could not load. Check your connection and try again.'),
+        },
+      );
+    } catch {
+      verificationStatus(
+        'Verification could not load. Check your connection and try sending again.',
+      );
+    } finally {
+      loadingVerification = false;
+    }
+  }
+  const limits: Record<string, number> = {
+    first_name: 100,
+    last_name: 100,
+    pref: 100,
+    pronouns: 80,
+    uw: 254,
+    cse: 254,
+    why: 1000,
+    more: 3000,
+  };
+  for (const [name, limit] of Object.entries(limits)) {
+    const input = form.elements.namedItem(name) as HTMLInputElement;
+    input.maxLength = limit;
+  }
+  form.querySelector<HTMLInputElement>('[data-jn-heard-other]')!.maxLength = 200;
+  let submitting = false;
+  // In-memory only. Preserve the exact request across uncertain network failures.
+  let pendingSubmission: string | null = null;
+  let submittedName = '';
+
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (submitting) return;
     if (!validateStep(step)) return;
     if (step < 2) {
       step += 1;
       render(stage);
-    } else {
-      const fd = new FormData(form);
-      const me =
-        String(fd.get('pref') || '').trim() || String(fd.get('name') || '').trim() || 'you';
-      renderWall(me);
-      setStage('done');
+      return;
     }
-    top();
+    if (!pendingSubmission) {
+      for (let i = 0; i < panels.length; i++) {
+        if (!validateStep(i)) {
+          step = i;
+          render(stage);
+          return;
+        }
+      }
+      if (!heardOther.hidden && !heardOther.value.trim()) {
+        step = 1;
+        render(stage);
+        heardOther.focus();
+        submitStatus.hidden = false;
+        submitStatus.textContent = 'Tell us how you heard about us.';
+        return;
+      }
+    }
+    const endpoint = import.meta.env.PUBLIC_MEMBERSHIP_API_URL;
+    submitStatus.hidden = false;
+    if (!endpoint) {
+      submitStatus.textContent =
+        'Membership submissions are not available yet. Please try again later.';
+      return;
+    }
+    if (!token) {
+      verificationStatus('Please complete the bot verification before sending.');
+      void loadVerification();
+      return;
+    }
+    if (!pendingSubmission) {
+      const fd = new FormData(form);
+      const field = (name: string) => String(fd.get(name) ?? '');
+      const wantsCse = wantsCseEmail();
+      submittedName = field('pref').trim() || `${field('first_name')} ${field('last_name')}`.trim();
+      pendingSubmission = JSON.stringify({
+        submission_id: crypto.randomUUID(),
+        first_name: field('first_name'),
+        last_name: field('last_name'),
+        preferred_name: field('pref'),
+        uw_email: wantsCse ? null : field('uw'),
+        cs_email: wantsCse ? field('cse') : null,
+        major: values.major ?? '',
+        grad_year: values.grad ?? '',
+        demographics: values.demo ?? '',
+        campus: values.campus ?? '',
+        pronouns: field('pronouns'),
+        why: field('why'),
+        heard_about: [...root.querySelectorAll<HTMLElement>('[data-chip].is-on')].map(
+          (chip) => chip.dataset.chip,
+        ),
+        heard_other: heardOther.hidden ? '' : heardOther.value,
+        more: field('more'),
+        code_of_conduct: fd.has('coc'),
+        photo_consent: fd.has('photoConsent'),
+        website: field('website'),
+      });
+    }
+    submitting = true;
+    submitButton.disabled = true;
+    (back as HTMLButtonElement).disabled = true;
+    nextLabel.textContent = 'sending...';
+    submitStatus.textContent = 'Saving your membership...';
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...JSON.parse(pendingSubmission), turnstile_token: token }),
+        credentials: 'omit',
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!response.ok) {
+        // A rejected request can be edited. For uncertain failures, retry the
+        // same immutable payload so a lost response cannot duplicate a member.
+        if ([400, 413, 415].includes(response.status)) pendingSubmission = null;
+        const detail = await response.json().catch(() => null);
+        throw new Error(
+          response.status === 429
+            ? 'Too many submissions. Please wait a minute and try again.'
+            : typeof detail?.error === 'string'
+              ? detail.error
+              : 'Your submission could not be confirmed. Please try again.',
+        );
+      }
+      const result = await response.json();
+      if (result.ok !== true)
+        throw new Error('Your submission could not be confirmed. Please try again.');
+      pendingSubmission = null;
+      renderWall(submittedName || 'you');
+      setStage('done');
+      form.reset();
+      top();
+    } catch (error) {
+      submitStatus.textContent =
+        error instanceof Error && error.name === 'Error'
+          ? error.message
+          : 'Connection interrupted. Please retry to confirm your submission.';
+      if (pendingSubmission) {
+        submitStatus.textContent += ' Retrying will send your original answers.';
+      }
+    } finally {
+      token = '';
+      if (widget !== undefined) turnstileWindow.turnstile?.reset(widget);
+      submitting = false;
+      submitButton.disabled = false;
+      (back as HTMLButtonElement).disabled = false;
+      nextLabel.textContent = 'send application';
+    }
   });
 
   // Clear the invalid flag on a required field as soon as it's fixed.
@@ -418,27 +720,46 @@ let last = '';
     const val = (e.target as HTMLInputElement).value;
     if (label && val.trim()) label.classList.remove('is-invalid');
   });
+  root.addEventListener('change', (e) => {
+    const target = e.target as HTMLInputElement;
+    if (target.type !== 'checkbox') return;
+    const label = target.closest('[data-jn-required]');
+    if (label && target.checked) label.classList.remove('is-invalid');
+  });
+
+  // Anything that changes a step's height -- the UW/CSE email swap, an "other..."
+  // input appearing, a textarea being dragged taller -- has to re-sit the track.
+  if (window.ResizeObserver) {
+    const ro = new ResizeObserver(() => syncHeight());
+    panels.forEach((p) => ro.observe(p));
+  }
+  window.addEventListener('resize', syncHeight);
 
   back.addEventListener('click', () => {
+    if (submitting) return;
     step = Math.max(0, step - 1);
     render(stage);
-    top();
   });
 
   // Custom selects.
   const selects = [...root.querySelectorAll<HTMLElement>('[data-jn-select]')];
   const values: Record<string, string> = {};
 
-  // Keep in sync with CSE_EMAIL_MAJORS in the frontmatter above.
+  // Match the backend's case-insensitive major rule, including custom answers.
   const CSE_EMAIL_MAJORS = new Set([
     'Computer Science',
     'Computer Engineering',
     'Electrical Engineering',
     'Intended CSE',
   ]);
+  function wantsCseEmail() {
+    return [...CSE_EMAIL_MAJORS].some(
+      (major) => major.toLowerCase() === values.major?.trim().toLowerCase(),
+    );
+  }
 
   function syncEmailField() {
-    const wantsCse = CSE_EMAIL_MAJORS.has(values.major);
+    const wantsCse = wantsCseEmail();
     root.querySelector<HTMLElement>('[data-jn-email="cse"]')!.hidden = !wantsCse;
     root.querySelector<HTMLElement>('[data-jn-email="uw"]')!.hidden = wantsCse;
   }
@@ -462,7 +783,7 @@ let last = '';
         if (name === 'major') syncEmailField();
       }),
     );
-    sel.querySelector('[data-other]')!.addEventListener('click', () => {
+    sel.querySelector('[data-other]')?.addEventListener('click', () => {
       values[name] = '';
       btn.hidden = true;
       other.hidden = false;
@@ -524,36 +845,89 @@ let last = '';
 </style>
 
 <style>
+  .jn-trap {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  [data-jn-verification][hidden] {
+    display: none !important;
+  }
+  .jn-submit-status {
+    text-align: center;
+    font: 300 26px/1.4 var(--font-body);
+    margin: 30px 100px 0;
+  }
+  .jn-step-btn:disabled {
+    opacity: 0.6;
+    cursor: wait;
+  }
   /* The page renders at 85%, matching the landing page. */
   .jn-shrink {
     zoom: 0.85;
     width: 2083px;
     margin-inline: auto;
   }
+  /* The source frame stacks the hero on one centred axis under the marquee,
+     instead of the left heading / right tagline split this page used to have. */
   .jn-header {
-    padding: 330px 100px 0;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: end;
-  }
-  .jn-header-left {
+    position: relative;
+    padding: 300px 100px 0;
     display: flex;
     flex-direction: column;
-    gap: 40px;
+    align-items: center;
+    text-align: center;
   }
-  .jn-header-right {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 50px;
-    margin-bottom: 30px;
+  .jn-header > :global([data-reveal]),
+  .jn-wall-head > :global([data-reveal]) {
+    width: 100%;
+  }
+  .jn-heading {
+    /* The marquee carries the page's display weight; this sits under it. */
+    font-size: 96px;
+    margin-top: 80px;
   }
   .jn-sub {
-    margin: 0;
+    margin: 44px auto 0;
+    max-width: 1000px;
     font: 300 34px/1.5 var(--font-body);
     color: var(--cseed-ink);
     white-space: pre-line;
-    text-align: right;
+    text-align: center;
+  }
+  .jn-cta {
+    position: relative;
+    width: 100%;
+    margin-top: 70px;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* The source's Caveat annotations, set in this design system's own hand. */
+  .jn-hand {
+    position: absolute;
+    font: 400 40px/1 var(--font-hand);
+    letter-spacing: 0.04em;
+    color: var(--cseed-ink);
+    white-space: nowrap;
+    transform: rotate(var(--rot));
+  }
+  .jn-hand-majors {
+    top: 224px;
+    left: 300px;
+    --rot: -3deg;
+  }
+  .jn-hand-weekly {
+    top: 14px;
+    left: 230px;
+    --rot: 5deg;
+  }
+  .jn-hand-quick {
+    top: 22px;
+    right: 180px;
+    --rot: -5deg;
   }
 
   .jn-step-btn {
@@ -583,30 +957,42 @@ let last = '';
   }
 
   .jn-form {
-    padding: 80px 0 0;
+    /* The tail spacer lives inside the wall now, so the form stage -- which
+       hides the wall -- carries its own room above the footer. */
+    padding: 80px 0 200px;
   }
-  .jn-track-clip {
-    overflow-x: clip;
-    overflow-y: visible;
-  }
-  .jn-track {
+  .jn-form-head {
     display: flex;
-    align-items: flex-start;
-    transition: transform 900ms cubic-bezier(0.65, 0, 0.2, 1);
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+  /* The steps sit on top of each other and cross-fade, and the track is sized to
+     whichever one is showing (see `syncHeight`), so moving on morphs the form
+     rather than sliding a fixed block sideways. Nothing is clipped, so the
+     custom selects can still open past the bottom edge. */
+  .jn-track {
+    position: relative;
+    height: 0;
+    transition: height 600ms var(--ease-soft);
   }
   .jn-panel {
-    flex: 0 0 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
     box-sizing: border-box;
-    padding: 0 100px 90px;
+    padding: 0 100px 40px;
     opacity: 0;
-    max-height: 1400px;
-    overflow: hidden;
-    transition: opacity 700ms var(--ease-soft);
+    visibility: hidden;
+    transition:
+      opacity 420ms var(--ease-soft),
+      visibility 0s linear 420ms;
   }
   .jn-panel.is-active {
     opacity: 1;
-    max-height: none;
-    overflow: visible;
+    visibility: visible;
+    transition: opacity 420ms var(--ease-soft);
   }
 
   .jn-heard {
@@ -661,12 +1047,71 @@ let last = '';
     transform: rotate(-4deg);
   }
 
+  /* The code-of-conduct step: the belief line and the four principles are read
+     out of the markdown, so this only has to lay them out. */
+  .jn-coc {
+    grid-column: span 2;
+  }
+  .jn-coc-lead {
+    margin: 0;
+    max-width: 1300px;
+    font: 300 32px/1.5 var(--font-body);
+    color: var(--cseed-ink);
+    text-wrap: pretty;
+  }
+  .jn-coc-list {
+    margin: 54px 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 80px;
+    row-gap: 40px;
+  }
+  .jn-coc-item {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-top: 1px solid var(--cseed-ink);
+    padding-top: 20px;
+  }
+  .jn-coc-name {
+    font: 400 28px/1.2 var(--font-body);
+    color: var(--cseed-ink);
+  }
+  .jn-coc-detail {
+    font: 300 21px/1.5 var(--font-body);
+    color: var(--cseed-ink-soft);
+    text-wrap: pretty;
+  }
+  .jn-coc-more {
+    margin: 46px 0 0;
+    font: 300 22px/1.5 var(--font-body);
+    color: var(--cseed-ink-soft);
+  }
+  .jn-coc-more a {
+    color: var(--cseed-ink);
+    background: linear-gradient(
+      transparent 60%,
+      var(--cseed-sun) 60%,
+      var(--cseed-sun) 96%,
+      transparent 96%
+    );
+  }
+
   .jn-consent {
     display: flex;
     align-items: flex-start;
     gap: 20px;
     cursor: pointer;
-    margin-top: 70px;
+    margin-top: 56px;
+  }
+  /* Flagged by the step validation when the agreement is left unticked. */
+  .jn-consent.is-invalid .jn-checkbox {
+    border-color: #b3261e;
+  }
+  .jn-consent.is-invalid span {
+    color: #b3261e;
   }
   .jn-checkbox {
     appearance: none;
@@ -700,18 +1145,19 @@ let last = '';
     color: var(--cseed-ink);
   }
 
+  /* The source centres the forward button and leaves "back" on the margin. */
   .jn-controls {
+    position: relative;
     padding: 60px 100px 0;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-  }
-  .jn-controls-left {
-    display: flex;
-    align-items: center;
-    gap: 40px;
   }
   .jn-back {
+    position: absolute;
+    left: 100px;
+    top: calc(50% + 30px);
+    transform: translateY(-50%);
     appearance: none;
     border: 0;
     background: none;
@@ -731,15 +1177,57 @@ let last = '';
     transition: all 600ms var(--ease-soft);
   }
 
+  /* The wave and the ground it opens onto run the full canvas, so they step
+     back out of the 85% shrink the same way `.footer-compact` does. */
+  .jn-bleed {
+    width: calc(2083px / 0.85);
+    margin-left: calc(2083px * (1 - 1 / 0.85) / 2);
+    margin-top: 220px;
+  }
   .jn-wall {
-    padding: 200px 100px 0;
+    position: relative;
+    background: var(--surface-strip);
+    /* The ground bleeds, but the list keeps the page's own 100px gutters:
+       the bleed overhangs the canvas by half its extra width on each side. */
+    padding: 120px calc(100px + (2083px / 0.85 - 2083px) / 2) 0;
   }
   .jn-wall-head {
     display: flex;
     flex-direction: column;
     gap: 34px;
     align-items: flex-end;
+    text-align: right;
     margin-bottom: 130px;
+  }
+  /* The source underlines a single word of the heading; this is the
+     highlighter the rest of the site already uses for that job. */
+  .jn-mark {
+    padding: 0 10px;
+    margin: 0 -10px;
+    background: linear-gradient(
+      transparent 42%,
+      var(--cseed-sun) 42%,
+      var(--cseed-sun) 92%,
+      transparent 92%
+    );
+  }
+  .jn-wall-sub {
+    margin: 0;
+    font: 300 24px/1.4 var(--font-body);
+    color: var(--cseed-ink-soft);
+  }
+  /* The head is right-aligned and its heading runs nearly the full measure,
+     so these sit in the two bands that stay clear: the eyebrow's own row, and
+     the gap between the subtitle and the first column of names. */
+  .jn-hand-growing {
+    top: 112px;
+    left: calc(100px + (2083px / 0.85 - 2083px) / 2);
+    --rot: 3deg;
+  }
+  .jn-hand-build {
+    top: 408px;
+    left: calc(280px + (2083px / 0.85 - 2083px) / 2);
+    --rot: -5deg;
   }
   .jn-members {
     column-count: 12;

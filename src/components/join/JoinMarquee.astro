@@ -1,0 +1,91 @@
+---
+/*
+ * The "join cseed!" band -- Figma "Join — Draft 1" node 360:101 (hero/marquee),
+ * brought over into this site's own palette and display face.
+ *
+ * The source sets five copies in Poppins Bold at 89.685 / 127.294 / 150.439 /
+ * 127.294 / 89.685 on the 2083px canvas, rotated -3 / +2 / 0 / -2 / +4 degrees
+ * and staggered vertically, inside a clip window that cuts the outer two off at
+ * both edges. The source canvas is 2083px wide, the same as this page's, so the
+ * sizes, the 58px spacing and the band are its numbers rounded -- which also
+ * puts the centre copy on the site's own 150px display measure. The vertical
+ * stagger is the source's tops re-centred on the band, and its ghost / forest /
+ * ink / blue / ghost colour run maps onto pale blue / sage / ink / sky / pale blue.
+ *
+ * The band is decorative -- the page's real <h1> is the stage heading below it.
+ */
+const copies = [
+  { size: 90, rot: -3, dy: -13, ink: 'var(--text-ghost)' },
+  { size: 127, rot: 2, dy: 12, ink: 'var(--cseed-sage)' },
+  { size: 150, rot: 0, dy: 0, ink: 'var(--cseed-ink)' },
+  { size: 127, rot: -2, dy: -12, ink: 'var(--cseed-sky)' },
+  { size: 90, rot: 4, dy: 18, ink: 'var(--text-ghost)' },
+];
+
+/*
+ * Three identical sets, centred in the band, travelling exactly one set (-1/3)
+ * per loop so the wrap is seamless. Three rather than two is what puts the big
+ * ink copy in the middle of the window at rest, the way the source frame has
+ * it: the run is 3 sets wide, so the band's centre falls in the middle of set
+ * 2, and because the size ladder 143/203/240/203/143 is a palindrome that
+ * middle is the ink copy itself -- no measured offset, whatever the font does.
+ * The spacing is a symmetric `margin-inline` rather than a flex `gap` for the
+ * same reason: it keeps every copy centred in its own box, and keeps one set's
+ * advance exactly a third of the run.
+ */
+const run = [...copies, ...copies, ...copies];
+---
+
+<div class="jn-marquee" aria-hidden="true">
+  <div class="jn-marquee-track">
+    {
+      run.map((c) => (
+        <span
+          class="jn-mq"
+          style={`--s:${c.size}px; --rot:${c.rot}deg; --dy:${c.dy}px; --ink:${c.ink}`}
+        >
+          join cseed!
+        </span>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .jn-marquee {
+    /* Clipped horizontally only, so the taller copies still bleed past the
+       band the way they do in the source. */
+    overflow-x: clip;
+    overflow-y: visible;
+    height: 217px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .jn-marquee-track {
+    display: flex;
+    align-items: center;
+    flex: none;
+    animation: jn-marquee-run 90s linear infinite;
+  }
+  .jn-mq {
+    flex: none;
+    margin-inline: 29px;
+    font: var(--weight-display) var(--s) / 1 var(--font-display);
+    letter-spacing: -0.045em;
+    color: var(--ink);
+    white-space: nowrap;
+    transform: translateY(var(--dy)) rotate(var(--rot));
+  }
+
+  /* One set's worth of travel. The shared `cseed-marquee` keyframes go to -50%,
+     which is one set only when the run is doubled; this run is tripled. */
+  @keyframes jn-marquee-run {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-33.3333%);
+    }
+  }
+</style>
