@@ -44,12 +44,10 @@ const launchFacts = [
 <PageLayout title="buildher — cseed">
   <PondHero>
     <div class="bh-hero-copy">
-      <Reveal><div class="t-eyebrow bh-hero-eyebrow">a community to build in</div></Reveal>
-      <Reveal delay={120}><h1 class="bh-hero-title">buildher</h1></Reveal>
-      <Reveal delay={220}><div class="bh-hero-tagline">grow together</div></Reveal>
-      <Reveal delay={320}>
+      <Reveal><h1 class="bh-hero-title">buildher</h1></Reveal>
+      <Reveal delay={160}>
         <p class="bh-hero-sub" style="white-space:pre-line">
-          {'A safe and inclusive environment for women and\nnon-binary students to build, learn and network.'}
+          {'A safe and inclusive environment for women and non-binary students to build, learn and network.'}
         </p>
       </Reveal>
     </div>
@@ -58,7 +56,7 @@ const launchFacts = [
   <section class="bh-section">
     <Rule width="100%" weight={0.5} animate class="bh-rule" />
     <div class="bh-head" style="margin:70px 0 120px">
-      <Reveal><div class="t-eyebrow">01 / what we do</div></Reveal>
+      <Reveal><div class="t-eyebrow">what we do</div></Reveal>
       <Reveal delay={120}><h2 class="t-serif">general events</h2></Reveal>
     </div>
     <div class="bh-events">
@@ -84,8 +82,7 @@ const launchFacts = [
   <section class="bh-launch">
     <div class="bh-launch-inner">
       <div class="bh-launch-copy">
-        <div class="bh-hand">build your project :)</div>
-        <Reveal><div class="t-eyebrow">02 / the yearly cohort</div></Reveal>
+        <Reveal><div class="t-eyebrow">the yearly cohort</div></Reveal>
         <Reveal delay={150}>
           <h2 class="bh-launch-title">launchpad</h2>
         </Reveal>
@@ -118,38 +115,29 @@ const launchFacts = [
       </div>
 
       <div class="bh-scene">
-        <svg class="bh-water" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-          <path
-            d="M50,4 C77,3 95,21 95,45 C95,70 85,94 56,96 C30,98 7,83 5,55 C3,30 24,5 50,4 Z"
-            fill="var(--bh-water)"
-          />
-          <path
-            d="M50,15 C71,14 84,28 84,47 C84,66 76,83 55,85 C34,87 17,74 16,53 C15,33 30,16 50,15 Z"
-            fill="var(--bh-water-hi)"
-            opacity="0.4"
-          />
-          <g fill="none" stroke="#cfe6ea" stroke-linecap="round">
-            <path d="M30 33 C 39 30, 47 35, 56 32" stroke-width="0.55" opacity="0.5" />
-            <path d="M60 25 C 67 23, 74 27, 79 24" stroke-width="0.45" opacity="0.4" />
-            <path d="M22 50 C 31 47, 39 52, 47 49" stroke-width="0.55" opacity="0.45" />
-            <path d="M63 58 C 71 56, 79 60, 85 57" stroke-width="0.5" opacity="0.4" />
-            <path d="M40 68 C 48 66, 55 70, 62 67" stroke-width="0.5" opacity="0.4" />
-          </g>
-        </svg>
-
         <div class="bh-scene-item bh-si-photo1 bh-float bh-f1">
           <Reveal mode="fade">
-            <div class="bh-lp-photo" style="width:404px; transform:rotate(-5deg)">
-              <img class="bh-lp-frame" src="/images/buildher/lilypad-outline.png" alt="" aria-hidden="true" />
-              <div class="bh-lp-mask"><img src="/images/buildher/multimodal.webp" alt="buildher members at a workshop" /></div>
+            <div class="bh-lp-photo" style="width:420px; aspect-ratio:1039/985; transform:rotate(-5deg)">
+              <img class="bh-lp-frame" src="/images/buildher/lilypad-outline1.png" alt="" aria-hidden="true" />
+              <div
+                class="bh-lp-mask"
+                style="-webkit-mask:url('/images/buildher/lilypad-outline1.png') center/contain no-repeat; mask:url('/images/buildher/lilypad-outline1.png') center/contain no-repeat"
+              >
+                <img src="/images/buildher/multimodal.webp" alt="buildher members at a workshop" />
+              </div>
             </div>
           </Reveal>
         </div>
         <div class="bh-scene-item bh-si-photo2 bh-float bh-f2">
           <Reveal mode="fade" delay={150}>
-            <div class="bh-lp-photo" style="width:360px; transform:rotate(8deg)">
-              <img class="bh-lp-frame" src="/images/buildher/lilypad-outline.png" alt="" aria-hidden="true" />
-              <div class="bh-lp-mask"><img src="/images/buildher/matcha2.webp" alt="buildher matcha cafe event" /></div>
+            <div class="bh-lp-photo" style="width:380px; aspect-ratio:1043/1025; transform:rotate(8deg)">
+              <img class="bh-lp-frame" src="/images/buildher/lilypad-outline2.png" alt="" aria-hidden="true" />
+              <div
+                class="bh-lp-mask"
+                style="-webkit-mask:url('/images/buildher/lilypad-outline2.png') center/contain no-repeat; mask:url('/images/buildher/lilypad-outline2.png') center/contain no-repeat"
+              >
+                <img src="/images/buildher/matcha2.webp" alt="buildher matcha cafe event" />
+              </div>
             </div>
           </Reveal>
         </div>
@@ -418,8 +406,8 @@ const launchFacts = [
   }
   .bh-si-photo1 { left: 10px; top: 40px; z-index: 3; }
   .bh-si-photo2 { right: 8px; top: 356px; z-index: 3; }
-  .bh-si-lily1 { right: 120px; top: 96px; z-index: 5; }
-  .bh-si-lily2 { left: 150px; bottom: 80px; z-index: 5; }
+  .bh-si-lily1 { left: 344px; top: 352px; z-index: 6; }
+  .bh-si-lily2 { right: 320px; top: 630px; z-index: 6; }
   .bh-lp-photo {
     position: relative;
     aspect-ratio: 1039 / 985;
