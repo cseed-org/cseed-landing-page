@@ -4,6 +4,7 @@ import Reveal from '../components/core/Reveal.astro';
 import Rule from '../components/core/Rule.astro';
 import TextLink from '../components/core/TextLink.astro';
 import Lilypad from '../components/buildher/Lilypad.astro';
+import PondHero from '../components/buildher/PondHero.astro';
 
 const pillars = [
   {
@@ -41,25 +42,18 @@ const launchFacts = [
 ---
 
 <PageLayout title="buildher — cseed">
-  <header class="bh-header">
-    <div class="bh-garden" aria-hidden="true">
-      <div class="bh-float bh-f1 bh-draggable"><Lilypad variant="flower" size={78} /></div>
-      <div class="bh-float bh-f2 bh-draggable"><Lilypad variant="leaf" size={104} rotate={-14} notch={140} /></div>
-      <div class="bh-float bh-f3 bh-draggable"><Lilypad variant="flower" size={54} /></div>
-      <div class="bh-float bh-f4 bh-draggable"><Lilypad variant="leaf" size={72} rotate={22} notch={20} /></div>
+  <PondHero>
+    <div class="bh-hero-copy">
+      <Reveal><div class="t-eyebrow bh-hero-eyebrow">a community to build in</div></Reveal>
+      <Reveal delay={120}><h1 class="bh-hero-title">buildher</h1></Reveal>
+      <Reveal delay={220}><div class="bh-hero-tagline">grow together</div></Reveal>
+      <Reveal delay={320}>
+        <p class="bh-hero-sub" style="white-space:pre-line">
+          {'A safe and inclusive environment for women and\nnon-binary students to build, learn and network.'}
+        </p>
+      </Reveal>
     </div>
-    <div class="bh-drag-hint" data-drag-hint>drag me!</div>
-    <div class="bh-header-left">
-      <Reveal><div class="t-eyebrow">a community to build in</div></Reveal>
-      <Reveal delay={120}><h1 class="t-serif bh-title" style="font-size:168px">buildher</h1></Reveal>
-      <Reveal delay={220}><div class="bh-tagline">grow together</div></Reveal>
-    </div>
-    <Reveal delay={300}>
-      <p class="bh-body" style="margin-bottom:30px; white-space:pre-line">
-        {'A safe and inclusive environment for women and\nnon-binary students to build, learn and network.'}
-      </p>
-    </Reveal>
-  </header>
+  </PondHero>
 
   <section class="bh-section">
     <Rule width="100%" weight={0.5} animate class="bh-rule" />
@@ -134,21 +128,33 @@ const launchFacts = [
             fill="var(--bh-water-hi)"
             opacity="0.4"
           />
-          <g fill="none" stroke="#CDE7EC" stroke-width="0.7" opacity="0.55" stroke-linecap="round">
-            <path d="M28 44 C 40 41, 52 47, 64 43" />
-            <path d="M26 62 C 42 57, 58 64, 74 59" />
-            <path d="M42 78 C 54 75, 66 80, 76 76" />
+          <g fill="none" stroke="#cfe6ea" stroke-linecap="round">
+            <path d="M30 33 C 39 30, 47 35, 56 32" stroke-width="0.55" opacity="0.5" />
+            <path d="M60 25 C 67 23, 74 27, 79 24" stroke-width="0.45" opacity="0.4" />
+            <path d="M22 50 C 31 47, 39 52, 47 49" stroke-width="0.55" opacity="0.45" />
+            <path d="M63 58 C 71 56, 79 60, 85 57" stroke-width="0.5" opacity="0.4" />
+            <path d="M40 68 C 48 66, 55 70, 62 67" stroke-width="0.5" opacity="0.4" />
           </g>
         </svg>
 
         <div class="bh-scene-item bh-si-photo1 bh-float bh-f1">
-          <Reveal mode="fade"><Lilypad variant="photo" src="/images/buildher/multimodal.webp" size={404} rotate={-5} notch={320} /></Reveal>
+          <Reveal mode="fade">
+            <div class="bh-lp-photo" style="width:404px; transform:rotate(-5deg)">
+              <img class="bh-lp-frame" src="/images/buildher/lilypad-outline.png" alt="" aria-hidden="true" />
+              <div class="bh-lp-mask"><img src="/images/buildher/multimodal.webp" alt="buildher members at a workshop" /></div>
+            </div>
+          </Reveal>
         </div>
         <div class="bh-scene-item bh-si-photo2 bh-float bh-f2">
-          <Reveal mode="fade" delay={150}><Lilypad variant="photo" src="/images/buildher/matcha2.webp" size={360} rotate={7} notch={205} /></Reveal>
+          <Reveal mode="fade" delay={150}>
+            <div class="bh-lp-photo" style="width:360px; transform:rotate(8deg)">
+              <img class="bh-lp-frame" src="/images/buildher/lilypad-outline.png" alt="" aria-hidden="true" />
+              <div class="bh-lp-mask"><img src="/images/buildher/matcha2.webp" alt="buildher matcha cafe event" /></div>
+            </div>
+          </Reveal>
         </div>
-        <div class="bh-scene-item bh-si-lily1 bh-float bh-f4"><Lilypad variant="flower" tone="pink" size={88} /></div>
-        <div class="bh-scene-item bh-si-lily2 bh-float bh-f2"><Lilypad variant="flower" tone="pink" size={60} /></div>
+        <div class="bh-scene-item bh-si-lily1 bh-float bh-f4"><img class="bh-lily-img" src="/images/buildher/lily.webp" alt="" style="width:96px" /></div>
+        <div class="bh-scene-item bh-si-lily2 bh-float bh-f2"><img class="bh-lily-img" src="/images/buildher/lily.webp" alt="" style="width:64px" /></div>
       </div>
     </div>
   </section>
@@ -164,7 +170,38 @@ const launchFacts = [
     text-wrap: pretty;
   }
 
-  /* ---- header ---- */
+  /* ---- pond hero ---- */
+  .bh-hero-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 26px;
+    text-shadow: 0 2px 20px rgba(0, 20, 24, 0.45);
+  }
+  .bh-hero-eyebrow {
+    color: var(--cseed-white);
+  }
+  .bh-hero-title {
+    margin: 0;
+    font: var(--weight-display) 240px/0.95 var(--font-display);
+    letter-spacing: -0.045em;
+    color: var(--cseed-white);
+  }
+  .bh-hero-tagline {
+    font: 400 52px/1 var(--font-hand);
+    letter-spacing: 0.03em;
+    color: var(--cseed-seed);
+    transform: rotate(-3deg);
+    padding-left: 6px;
+  }
+  .bh-hero-sub {
+    margin: 14px 0 0;
+    max-width: 760px;
+    font: 300 34px/1.5 var(--font-body);
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  /* ---- header (no longer used) ---- */
   .bh-header {
     position: relative;
     padding: 330px 100px 0;
@@ -311,7 +348,6 @@ const launchFacts = [
     padding: 0 8px;
     line-height: 1.45;
   }
-
   /* ---- launchpad ---- */
   .bh-launch {
     --bh-water: #2e6e7e;
@@ -384,6 +420,34 @@ const launchFacts = [
   .bh-si-photo2 { right: 8px; top: 356px; z-index: 3; }
   .bh-si-lily1 { right: 120px; top: 96px; z-index: 5; }
   .bh-si-lily2 { left: 150px; bottom: 80px; z-index: 5; }
+  .bh-lp-photo {
+    position: relative;
+    aspect-ratio: 1039 / 985;
+    filter: drop-shadow(0 14px 22px rgba(0, 20, 24, 0.36));
+  }
+  .bh-lp-frame {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .bh-lp-mask {
+    position: absolute;
+    inset: 2.5%;
+    -webkit-mask: url('/images/buildher/lilypad-outline.png') center / contain no-repeat;
+    mask: url('/images/buildher/lilypad-outline.png') center / contain no-repeat;
+  }
+  .bh-lp-mask img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .bh-lily-img {
+    display: block;
+    filter: drop-shadow(0 8px 14px rgba(0, 20, 24, 0.28));
+  }
 
   .bh-float { animation: bh-bob 6s var(--ease-inout) infinite alternate; }
   .bh-f1 { animation-duration: 6.4s; }

@@ -27,6 +27,10 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# local tool config (mise / rtx)
+mise.toml
+.mise.toml
+
 # editors / os
 .DS_Store
 Thumbs.db
