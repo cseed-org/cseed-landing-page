@@ -7,8 +7,10 @@ interface Props {
   position?: string;
   style?: string;
   z?: number;
+  src?: string;
+  alt?: string;
 }
-const { photoId, w, h, rotate = 0, position = 'center', style = '', z } = Astro.props;
+const { photoId, w, h, rotate = 0, position = 'center', style = '', z, src, alt = '' } = Astro.props;
 ---
 
 <figure
@@ -16,7 +18,13 @@ const { photoId, w, h, rotate = 0, position = 'center', style = '', z } = Astro.
   data-photo={photoId}
   style={`--pl-rotate:${rotate}deg; ${z !== undefined ? `z-index:${z};` : ''} ${style}`}
 >
-  <div class="polaroid-photo ph-light" style={`width:${w}px; height:${h}px; background-position:${position}`}></div>
+  {
+    src ? (
+      <img class="polaroid-photo" src={src} alt={alt} width={w} height={h} style={`object-position:${position}`} />
+    ) : (
+      <div class="polaroid-photo ph-light" style={`width:${w}px; height:${h}px; background-position:${position}`} />
+    )
+  }
 </figure>
 
 <style>
@@ -45,5 +53,9 @@ const { photoId, w, h, rotate = 0, position = 'center', style = '', z } = Astro.
   }
   .polaroid-photo {
     overflow: hidden;
+  }
+  img.polaroid-photo {
+    display: block;
+    object-fit: cover;
   }
 </style>

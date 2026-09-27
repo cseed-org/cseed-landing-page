@@ -4,8 +4,8 @@ import Rule from '../core/Rule.astro';
 import DropdownNav from './DropdownNav.astro';
 
 /* Source node "nav bar" -- 2085x200, wordmark inset 41px, Playfair 80 items
-   right-aligned, 1px black rule 182px down. Rendered here at a 100px band
-   (itemSize 38 / wordmarkSize 36) -- same ratio every source page renders it at. */
+   right-aligned, 1px black rule 182px down. Rendered here at a compact 72px band
+   (itemSize 28 / wordmarkSize 28). */
 const items = [
   {
     label: 'programs',
@@ -19,12 +19,12 @@ const items = [
   { label: 'about us', href: '/about-us/' },
   { label: 'join', href: '/join/' },
 ];
-const height = 100;
+const height = 72;
 ---
 
 <div class="nav-bar" style={`height:${height}px`}>
   <a class="nav-bar-mark" href="/" style={`height:${height}px`}>
-    <Wordmark size={36} />
+    <Wordmark size={28} />
   </a>
   <div class="nav-bar-items" style={`height:${height}px`}>
     {
@@ -68,7 +68,7 @@ const height = 100;
     top: 0;
     display: flex;
     align-items: center;
-    gap: 36px;
+    gap: 30px;
   }
   .nav-bar-item {
     position: relative;
@@ -78,7 +78,7 @@ const height = 100;
   .nav-bar-link {
     font-family: var(--font-display);
     font-weight: var(--weight-display);
-    font-size: 38px;
+    font-size: 28px;
     line-height: 1;
     letter-spacing: var(--tracking-display);
     color: var(--text-body);

@@ -16,7 +16,7 @@ const programs = [
     blurb: 'Make progress on that idea you keep\nthinking about, with a community\nbuilding alongside you.',
     link: 'find your cohort',
     href: '/buildspace/',
-    photo: { slot: 'lp-buildspace', w: 920, h: 590, rotate: -1.2, position: 'center 30%', style: 'left:130px; top:555px' },
+    photo: { slot: 'lp-buildspace', w: 920, h: 590, rotate: -1.2, position: 'center', style: 'left:130px; top:555px', src: '/images/buildspace.webp', alt: 'The buildspace cohort making the c hand sign together' },
     copy: 'left:1150px; top:610px',
   },
   {
@@ -36,7 +36,16 @@ const programs = [
     blurb: 'Bring a project, a question, or just\nyourself. A weekly space to make\nthings and meet people.',
     link: 'see you saturday',
     href: '/saturdays/',
-    photo: { slot: 'lp-saturdays', w: 1100, h: 530, rotate: -1.6, position: 'center', style: 'left:80px; top:1900px' },
+    photo: {
+      slot: 'lp-saturdays',
+      w: 1100,
+      h: 530,
+      rotate: -1.6,
+      position: 'center',
+      style: 'left:80px; top:1900px',
+      src: '/images/saturdays.webp',
+      alt: 'Three cseed members making the c hand sign at a Saturday session',
+    },
     copy: 'left:1260px; top:1985px',
   },
 ];
@@ -69,7 +78,7 @@ const programs = [
       <>
         {p.photo && (
           <Reveal mode="fade" style={`position:absolute; ${p.photo.style}`}>
-            <Polaroid photoId={p.photo.slot} w={p.photo.w} h={p.photo.h} rotate={p.photo.rotate} position={p.photo.position} />
+            <Polaroid photoId={p.photo.slot} w={p.photo.w} h={p.photo.h} rotate={p.photo.rotate} position={p.photo.position} src={p.photo.src} alt={p.photo.alt} />
           </Reveal>
         )}
         <div class="program-copy" style={`position:absolute; ${p.copy}`} id={p.name}>
@@ -95,10 +104,27 @@ const programs = [
   }
 
   <Reveal mode="fade" style="position:absolute; left:965px; top:1225px">
-    <Polaroid photoId="lp-buildher-wide" w={740} h={560} rotate={-1.5} position="center 20%" />
+    <Polaroid
+      photoId="lp-buildher-wide"
+      w={740}
+      h={560}
+      rotate={-1.5}
+      position="center"
+      src="/images/buildher-wide.webp"
+      alt="buildher members making pipe-cleaner crafts at a workshop table"
+    />
   </Reveal>
   <Reveal mode="fade" delay={180} style="position:absolute; left:1680px; top:1375px; z-index:2">
-    <Polaroid photoId="lp-buildher-tall" w={290} h={440} rotate={2.2} position="22% center" z={2} />
+    <Polaroid
+      photoId="lp-buildher-tall"
+      w={290}
+      h={440}
+      rotate={2.2}
+      position="center"
+      z={2}
+      src="/images/buildher-tall.webp"
+      alt="A buildher member holding up a pink pipe cleaner as a smile"
+    />
   </Reveal>
 </div>
 

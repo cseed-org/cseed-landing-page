@@ -84,18 +84,15 @@ const projects: [string, string, string, number][] = [
   ['potluck', 'Plan shared dinners without the group chat chaos.', 'Ruby Clarke', 3],
 ];
 
-// `dot` is where each track's orbit dot sits, in degrees clockwise from the top.
 const tracks = [
-  { kind: 'hardware', label: 'hardware', ring: '#B45CE0', dot: 215 },
-  { kind: 'software', label: 'software', ring: '#16A36F', dot: 35 },
+  { kind: 'hardware', label: 'hardware' },
+  { kind: 'software', label: 'software' },
   {
     kind: 'xra',
     label: 'extended reality',
-    ring: '#2F5BFF',
-    dot: 0,
     note: 'build with computer vision, AR and VR',
   },
-  { kind: 'creatives', label: 'creatives', ring: '#FF0066', dot: 140 },
+  { kind: 'creatives', label: 'creatives' },
 ] as const;
 ---
 
@@ -245,12 +242,6 @@ const tracks = [
           <Reveal delay={i * 120}>
             <div class="bs-track" data-kind={t.kind}>
               <div class="bs-track-icon" data-track-hover>
-                <div class="bs-track-ring" style={`border-color:${t.ring}`} />
-                <div class="bs-track-orbit" style={`transform:rotate(${t.dot}deg)`}>
-                  <div class="bs-track-orbit bs-spin-5">
-                    <div class="bs-track-orbit-dot" style={`background:${t.ring}`} />
-                  </div>
-                </div>
                 <div class="bs-track-idle">
                   <div class="bs-spin-8">
                     <TrackIcon kind={t.kind} />
@@ -1203,35 +1194,10 @@ void main() {
   .bs-track-icon:hover {
     z-index: 4;
   }
-  .bs-track-ring {
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    border: 2px dashed;
-    opacity: 0.55;
-  }
-  .bs-track-orbit {
-    position: absolute;
-    inset: 0;
-  }
-  .bs-track-orbit-dot {
-    position: absolute;
-    left: 50%;
-    top: -8px;
-    width: 16px;
-    height: 16px;
-    margin-left: -8px;
-    border-radius: 50%;
-  }
-  .bs-spin-5 {
-    animation: bs-spin 5s linear infinite;
-    animation-play-state: paused;
-  }
   .bs-spin-8 {
     animation: bs-spin 8s linear infinite;
     animation-play-state: paused;
   }
-  .bs-track[data-kind='xra'] .bs-track-icon:hover .bs-spin-5,
   .bs-track[data-kind='xra'] .bs-track-icon:hover .bs-spin-8 {
     animation-play-state: running;
   }
