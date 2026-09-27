@@ -9,6 +9,8 @@ interface Props {
   color?: string;
   style?: string;
   class?: string;
+  /** Open in a new tab (for links off the site, like application forms). */
+  external?: boolean;
 }
 
 const {
@@ -19,12 +21,20 @@ const {
   color,
   style = '',
   class: className,
+  external = false,
 } = Astro.props;
 const mono = variant === 'mono';
 const ink = color || (mono ? 'var(--link-on-photo)' : 'var(--link-ink)');
 ---
 
-<a class:list={['text-link', className]} data-variant={variant} href={href} style={`color:${ink}; ${style}`}>
+<a
+  class:list={['text-link', className]}
+  data-variant={variant}
+  href={href}
+  target={external ? '_blank' : undefined}
+  rel={external ? 'noopener noreferrer' : undefined}
+  style={`color:${ink}; ${style}`}
+>
   <span class="text-link-label" style={`background-image:linear-gradient(${ink}, ${ink})`}>
     <slot />
   </span>

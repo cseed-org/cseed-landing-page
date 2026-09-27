@@ -27,4 +27,11 @@ const { heading = 'interested in our mission?', linkLabel = 'sponsor us', href =
     align-items: center;
     gap: 26px;
   }
+
+  @media (max-width: 900px) {
+    :global(html[data-responsive]) .mission-prompt {
+      padding: 0 40px;
+      gap: 40px;
+    }
+  }
 </style>

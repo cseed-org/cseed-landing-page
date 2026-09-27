@@ -4,16 +4,19 @@ import '../styles/global.css';
 interface Props {
   title?: string;
   description?: string;
+  /** Scale to fill any screen width, with a stacked mobile canvas on narrow screens. */
+  responsive?: boolean;
 }
 
 const {
+  responsive = false,
   title = 'cseed — good people. curious ideas.',
   description = 'cseed runs community programs for people who want to build something: buildspace, buildher, and saturdays.',
 } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-responsive={responsive ? true : undefined}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -32,10 +35,22 @@ const {
         return z > 0 ? z : 1;
       }
 
-      /* The whole page is authored on a fixed 2083px canvas and scaled as one unit. */
+      const RESPONSIVE = document.documentElement.hasAttribute('data-responsive');
+
+      /* The canvas width in play: 2083px, or the 780px mobile canvas that
+         responsive pages switch to on narrow screens (see tokens/layout.css). */
+      function canvasWidth(): number {
+        const v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--canvas-width'));
+        return v > 0 ? v : CANVAS_WIDTH;
+      }
+
+      /* The whole page is authored on a fixed-width canvas and scaled as one unit.
+         Responsive pages scale to exactly fill the screen, up as well as down; the
+         rest only ever scale down, as before. */
       function fit() {
         const w = window.innerWidth || document.documentElement.clientWidth || CANVAS_WIDTH;
-        document.documentElement.style.setProperty('--page-zoom', String(Math.min(1, w / CANVAS_WIDTH) || 1));
+        const z = RESPONSIVE ? w / canvasWidth() : Math.min(1, w / CANVAS_WIDTH);
+        document.documentElement.style.setProperty('--page-zoom', String(z || 1));
       }
 
       function fitHero() {

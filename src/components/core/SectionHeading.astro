@@ -29,4 +29,17 @@ const { size = 96, width = 740, align = 'center', color = 'var(--text-body)', as
     letter-spacing: var(--tracking-display);
     white-space: nowrap;
   }
+
+  /* Mobile canvas (responsive pages only): wrap to the column instead of a fixed
+     one-line box. */
+  @media (max-width: 900px) {
+    :global(html[data-responsive]) .section-heading {
+      width: auto !important;
+      max-width: 100%;
+      height: auto;
+      font-size: 84px !important;
+      line-height: 1;
+      white-space: normal;
+    }
+  }
 </style>

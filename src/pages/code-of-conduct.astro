@@ -15,6 +15,7 @@ const html = marked.parse(body) as string;
   title="member code of conduct — cseed"
   description="What cseed expects from every member."
   compactFooter
+  responsive
 >
   <div class="coc-shrink" data-coc>
     <header class="coc-header">
@@ -35,7 +36,7 @@ const html = marked.parse(body) as string;
   /* The page renders at 85%, matching the other pages. */
   .coc-shrink {
     zoom: 0.85;
-    width: 2083px;
+    width: var(--canvas-width);
     margin-inline: auto;
   }
   .coc-header {
@@ -103,5 +104,35 @@ const html = marked.parse(body) as string;
   }
   .coc-body :global(li > ul > li) {
     list-style: circle;
+  }
+
+  /* ---------- Mobile canvas (780px, phones and small tablets) ---------- */
+  @media (max-width: 900px) {
+    .coc-shrink {
+      zoom: 1;
+      width: auto;
+    }
+    .coc-header {
+      padding: 200px 40px 0;
+      gap: 30px;
+    }
+    .coc-header h1 {
+      font-size: 88px !important;
+    }
+    .coc-shrink > div[style*='padding:0 100px'] {
+      padding: 0 40px !important;
+      margin-top: 50px !important;
+    }
+    .coc-body {
+      margin-top: 60px;
+      padding: 0 40px;
+      font-size: 29px;
+    }
+    .coc-body :global(h2) {
+      font-size: 54px;
+    }
+    .coc-body :global(h4) {
+      font-size: 29px;
+    }
   }
 </style>

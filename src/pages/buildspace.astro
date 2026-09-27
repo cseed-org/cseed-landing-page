@@ -84,24 +84,28 @@ const introPhotos: {
   },
 ];
 
-const projects: [string, string, string, number][] = [
-  ['plantpal', 'A sensor that texts you when your plants are thirsty.', 'Maya Chen', 5],
-  ['study buddy', 'Matches classmates into study groups by schedule.', 'Leo Novak', 5],
-  ['thriftmap', 'A live map of secondhand stores and what just came in.', 'Zara Ahmed', 4],
-  ['lofi loop', 'A browser synth for making study beats in a minute.', 'Kai Tanaka', 4],
-  ['commute', 'Bus arrival times on an e-ink display by the door.', 'Omar Haddad', 3],
-  ['potluck', 'Plan shared dinners without the group chat chaos.', 'Ruby Clarke', 3],
-];
-
+// Descriptions from the buildspace FAQ's tracks section; revealed when a card expands.
 const tracks = [
-  { kind: 'hardware', label: 'hardware' },
-  { kind: 'software', label: 'software' },
-  { kind: 'xra', label: 'extended reality' },
-  { kind: 'creatives', label: 'creatives' },
+  { kind: 'software', label: 'software', desc: 'Apps, AI, web dev, systems, all the code-y things.' },
+  {
+    kind: 'hardware',
+    label: 'hardware',
+    desc: 'Robotics, light shows, mechatronics, sensors, drones, etc. We’re partnering with the animation fund and a few other supporters to fund hardware tools for free!',
+  },
+  {
+    kind: 'xra',
+    label: 'extended reality',
+    desc: 'AR/VR apps, immersive games, virtual worlds, mixed reality, and interactive 3D experiences. In partnership with XRA at UW, with Apple Vision Pro and Quest 3 headsets, mentors, and other resources provided.',
+  },
+  {
+    kind: 'creatives',
+    label: 'creatives',
+    desc: 'Film, photography, content creation, writing, crochet, art. Includes design too: motion graphics, industrial design, Framer experiments, and more.',
+  },
 ] as const;
 ---
 
-<PageLayout title="buildspace — cseed" compactFooter>
+<PageLayout title="buildspace — cseed" compactFooter responsive>
   <section class="bs-space" id="cohort" data-nav-dark-hero>
     <div class="bs-galaxy" data-galaxy aria-hidden="true"></div>
     <div class="bs-space-vignette" aria-hidden="true"></div>
@@ -135,7 +139,8 @@ const tracks = [
       <Reveal delay={600}>
         <div style="margin-top:110px">
           <TextLink
-            href="/join/"
+            href="https://docs.google.com/forms/d/e/1FAIpQLSeZVQMGzzQYMKECKOn7Fn5YsbfXQKyMsGFtUpfkwha1w5wHzw/viewform"
+            external
             color="var(--cseed-white)"
             arrowLength={26}
             style="font:400 34px/1 var(--font-body); gap:14px"
@@ -244,49 +249,21 @@ const tracks = [
     <div class="bs-tracks">
       {
         tracks.map((t, i) => (
-          <Reveal delay={i * 120}>
-            <div class="bs-track" data-kind={t.kind}>
-              <div class="bs-track-icon">
-                <div class="bs-track-idle">
-                  <TrackIcon kind={t.kind} />
+          <div class="bs-track-cell" tabindex="0">
+            <Reveal delay={i * 120}>
+              <div class="bs-track" data-kind={t.kind}>
+                <div class="bs-track-icon">
+                  <TrackIcon kind={t.kind} bare />
                 </div>
+                <div class="bs-track-label">
+                  {t.label.split(' ').map((w) => (
+                    <div>{w}</div>
+                  ))}
+                </div>
+                <p class="bs-track-desc">{t.desc}</p>
               </div>
-              <div class="bs-track-label">
-                {t.label.split(' ').map((w) => (
-                  <div>{w}</div>
-                ))}
-              </div>
-            </div>
-          </Reveal>
-        ))
-      }
-    </div>
-  </section>
-
-  <section class="bs-section">
-    <div class="bs-head" style="margin-bottom:130px">
-      <Reveal><div class="t-eyebrow">made at buildspace</div></Reveal>
-      <Reveal delay={120}><h2 class="t-serif">past projects</h2></Reveal>
-    </div>
-    <div class="bs-projects">
-      {
-        projects.map(([name, blurb, by, cohort], i) => (
-          <Reveal delay={(i % 3) * 120}>
-            <div class="bs-project">
-              <div class="bs-project-image">
-                <span>project image</span>
-              </div>
-              <div class="t-eyebrow">
-                cohort {String(cohort).padStart(2, '0')} / {by}
-              </div>
-              <h3 class="t-serif" style="font-size:64px; letter-spacing:-0.035em">
-                {name}
-              </h3>
-              <p class="bs-body" style="font-size:26px">
-                {blurb}
-              </p>
-            </div>
-          </Reveal>
+            </Reveal>
+          </div>
         ))
       }
     </div>
@@ -853,7 +830,7 @@ void main() {
   /* Everything below the space hero renders at 75%. */
   .bs-shrink {
     zoom: 0.75;
-    width: 2083px;
+    width: var(--canvas-width);
     margin-inline: auto;
   }
 
@@ -1026,70 +1003,115 @@ void main() {
     pointer-events: none;
   }
 
-  /* tracks */
+  /* tracks: a horizontal accordion inside a fixed 1883x618 box. Hovering (or
+     focusing) a card widens it and reveals its description; the others narrow to
+     make room. Nothing changes the box's size, so the page never shifts. */
   .bs-tracks {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    display: flex;
     gap: 40px;
+    height: 618px;
+  }
+  .bs-track-cell {
+    flex: 1 1 0;
+    min-width: 0;
+    outline: none;
+    transition: flex-grow 650ms var(--ease-soft);
+  }
+  .bs-track-cell:hover,
+  .bs-track-cell:focus-visible {
+    flex-grow: 2.4;
+  }
+  .bs-track-cell > :global(.reveal) {
+    height: 100%;
   }
   .bs-track {
+    --track-color: var(--cseed-white);
     position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 40px;
-    padding: 90px 30px 100px;
-    background: var(--cseed-white);
-    /* Equal-height cards: "extended reality" wraps to two lines. */
+    justify-content: center;
+    gap: 34px;
     height: 100%;
+    padding: 40px 30px;
     box-sizing: border-box;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--track-color) 45%, white);
   }
+  /* Each card takes a pastel shade of its icon's main color. */
+  .bs-track[data-kind='hardware'] {
+    --track-color: #d66bff;
+  }
+  .bs-track[data-kind='software'] {
+    --track-color: #88d9bd;
+  }
+  .bs-track[data-kind='xra'] {
+    --track-color: #a9c7ff;
+  }
+  .bs-track[data-kind='creatives'] {
+    --track-color: #ffb8d0;
+  }
+  /* Just the icon's mark, straight on the card's flat color. */
   .bs-track-icon {
-    position: relative;
-    width: 300px;
-    height: 300px;
+    flex: none;
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1;
+    width: 220px;
+    height: 220px;
+    transition:
+      width 650ms var(--ease-soft),
+      height 650ms var(--ease-soft);
   }
+  .bs-track-icon :global(svg) {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    overflow: visible;
+  }
+  .bs-tracks:hover .bs-track-icon,
+  .bs-tracks:focus-within .bs-track-icon {
+    width: 180px;
+    height: 180px;
+  }
+  .bs-track-cell:hover .bs-track-icon,
+  .bs-track-cell:focus-visible .bs-track-icon {
+    width: 150px;
+    height: 150px;
+  }
+  /* Same display serif as the "pick your track" heading. */
   .bs-track-label {
-    font: italic 700 42px/1.05 var(--font-mono);
-    letter-spacing: 0.01em;
-    text-transform: uppercase;
+    font: 400 58px/1 var(--font-display);
+    letter-spacing: -0.035em;
     text-align: center;
+    color: var(--cseed-ink);
   }
-  /* projects */
-  .bs-projects {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    column-gap: 70px;
-    row-gap: 120px;
+  /* Fixed measure so the text never reflows while the card is animating open. */
+  .bs-track-desc {
+    flex: none;
+    width: 600px;
+    max-height: 0;
+    margin: -34px 0 0;
+    overflow: hidden;
+    opacity: 0;
+    font: 300 28px/1.45 var(--font-body);
+    text-align: center;
+    color: var(--cseed-ink);
+    transition:
+      max-height 500ms var(--ease-soft),
+      margin 500ms var(--ease-soft),
+      opacity 250ms var(--ease-soft);
   }
-  .bs-project {
-    display: flex;
-    flex-direction: column;
-    gap: 26px;
-    cursor: pointer;
+  .bs-track-cell:hover .bs-track-desc,
+  .bs-track-cell:focus-visible .bs-track-desc {
+    max-height: 240px;
+    margin-top: 0;
+    opacity: 1;
+    transition:
+      max-height 500ms var(--ease-soft) 200ms,
+      margin 500ms var(--ease-soft) 200ms,
+      opacity 400ms var(--ease-soft) 350ms;
   }
-  .bs-project-image {
-    aspect-ratio: 16 / 11;
-    background: var(--cseed-mist);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 600ms var(--ease-soft);
-  }
-  .bs-project:hover .bs-project-image {
-    background: var(--cseed-white);
-    transform: translateY(-10px);
-    box-shadow: 0 26px 50px -24px rgba(40, 34, 20, 0.3);
-  }
-  .bs-project-image span {
-    font: 400 18px/1 var(--font-mono);
-    color: var(--cseed-ink-soft);
-  }
-
   /* Cut-out group photos sit on the page ground with no background of their own. */
   /* Black-and-white member cutout standing on the footer's top edge. */
   .bs-group {
@@ -1103,5 +1125,152 @@ void main() {
     width: 1500px;
     height: auto;
     max-width: none;
+  }
+
+  /* ---------- Mobile canvas (780px, phones and small tablets) ---------- */
+  @media (max-width: 900px) {
+    .bs-space {
+      height: auto;
+    }
+    .bs-space-copy {
+      padding: 220px 40px 150px;
+    }
+    .bs-space-copy h2 {
+      font-size: 150px !important;
+    }
+    .bs-space-copy p {
+      width: auto !important;
+      font-size: 30px;
+    }
+    .bs-cohort-facts {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 30px;
+      margin-top: 70px;
+      align-self: stretch;
+    }
+
+    .bs-shrink {
+      zoom: 1;
+      width: auto;
+    }
+    .bs-section {
+      padding: 150px 40px 0;
+    }
+    .bs-shrink > .bs-section:first-child {
+      padding-top: 120px;
+    }
+    .bs-intro {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 44px;
+    }
+    .bs-intro-title {
+      font-size: 84px !important;
+    }
+    .bs-intro-right {
+      padding-bottom: 0;
+    }
+    .bs-intro-copy {
+      font-size: 30px;
+    }
+    .bs-motto {
+      font-size: 38px;
+    }
+
+    /* Collage becomes a two-column grid; the landscape cohort photo spans both. */
+    .bs-photo-collage {
+      height: auto;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-auto-flow: dense;
+      gap: 34px 26px;
+      align-items: start;
+      margin-top: 80px;
+    }
+    .bs-photo-collage > :global(.reveal) {
+      position: relative !important;
+      left: auto !important;
+      top: auto !important;
+    }
+    .bs-photo-collage > :global(.reveal:nth-child(2)) {
+      grid-column: 1 / -1;
+    }
+    .bs-photo-frame {
+      padding: 12px;
+    }
+    .bs-photo-img {
+      width: 100% !important;
+      height: auto !important;
+    }
+
+    .bs-details {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 64px 44px;
+      margin-top: 120px;
+    }
+    .bs-detail-title {
+      font-size: 44px;
+    }
+
+    .bs-explode {
+      margin: 200px 40px 0;
+    }
+    .bs-explode-block {
+      padding: 80px 44px 440px;
+      min-height: 0;
+    }
+    .bs-explode-copy {
+      gap: 36px;
+    }
+    .bs-explode-copy h2 {
+      font-size: 96px !important;
+    }
+    .bs-explode-tag {
+      font-size: 30px;
+    }
+    .bs-cutout {
+      right: 20px;
+      height: 420px;
+    }
+
+    /* No hover on touch screens: stack the cards with descriptions showing. */
+    .bs-tracks {
+      flex-direction: column;
+      height: auto;
+      gap: 26px;
+    }
+    .bs-track-cell {
+      flex: none;
+    }
+    .bs-track {
+      padding: 56px 40px 60px;
+      gap: 26px;
+    }
+    .bs-track-icon,
+    .bs-tracks:hover .bs-track-icon,
+    .bs-track-cell:hover .bs-track-icon {
+      width: 170px;
+      height: 170px;
+    }
+    .bs-track-label {
+      font-size: 60px;
+    }
+    .bs-track-desc,
+    .bs-track-cell:hover .bs-track-desc {
+      width: auto;
+      max-height: none;
+      margin: 0;
+      opacity: 1;
+    }
+
+    .bs-group {
+      margin-top: 150px;
+      padding: 0 20px;
+    }
+    .bs-group-cutout {
+      width: 100%;
+      max-width: 100%;
+    }
   }
 </style>

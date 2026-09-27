@@ -10,11 +10,13 @@ interface Props {
   description?: string;
   /** Render the footer at 85%, like the landing page. */
   compactFooter?: boolean;
+  /** Fill any screen width, with a stacked mobile layout on narrow screens (see BaseLayout). */
+  responsive?: boolean;
 }
-const { title, description, compactFooter = false } = Astro.props;
+const { title, description, compactFooter = false, responsive = false } = Astro.props;
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title} description={description} responsive={responsive}>
   <div class="canvas-frame">
     <div class="canvas page-canvas" id="top">
       <div class="page-nav"><NavBar /></div>
@@ -54,19 +56,26 @@ const { title, description, compactFooter = false } = Astro.props;
     overflow-x: hidden;
   }
   .page-canvas {
-    width: 2083px;
+    width: var(--canvas-width);
     background: var(--surface-page);
     overflow: hidden;
   }
   .footer-compact {
     zoom: 0.85;
-    width: calc(2083px / 0.85);
+    width: calc(var(--canvas-width) / 0.85);
   }
   .page-nav {
     position: fixed;
     top: 0;
     left: 0;
-    width: 2083px;
+    width: var(--canvas-width);
     z-index: 10;
+  }
+  /* The mobile canvas is authored at its final size, so no extra footer shrink. */
+  @media (max-width: 900px) {
+    :global(html[data-responsive]) .footer-compact {
+      zoom: 1;
+      width: auto;
+    }
   }
 </style>

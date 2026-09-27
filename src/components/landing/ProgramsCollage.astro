@@ -77,11 +77,11 @@ const programs = [
     programs.map((p) => (
       <>
         {p.photo && (
-          <Reveal mode="fade" style={`position:absolute; ${p.photo.style}`}>
+          <Reveal mode="fade" class={`program-photo program-photo--${p.name}`} style={`position:absolute; ${p.photo.style}`}>
             <Polaroid photoId={p.photo.slot} w={p.photo.w} h={p.photo.h} rotate={p.photo.rotate} position={p.photo.position} src={p.photo.src} alt={p.photo.alt} />
           </Reveal>
         )}
-        <div class="program-copy" style={`position:absolute; ${p.copy}`} id={p.name}>
+        <div class={`program-copy program-copy--${p.name}`} style={`position:absolute; ${p.copy}`} id={p.name}>
           <Reveal>
             <div class="program-eyebrow">{p.n}</div>
           </Reveal>
@@ -107,7 +107,7 @@ const programs = [
     ))
   }
 
-  <Reveal mode="fade" style="position:absolute; left:965px; top:1225px">
+  <Reveal mode="fade" class="program-photo program-photo--buildher" style="position:absolute; left:965px; top:1225px">
     <Polaroid
       photoId="lp-buildher-wide"
       w={740}
@@ -118,7 +118,7 @@ const programs = [
       alt="buildher members making pipe-cleaner crafts at a workshop table"
     />
   </Reveal>
-  <Reveal mode="fade" delay={180} style="position:absolute; left:1680px; top:1375px; z-index:2">
+  <Reveal mode="fade" delay={180} class="program-photo program-photo--buildher-tall" style="position:absolute; left:1680px; top:1375px; z-index:2">
     <Polaroid
       photoId="lp-buildher-tall"
       w={290}
@@ -140,7 +140,7 @@ const programs = [
   }
   .programs-collage {
     position: relative;
-    width: 2083px;
+    width: var(--canvas-width);
     height: 2560px;
   }
   .programs-intro {
@@ -234,5 +234,88 @@ const programs = [
   }
   .program-link {
     margin-top: 34px;
+  }
+
+  /* Mobile canvas (responsive pages only): the absolute collage becomes one
+     column -- intro, then each program's photo(s) followed by its copy. */
+  @media (max-width: 900px) {
+    :global(html[data-responsive]) .programs-collage {
+      height: auto;
+      display: flex;
+      flex-direction: column;
+      padding: 0 40px;
+    }
+    :global(html[data-responsive]) .programs-collage > :global(*) {
+      position: relative !important;
+      left: auto !important;
+      top: auto !important;
+    }
+    :global(html[data-responsive]) .programs-intro {
+      width: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 36px;
+    }
+    :global(html[data-responsive]) .programs-title {
+      font-size: 104px;
+    }
+    :global(html[data-responsive]) .highlight-stroke {
+      left: 236px;
+      top: 188px;
+      width: 330px;
+      height: 26px;
+    }
+    :global(html[data-responsive]) .programs-intro-rule {
+      display: none;
+    }
+    :global(html[data-responsive]) .programs-lede {
+      font-size: 30px;
+      white-space: normal;
+    }
+
+    :global(html[data-responsive]) :global(.program-photo) {
+      margin-top: 90px;
+    }
+    :global(html[data-responsive]) :global(.program-photo) :global(.polaroid-photo) {
+      width: 100% !important;
+      height: auto !important;
+    }
+    :global(html[data-responsive]) .program-copy {
+      margin-top: 56px;
+    }
+    :global(html[data-responsive]) :global(.program-photo--buildspace) {
+      order: 1;
+    }
+    :global(html[data-responsive]) .program-copy--buildspace {
+      order: 2;
+    }
+    :global(html[data-responsive]) :global(.program-photo--buildher) {
+      order: 3;
+      width: 78%;
+    }
+    :global(html[data-responsive]) :global(.program-photo--buildher-tall) {
+      order: 4;
+      width: 34%;
+      align-self: flex-end;
+      margin-top: -300px;
+    }
+    :global(html[data-responsive]) .program-copy--buildher {
+      order: 5;
+    }
+    :global(html[data-responsive]) :global(.program-photo--saturdays) {
+      order: 6;
+    }
+    :global(html[data-responsive]) .program-copy--saturdays {
+      order: 7;
+    }
+    :global(html[data-responsive]) .program-name {
+      font-size: 96px;
+    }
+    :global(html[data-responsive]) .program-blurb {
+      width: auto;
+      font-size: 29px;
+      white-space: normal;
+    }
   }
 </style>

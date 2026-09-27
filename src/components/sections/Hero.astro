@@ -27,15 +27,33 @@ const { display = 'good people. curious ideas.', cta = 'scroll down' } = Astro.p
     <Wordmark size={75} color="var(--text-wordmark-photo)" />
   </div>
   <h1 class="hero-display">{display}</h1>
-  <div class="hero-cta">
-    <TextLink variant="mono" href="#programs" style="font-size:44px">{cta}</TextLink>
+  <div class="hero-cta" data-hero-cta>
+    <TextLink variant="mono" href="#programs" style="font-size:32px">{cta}</TextLink>
   </div>
 </section>
+
+<script>
+  /* Show "scroll down" only after 3s at the top of the page without scrolling. */
+  const cta = document.querySelector<HTMLElement>('[data-hero-cta]');
+  if (cta) {
+    let timer = 0;
+    const arm = () => {
+      window.clearTimeout(timer);
+      cta.classList.remove('is-visible');
+      if (window.scrollY > 8) return;
+      timer = window.setTimeout(() => {
+        if (window.scrollY <= 8) cta.classList.add('is-visible');
+      }, 3000);
+    };
+    arm();
+    window.addEventListener('scroll', arm, { passive: true });
+  }
+</script>
 
 <style>
   .hero {
     position: relative;
-    width: 2083px;
+    width: var(--canvas-width);
     overflow: hidden;
     background: var(--surface-photo);
   }
@@ -91,7 +109,31 @@ const { display = 'good people. curious ideas.', cta = 'scroll down' } = Astro.p
     right: 0;
     bottom: 132px;
     text-align: center;
-    animation: cseed-fade-up var(--dur-hero) var(--ease-soft) 760ms both;
+    /* Hidden until the visitor has sat on the hero for 3s without scrolling
+       (see the script below), then it rises in and bobs gently. */
+    opacity: 0;
+    transform: translateY(28px);
+    pointer-events: none;
+    transition:
+      opacity 800ms var(--ease-soft),
+      transform 800ms var(--ease-soft);
+  }
+  .hero-cta.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  .hero-cta.is-visible :global(.text-link) {
+    animation: hero-cta-bob 3000ms ease-in-out 900ms infinite;
+  }
+  @keyframes hero-cta-bob {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(5px);
+    }
   }
   /* smaller CTA with a thin underline tucked close to "scroll down" */
   .hero-cta :global(.text-link) {
@@ -101,5 +143,32 @@ const { display = 'good people. curious ideas.', cta = 'scroll down' } = Astro.p
     background-size: 100% 0.75px;
     line-height: 1;
     padding-bottom: 4px;
+  }
+
+  /* Mobile canvas (responsive pages only): photo covers the frame, wordmark
+     centred, and the display line wraps instead of running off the edge. */
+  @media (max-width: 900px) {
+    :global(html[data-responsive]) .hero-photo {
+      left: 0;
+      width: 100%;
+    }
+    :global(html[data-responsive]) .hero-scrim {
+      left: 0;
+      right: 0;
+    }
+    :global(html[data-responsive]) .hero-wordmark {
+      left: 0;
+      right: 0;
+      width: auto;
+    }
+    :global(html[data-responsive]) .hero-display {
+      left: 40px;
+      right: 40px;
+      width: auto;
+      bottom: 230px;
+      white-space: normal;
+      font-size: 104px;
+      line-height: 1;
+    }
   }
 </style>

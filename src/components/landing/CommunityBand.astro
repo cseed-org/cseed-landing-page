@@ -37,7 +37,7 @@ import Reveal from '../core/Reveal.astro';
 
 <style>
   .community-band {
-    width: 2083px;
+    width: var(--canvas-width);
   }
   .community-photos {
     display: flex;
@@ -55,5 +55,43 @@ import Reveal from '../core/Reveal.astro';
   .community-photo--tall {
     width: 560px;
     height: 644px;
+  }
+
+  /* Mobile canvas (responsive pages only): even 40px gutters, and the two photos
+     keep their side-by-side proportions at the narrower width. */
+  @media (max-width: 900px) {
+    :global(html[data-responsive]) .community-band {
+      padding: 0 40px;
+    }
+    :global(html[data-responsive]) .community-band > :global(.reveal) {
+      margin-left: 0 !important;
+      padding-left: 0 !important;
+    }
+    :global(html[data-responsive]) .community-band > :global(.reveal:first-child) {
+      margin-top: 110px !important;
+    }
+    :global(html[data-responsive]) .community-band > :global(.reveal:nth-child(2)) {
+      margin-top: 28px !important;
+    }
+    :global(html[data-responsive]) .community-band > :global(.reveal:nth-child(3)) {
+      margin-top: 64px !important;
+    }
+    :global(html[data-responsive]) .community-photos {
+      gap: 20px;
+    }
+    :global(html[data-responsive]) .community-photo--wide {
+      flex: 1344 1 0;
+      min-width: 0;
+      width: auto;
+      height: auto;
+      aspect-ratio: 1344 / 644;
+    }
+    :global(html[data-responsive]) .community-photo--tall {
+      flex: 560 1 0;
+      min-width: 0;
+      width: auto;
+      height: auto;
+      aspect-ratio: 560 / 644;
+    }
   }
 </style>

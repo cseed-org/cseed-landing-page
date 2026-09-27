@@ -32,3 +32,11 @@
   --radius-none: 0px;
   --shadow-none: none;
 }
+
+/* Responsive pages (BaseLayout's `responsive` prop) swap to a narrower, stacked
+   780px canvas on phones and small tablets; BaseLayout scales it to fit the screen. */
+@media (max-width: 900px) {
+  html[data-responsive] {
+    --canvas-width: 780px;
+  }
+}

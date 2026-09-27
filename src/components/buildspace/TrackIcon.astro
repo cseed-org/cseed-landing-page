@@ -2,8 +2,10 @@
 /* The five cohort-06 track marks, transcribed from ui_kits/buildspace/BuildspacePage.jsx. */
 interface Props {
   kind: 'hardware' | 'software' | 'xra' | 'wildcard' | 'creatives';
+  /** Just the mark, without its colored backing shape, framed tighter. */
+  bare?: boolean;
 }
-const { kind } = Astro.props;
+const { kind, bare = false } = Astro.props;
 
 function star(n: number, ro: number, ri: number, rot = -90) {
   return Array.from({ length: n * 2 }, (_, i) => {
@@ -15,11 +17,11 @@ function star(n: number, ro: number, ri: number, rot = -90) {
 const wildcardRays = Array.from({ length: 8 }, (_, i) => i * 45);
 ---
 
-<svg width="220" height="220" viewBox="-110 -110 220 220" aria-hidden="true">
+<svg width="220" height="220" viewBox={bare ? '-66 -66 132 132' : '-110 -110 220 220'} aria-hidden="true">
   {
     kind === 'hardware' && (
       <g>
-        <circle r="78" fill="#D66BFF" />
+        {!bare && <circle r="78" fill="#D66BFF" />}
         <g fill="#8A00C2">
           <g transform="rotate(-42)">
             <rect x="-5" y="-32" width="10" height="84" rx="4" />
@@ -51,7 +53,7 @@ const wildcardRays = Array.from({ length: 8 }, (_, i) => i * 45);
   {
     kind === 'creatives' && (
       <g>
-        <polygon points={star(8, 100, 48)} fill="#FFB8D0" />
+        {!bare && <polygon points={star(8, 100, 48)} fill="#FFB8D0" />}
         <g
           fill="none"
           stroke="#FF0066"
@@ -70,7 +72,7 @@ const wildcardRays = Array.from({ length: 8 }, (_, i) => i * 45);
   {
     kind === 'software' && (
       <g>
-        <rect x="-66" y="-66" width="132" height="132" rx="14" fill="#88D9BD" transform="rotate(45)" />
+        {!bare && <rect x="-66" y="-66" width="132" height="132" rx="14" fill="#88D9BD" transform="rotate(45)" />}
         <g fill="#16A36F">
           <path d="M-38 -30 H38 V18 H-38 Z M-30 -22 V10 H30 V-22 Z" fill-rule="evenodd" />
           <path d="M-50 22 H50 L44 32 H-44 Z" />
@@ -89,7 +91,7 @@ const wildcardRays = Array.from({ length: 8 }, (_, i) => i * 45);
   {
     kind === 'xra' && (
       <g>
-        <circle r="64" fill="none" stroke="#A9C7FF" stroke-width="30" />
+        {!bare && <circle r="64" fill="none" stroke="#A9C7FF" stroke-width="30" />}
         <path
           d="M0 -58 C 6 -14, 14 -6, 58 0 C 14 6, 6 14, 0 58 C -6 14, -14 6, -58 0 C -14 -6, -6 -14, 0 -58 Z"
           fill="#2F5BFF"

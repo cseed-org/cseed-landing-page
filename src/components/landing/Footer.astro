@@ -121,4 +121,34 @@ const columns = [
     gap: 12px;
     font: 400 20px/1 var(--font-body);
   }
+
+  /* Mobile canvas (responsive pages only): brand above the link columns. */
+  @media (max-width: 900px) {
+    :global(html[data-responsive]) .site-footer {
+      padding: 80px 40px 44px;
+      gap: 80px;
+    }
+    :global(html[data-responsive]) .site-footer-top {
+      flex-direction: column;
+      gap: 64px;
+    }
+    :global(html[data-responsive]) .site-footer-brand p {
+      font-size: 28px;
+    }
+    :global(html[data-responsive]) .site-footer-columns {
+      width: 100%;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      padding-right: 0;
+    }
+    :global(html[data-responsive]) .site-footer-column-title {
+      font-size: 26px;
+    }
+    :global(html[data-responsive]) .site-footer-link {
+      font-size: 24px;
+    }
+    :global(html[data-responsive]) .site-footer-note {
+      font-size: 22px;
+      text-align: center;
+    }
+  }
 </style>

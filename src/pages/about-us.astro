@@ -6,7 +6,7 @@ import TextLink from '../components/core/TextLink.astro';
 import { TEAM, ABOUT_STATS } from '../data/community';
 ---
 
-<PageLayout title="about us — cseed" compactFooter>
+<PageLayout title="about us — cseed" compactFooter responsive>
   <div class="ab-shrink">
   <div style="height:330px"></div>
 
@@ -87,7 +87,7 @@ import { TEAM, ABOUT_STATS } from '../data/community';
   /* The page renders at 85%, matching the landing page. */
   .ab-shrink {
     zoom: 0.85;
-    width: 2083px;
+    width: var(--canvas-width);
     margin-inline: auto;
   }
   .ab-opener {
@@ -219,5 +219,60 @@ import { TEAM, ABOUT_STATS } from '../data/community';
   }
   .team-photo.is-on .team-photo-dot {
     opacity: 1;
+  }
+
+  /* ---------- Mobile canvas (780px, phones and small tablets) ---------- */
+  @media (max-width: 900px) {
+    .ab-shrink {
+      zoom: 1;
+      width: auto;
+    }
+    .ab-shrink > div:first-child {
+      height: 220px !important;
+    }
+    .ab-opener {
+      padding: 0 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 110px;
+    }
+    .ab-opener-copy {
+      order: -1;
+      text-align: left;
+      align-items: flex-start;
+      padding-top: 0;
+    }
+    .ab-opener-copy h1 {
+      font-size: 96px;
+    }
+    .ab-opener-copy h1[style] {
+      margin-top: 40px !important;
+    }
+    .ab-stats {
+      align-self: stretch;
+      gap: 64px;
+    }
+    .ab-stat-value {
+      font-size: 120px;
+    }
+    .ab-shrink > div[style*='padding:0 100px'] {
+      padding: 0 40px !important;
+      margin-top: 160px !important;
+    }
+    .ab-team {
+      padding: 150px 40px 0;
+    }
+    .ab-section-head {
+      align-items: flex-start;
+      margin-bottom: 80px;
+    }
+    .ab-wall {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 28px;
+      row-gap: 56px;
+    }
+    .ab-person-name {
+      font-size: 28px;
+    }
   }
 </style>

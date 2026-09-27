@@ -123,4 +123,24 @@ const height = 72;
     bottom: 0;
     pointer-events: none;
   }
+
+  /* Mobile canvas (responsive pages only). */
+  @media (max-width: 900px) {
+    :global(html[data-responsive]) .nav-bar-mark {
+      left: 32px;
+    }
+    :global(html[data-responsive]) .nav-bar-items {
+      right: 32px;
+      gap: 26px;
+    }
+    :global(html[data-responsive]) .nav-bar-logo {
+      width: 88px;
+    }
+    :global(html[data-responsive]) .nav-bar-link {
+      font-size: 30px;
+    }
+    :global(html[data-responsive]) .nav-bar :global(.nav-bar-rule) {
+      width: 100% !important;
+    }
+  }
 </style>

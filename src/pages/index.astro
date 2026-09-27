@@ -16,7 +16,7 @@ const sponsors = [
 ];
 ---
 
-<BaseLayout>
+<BaseLayout responsive>
   <div class="canvas-frame">
     <div class="canvas" id="top">
       <Hero />
@@ -51,7 +51,7 @@ const sponsors = [
     overflow-x: hidden;
   }
   .canvas {
-    width: 2083px;
+    width: var(--canvas-width);
     background: var(--surface-page);
   }
   /* Everything below the hero renders at 85%. Content sections keep their
@@ -75,7 +75,7 @@ const sponsors = [
     position: fixed;
     top: 0;
     left: 0;
-    width: 2083px;
+    width: var(--canvas-width);
     z-index: 10;
     transform: translateY(-100%);
     opacity: 0;
@@ -88,5 +88,15 @@ const sponsors = [
     transform: translateY(0);
     opacity: 1;
     pointer-events: auto;
+  }
+
+  /* Mobile canvas: sections are authored at their final size, so drop the shrinks. */
+  @media (max-width: 900px) {
+    .shrink,
+    .shrink-bleed,
+    .shrink-bleed.sponsor-band {
+      zoom: 1;
+      width: auto;
+    }
   }
 </style>

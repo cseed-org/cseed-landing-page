@@ -105,6 +105,12 @@ svg {
   text-transform: uppercase;
   color: var(--cseed-ink);
 }
+/* Mobile canvas on responsive pages (see tokens/layout.css). */
+@media (max-width: 900px) {
+  html[data-responsive] .t-serif {
+    font-size: 104px;
+  }
+}
 
 /* Rule draw-in, matching the design system's `Rule animate` prop. */
 [data-rule-animate] {
