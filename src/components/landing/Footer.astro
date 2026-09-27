@@ -1,5 +1,4 @@
 ---
-import Wordmark from '../core/Wordmark.astro';
 
 const columns = [
   {
@@ -24,7 +23,8 @@ const columns = [
     links: [
       ['instagram', '#'],
       ['linkedin', '#'],
-      ['email us', '#'],
+      ['github', 'https://github.com/cseed-org'],
+      ['email@cseed.org', 'mailto:email@cseed.org'],
     ],
   },
 ];
@@ -33,7 +33,7 @@ const columns = [
 <footer class="site-footer">
   <div class="site-footer-top">
     <div class="site-footer-brand">
-      <Wordmark size={40} color="var(--cseed-ink)" />
+      <img class="site-footer-logo" src="/images/cseed-logo.png" alt="cseed" width="176" height="40" />
       <p>good people. curious ideas.</p>
     </div>
     <div class="site-footer-columns">
@@ -51,15 +51,18 @@ const columns = [
       }
     </div>
   </div>
-  <div class="site-footer-note">© 2026 cseed. All rights reserved.</div>
+  <div class="site-footer-note">
+    <span>made with love by our design team &lt;3</span>
+    <span>© 2026 cseed. All rights reserved.</span>
+  </div>
 </footer>
 
 <style>
   .site-footer {
-    width: 2083px;
-    height: 760px;
+    width: 100%;
     box-sizing: border-box;
-    padding: 200px 40px 72px;
+    padding: 96px 40px 48px;
+    gap: 96px;
     background: var(--cseed-sun);
     color: var(--cseed-ink);
     display: flex;
@@ -74,7 +77,12 @@ const columns = [
   .site-footer-brand {
     display: flex;
     flex-direction: column;
-    gap: 34px;
+    gap: 20px;
+  }
+  .site-footer-logo {
+    display: block;
+    width: 176px;
+    height: auto;
   }
   .site-footer-brand p {
     margin: 0;
@@ -107,7 +115,10 @@ const columns = [
     color: var(--cseed-ink);
   }
   .site-footer-note {
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
     font: 400 20px/1 var(--font-body);
   }
 </style>

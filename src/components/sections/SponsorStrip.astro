@@ -7,7 +7,10 @@ interface Props {
   logos: { src: string; alt: string }[];
 }
 const { logos } = Astro.props;
-const run = [...logos, ...logos];
+/* Each half of the loop must be wider than the band (4900px of track at the
+   landing page's 0.425 zoom), so the logo set repeats 3x per half. */
+const half = [...logos, ...logos, ...logos];
+const run = [...half, ...half];
 ---
 
 <div class="sponsor-strip">
@@ -31,6 +34,6 @@ const run = [...logos, ...logos];
     gap: 124px;
     padding-left: 14px;
     flex: none;
-    animation: cseed-marquee 72s linear infinite;
+    animation: cseed-marquee 173s linear infinite;
   }
 </style>

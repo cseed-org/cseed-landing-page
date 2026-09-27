@@ -8,7 +8,7 @@ export const TEAM: { name: string; photo: string }[] = [
   ['Maya Ma', 'maya-ma'],
   ['Nel Alaimaleata', 'nel-alaimaleata'],
   ['Shiloh Dhasan', 'shiloh-dhasan'],
-  ['Shuhui Yang', 'shuhui-yang'],
+  // ['Shuhui Yang', 'shuhui-yang'], // hidden for now
   ['Surya Duraivenkatesh', 'surya-duraivenkatesh'],
   ['Talal Kheiry', 'talal-kheiry'],
   ['Victoria Tchervenski', 'victoria-tchervenski'],

@@ -7,8 +7,8 @@ import TrackIcon from '../components/buildspace/TrackIcon.astro';
 
 const facts = [
   ['duration', '6 weeks'],
-  ['Priority Application Deadline', 'October 7th, 2026'],
-  ['Final Application Deadline', 'October 9th, 2026'],
+  ['priority application deadline', 'October 7th, 2026'],
+  ['final application deadline', 'October 9th, 2026'],
 ];
 
 const details = [
@@ -49,8 +49,8 @@ const introPhotos: {
     w: 480,
     h: 360,
     r: 3,
-    src: '/images/buildspace/intro-demo-day.webp',
-    alt: 'The whole buildspace cohort celebrating at demo day',
+    src: '/images/buildspace/intro-cohort3.webp',
+    alt: 'The buildspace cohort 3 group photo at demo day',
   },
   {
     id: 'bs-intro-3',
@@ -62,7 +62,16 @@ const introPhotos: {
     src: '/images/buildspace/intro-laptops.webp',
     alt: 'Members working together on laptops during a build night',
   },
-  { id: 'bs-intro-4', l: 1010, t: 60, w: 380, h: 500, r: 5 },
+  {
+    id: 'bs-intro-4',
+    l: 1010,
+    t: 60,
+    w: 380,
+    h: 500,
+    r: 5,
+    src: '/images/buildspace/intro-talk.webp',
+    alt: 'A buildspace member in glasses talking with others during a session',
+  },
   {
     id: 'bs-intro-5',
     l: 1420,
@@ -87,17 +96,13 @@ const projects: [string, string, string, number][] = [
 const tracks = [
   { kind: 'hardware', label: 'hardware' },
   { kind: 'software', label: 'software' },
-  {
-    kind: 'xra',
-    label: 'extended reality',
-    note: 'build with computer vision, AR and VR',
-  },
+  { kind: 'xra', label: 'extended reality' },
   { kind: 'creatives', label: 'creatives' },
 ] as const;
 ---
 
-<PageLayout title="buildspace — cseed">
-  <section class="bs-space" id="cohort">
+<PageLayout title="buildspace — cseed" compactFooter>
+  <section class="bs-space" id="cohort" data-nav-dark-hero>
     <div class="bs-galaxy" data-galaxy aria-hidden="true"></div>
     <div class="bs-space-vignette" aria-hidden="true"></div>
     <div class="bs-space-copy">
@@ -142,11 +147,12 @@ const tracks = [
     </div>
   </section>
 
+  <div class="bs-shrink">
   <section class="bs-section">
     <div class="bs-intro">
       <Reveal delay={120}>
-        <h1 class="t-serif" style="font-size:170px">
-          What do you <span class="bs-dream"
+        <h1 class="t-serif bs-intro-title" style="font-size:160px">
+          what do you <span class="bs-dream"
             >dream<svg viewBox="-50 -50 100 100" aria-hidden="true"
               ><path
                 d="M0 -48 C 5 -12, 12 -5, 48 0 C 12 5, 5 12, 0 48 C -5 12, -12 5, -48 0 C -12 -5, -5 -12, 0 -48 Z"
@@ -161,7 +167,7 @@ const tracks = [
             Buildspace is a place to follow that half-formed thought.
           </p>
           <p class="bs-motto">
-            <span class="bs-motto-highlight">Build things that don’t scale.</span>
+            <span class="bs-motto-highlight">build things that don’t scale.</span>
           </p>
         </div>
       </Reveal>
@@ -210,16 +216,15 @@ const tracks = [
     </div>
   </section>
 
-  <!-- Easter egg: click the block three times and it shatters, then reassembles. -->
-  <div class="bs-explode" data-explode>
-    <section class="bs-explode-block" data-explode-block>
+  <div class="bs-explode">
+    <section class="bs-explode-block">
       <div class="bs-explode-copy">
         <Reveal
           ><h2 class="t-serif" style="font-size:130px">
-            Experimenting<br />is empowering.
+            experimenting<br />is empowering.
           </h2></Reveal
         >
-        <Reveal delay={150}><div class="bs-explode-tag">Explore. Experiment. Explode.</div></Reveal>
+        <Reveal delay={150}><div class="bs-explode-tag">explore. experiment. explode.</div></Reveal>
       </div>
       <img
         class="bs-cutout"
@@ -241,17 +246,10 @@ const tracks = [
         tracks.map((t, i) => (
           <Reveal delay={i * 120}>
             <div class="bs-track" data-kind={t.kind}>
-              <div class="bs-track-icon" data-track-hover>
+              <div class="bs-track-icon">
                 <div class="bs-track-idle">
-                  <div class="bs-spin-8">
-                    <TrackIcon kind={t.kind} />
-                  </div>
+                  <TrackIcon kind={t.kind} />
                 </div>
-                {'note' in t && (
-                  <div class="bs-track-note">
-                    <span>{t.note}</span>
-                  </div>
-                )}
               </div>
               <div class="bs-track-label">
                 {t.label.split(' ').map((w) => (
@@ -295,24 +293,20 @@ const tracks = [
   </section>
 
   <div class="bs-group">
-    <div class="bs-group-slot" style="height:520px"><span>group photo</span></div>
-    <div class="bs-group-slot" style="height:620px"><span>group photo</span></div>
-    <div class="bs-group-slot" style="height:520px"><span>group photo</span></div>
+    <img
+      class="bs-group-cutout"
+      src="/images/buildspace/group-cutout.webp"
+      alt="A collage of buildspace members cut out in black and white"
+      width="1798"
+      height="875"
+      loading="lazy"
+    />
+  </div>
   </div>
 </PageLayout>
 
 <script>
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  /* ---------- Track hover: cursor-following note ---------- */
-  document.querySelectorAll<HTMLElement>('[data-track-hover]').forEach((el) => {
-    el.addEventListener('mousemove', (e) => {
-      const r = el.getBoundingClientRect();
-      const z = r.width / el.offsetWidth || 1;
-      el.style.setProperty('--x', `${(e.clientX - r.left) / z}px`);
-      el.style.setProperty('--y', `${(e.clientY - r.top) / z}px`);
-    });
-  });
 
   /* ---------- Details tiles: auto-cycling yellow highlight ---------- */
   function cycleDetails(container: HTMLElement) {
@@ -671,7 +665,7 @@ void main() {
       speed: 1,
       twinkleIntensity: 0.3,
       rotationSpeed: 0.1,
-      repulsionStrength: 0.6,
+      repulsionStrength: 0.06, // barely-there nudge on hover (was 0.6)
       glowIntensity: 0.5,
     };
     const canvas = document.createElement('canvas');
@@ -786,7 +780,7 @@ void main() {
     const ok = galaxyWebGL(galaxy, {
       mouseRepulsion: true,
       mouseInteraction: true,
-      repulsionStrength: 0.6,
+      repulsionStrength: 0.06, // barely-there nudge on hover (was 0.6)
       density: 1.5,
       glowIntensity: 0.5,
       saturation: 0.8,
@@ -796,155 +790,7 @@ void main() {
     });
     if (!ok) starfield(galaxy);
   }
-
-  /* ---------- Explode easter egg (ui_kits/buildspace/Explode.jsx) ---------- */
-  function explode(wrap: HTMLElement, clicksNeeded = 3, overflowTop = 240) {
-    const block = wrap.querySelector<HTMLElement>('[data-explode-block]')!;
-    let clicks = 0;
-    let busy = false;
-
-    block.addEventListener('click', (e) => {
-      if (busy) return;
-      clicks += 1;
-      if (clicks < clicksNeeded) {
-        const a = 3 + clicks * 3;
-        block.animate(
-          [
-            { transform: 'none' },
-            { transform: `translate(${-a}px, ${a * 0.4}px) rotate(-0.4deg)` },
-            { transform: `translate(${a}px, ${-a * 0.3}px) rotate(0.5deg)` },
-            { transform: `translate(${-a * 0.5}px, 0)` },
-            { transform: 'none' },
-          ],
-          { duration: 360, easing: 'ease-out' },
-        );
-        return;
-      }
-      clicks = 0;
-      busy = true;
-
-      const W = block.offsetWidth;
-      const H = block.offsetHeight;
-      const r = block.getBoundingClientRect();
-      const z = r.width / W || 1;
-      const ox = (e.clientX - r.left) / z;
-      const oy = (e.clientY - r.top) / z;
-      const cols = 8;
-      const rows = 6;
-      const top = -overflowTop;
-      const cw = W / cols;
-      const ch = (H - top) / rows;
-      const pts: number[][] = [];
-      for (let j = 0; j <= rows; j++)
-        for (let i = 0; i <= cols; i++) {
-          const edge = i === 0 || j === 0 || i === cols || j === rows;
-          pts.push([
-            i * cw + (edge ? 0 : (Math.random() - 0.5) * cw * 0.7),
-            top + j * ch + (edge ? 0 : (Math.random() - 0.5) * ch * 0.7),
-          ]);
-        }
-      const P = (i: number, j: number) => pts[j * (cols + 1) + i];
-
-      const layer = document.createElement('div');
-      layer.setAttribute('aria-hidden', 'true');
-      layer.style.cssText = `position:absolute;left:0;top:0;width:${W}px;height:${H}px;pointer-events:none;z-index:20`;
-      const pieces: { el: HTMLElement; vx: number; vy: number; vr: number; vz: number }[] = [];
-
-      for (let j = 0; j < rows; j++)
-        for (let i = 0; i < cols; i++) {
-          const a = P(i, j);
-          const b = P(i + 1, j);
-          const c = P(i + 1, j + 1);
-          const d = P(i, j + 1);
-          const tris =
-            (i + j) % 2
-              ? [
-                  [a, b, c],
-                  [a, c, d],
-                ]
-              : [
-                  [a, b, d],
-                  [b, c, d],
-                ];
-          for (const t of tris) {
-            const cx = (t[0][0] + t[1][0] + t[2][0]) / 3;
-            const cy = (t[0][1] + t[1][1] + t[2][1]) / 3;
-            const dx = cx - ox;
-            const dy = cy - oy;
-            const dist = Math.hypot(dx, dy) || 1;
-            const force = 900 + 1400 * Math.exp(-dist / 500) + Math.random() * 500;
-            const el = document.createElement('div');
-            el.style.cssText = `position:absolute;left:0;top:0;width:${W}px;height:${H}px;will-change:transform,opacity;transform-origin:${cx}px ${cy}px;clip-path:polygon(${t.map(([x, y]) => `${x}px ${y}px`).join(',')})`;
-            const copy = block.cloneNode(true) as HTMLElement;
-            copy.removeAttribute('data-explode-block');
-            copy.style.cssText = 'position:absolute;inset:0;margin:0;visibility:visible';
-            copy.querySelectorAll('[data-reveal]').forEach((n) => {
-              n.classList.add('is-shown');
-              (n as HTMLElement).style.transition = 'none';
-            });
-            el.append(copy);
-            layer.append(el);
-            pieces.push({
-              el,
-              vx: (dx / dist) * force,
-              vy: (dy / dist) * force - 700 - Math.random() * 500,
-              vr: (Math.random() - 0.5) * 720,
-              vz: Math.random() * 0.6,
-            });
-          }
-        }
-
-      wrap.append(layer);
-      block.style.visibility = 'hidden';
-
-      const DUR = reduceMotion ? 0.6 : 1.9;
-      const G = 2600;
-      let start: number | null = null;
-      const tick = (now: number) => {
-        if (start == null) start = now;
-        const t = (now - start) / 1000;
-        for (const p of pieces) {
-          if (reduceMotion) {
-            p.el.style.opacity = String(Math.max(0, 1 - t / DUR));
-            continue;
-          }
-          const x = p.vx * t;
-          const y = p.vy * t + 0.5 * G * t * t;
-          p.el.style.transform = `translate(${x}px, ${y}px) rotate(${p.vr * t}deg) scale(${1 - p.vz * Math.min(1, t)})`;
-          p.el.style.opacity = String(Math.max(0, 1 - Math.max(0, t - 1.1) / (DUR - 1.1)));
-        }
-        if (t < DUR) {
-          requestAnimationFrame(tick);
-          return;
-        }
-        layer.remove();
-        block.style.visibility = '';
-        block.animate(
-          [
-            { opacity: 0, transform: 'scale(0.96)' },
-            { opacity: 1, transform: 'none' },
-          ],
-          {
-            duration: 700,
-            easing: 'cubic-bezier(.2,.8,.2,1)',
-          },
-        );
-        busy = false;
-      };
-      requestAnimationFrame(tick);
-    });
-  }
-  const explodeWrap = document.querySelector<HTMLElement>('[data-explode]');
-  if (explodeWrap) explode(explodeWrap);
 </script>
-
-<style is:global>
-  @keyframes bs-spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-</style>
 
 <style>
   .bs-body {
@@ -1004,6 +850,13 @@ void main() {
     padding-top: 22px;
   }
 
+  /* Everything below the space hero renders at 75%. */
+  .bs-shrink {
+    zoom: 0.75;
+    width: 2083px;
+    margin-inline: auto;
+  }
+
   /* intro */
   .bs-section {
     padding: 240px 100px 0;
@@ -1020,8 +873,8 @@ void main() {
   }
   .bs-dream svg {
     position: absolute;
-    right: -0.32em;
-    top: -0.12em;
+    right: -0.26em;
+    top: 0.1em;
     width: 0.4em;
     height: 0.4em;
   }
@@ -1030,9 +883,15 @@ void main() {
   .bs-intro {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 560px;
-    column-gap: 120px;
+    column-gap: 60px;
     align-items: end;
-    margin-top: 40px;
+  }
+  /* Two lines: "what do you dream" / "of making?" */
+  .bs-intro-title {
+    white-space: nowrap;
+  }
+  .bs-shrink > .bs-section:first-child {
+    padding-top: 140px;
   }
   .bs-intro-right {
     display: flex;
@@ -1179,10 +1038,13 @@ void main() {
     flex-direction: column;
     align-items: center;
     gap: 40px;
+    padding: 90px 30px 100px;
+    background: var(--cseed-white);
+    /* Equal-height cards: "extended reality" wraps to two lines. */
+    height: 100%;
+    box-sizing: border-box;
   }
   .bs-track-icon {
-    --x: 0px;
-    --y: 0px;
     position: relative;
     width: 300px;
     height: 300px;
@@ -1190,45 +1052,6 @@ void main() {
     align-items: center;
     justify-content: center;
     z-index: 1;
-  }
-  .bs-track-icon:hover {
-    z-index: 4;
-  }
-  .bs-spin-8 {
-    animation: bs-spin 8s linear infinite;
-    animation-play-state: paused;
-  }
-  .bs-track[data-kind='xra'] .bs-track-icon:hover .bs-spin-8 {
-    animation-play-state: running;
-  }
-  .bs-track-note {
-    position: absolute;
-    left: calc(var(--x) + 22px);
-    top: calc(var(--y) - 26px);
-    pointer-events: none;
-    height: 52px;
-    display: flex;
-    align-items: center;
-    background: var(--cseed-ink);
-    color: var(--cseed-white);
-    white-space: nowrap;
-    overflow: hidden;
-    max-width: 0;
-    padding: 0;
-    opacity: 0;
-    transition: opacity 150ms;
-  }
-  .bs-track-icon:hover .bs-track-note {
-    max-width: 560px;
-    padding: 0 22px;
-    opacity: 1;
-    transition:
-      max-width 500ms var(--ease-soft),
-      padding 500ms var(--ease-soft),
-      opacity 200ms;
-  }
-  .bs-track-note span {
-    font: 400 22px/1 var(--font-body);
   }
   .bs-track-label {
     font: italic 700 42px/1.05 var(--font-mono);
@@ -1268,27 +1091,17 @@ void main() {
   }
 
   /* Cut-out group photos sit on the page ground with no background of their own. */
+  /* Black-and-white member cutout standing on the footer's top edge. */
   .bs-group {
     margin-top: 200px;
-    padding: 0 100px;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr) minmax(0, 1fr);
-    gap: 30px;
-    align-items: end;
-    height: 620px;
+    display: flex;
+    justify-content: center;
     margin-bottom: -2px;
   }
-  .bs-group-slot {
-    width: 100%;
-    min-width: 0;
-    border: 1px dashed var(--cseed-ink-soft);
-    border-bottom: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .bs-group-slot span {
-    font: 400 18px/1 var(--font-mono);
-    color: var(--cseed-ink-soft);
+  .bs-group-cutout {
+    display: block;
+    width: 1500px;
+    height: auto;
+    max-width: none;
   }
 </style>

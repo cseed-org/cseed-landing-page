@@ -1,5 +1,4 @@
 ---
-import Wordmark from '../core/Wordmark.astro';
 import Rule from '../core/Rule.astro';
 import DropdownNav from './DropdownNav.astro';
 
@@ -9,7 +8,6 @@ import DropdownNav from './DropdownNav.astro';
 const items = [
   {
     label: 'programs',
-    href: '/#programs',
     children: [
       { label: 'buildspace', href: '/buildspace/' },
       { label: 'buildher', href: '/buildher/' },
@@ -24,18 +22,25 @@ const height = 72;
 
 <div class="nav-bar" style={`height:${height}px`}>
   <a class="nav-bar-mark" href="/" style={`height:${height}px`}>
-    <Wordmark size={28} />
+    <img class="nav-bar-logo" src="/images/cseed-logo.png" alt="cseed" width="69" height="16" />
+    <img class="nav-bar-logo nav-bar-logo--white" src="/images/cseed-logo-white.png" alt="" aria-hidden="true" width="69" height="16" />
   </a>
   <div class="nav-bar-items" style={`height:${height}px`}>
     {
       items.map((item) => (
         <div class="nav-bar-item" style={`height:${height}px`}>
-          <a
-            href={item.href}
-            class:list={['nav-bar-link', { 'nav-bar-link--join': item.label === 'join' }]}
-          >
-            {item.label}
-          </a>
+          {item.children ? (
+            <button type="button" class="nav-bar-link nav-bar-link--menu" aria-haspopup="true">
+              {item.label}
+            </button>
+          ) : (
+            <a
+              href={item.href}
+              class:list={['nav-bar-link', { 'nav-bar-link--join': item.label === 'join' }]}
+            >
+              {item.label}
+            </a>
+          )}
           {item.children && (
             <div class="nav-bar-dropdown" style={`top:${height}px`}>
               <DropdownNav items={item.children} width="max-content" />
@@ -49,10 +54,46 @@ const height = 72;
 </div>
 
 <style>
+  .nav-bar-logo {
+    display: block;
+    width: 69px;
+    height: auto;
+  }
   .nav-bar {
     position: relative;
     width: 100%;
     background: var(--surface-page);
+    transition: background-color var(--dur-hover) var(--ease-soft);
+  }
+  .nav-bar-logo--white {
+    display: none;
+  }
+
+  /* Over a dark hero (the page opts in with data-nav-dark-hero; PageLayout toggles
+     .is-on-dark while the hero is behind the nav): transparent band, white type. */
+  :global(.is-on-dark) .nav-bar {
+    background: transparent;
+  }
+  :global(.is-on-dark) .nav-bar-logo {
+    display: none;
+  }
+  :global(.is-on-dark) .nav-bar-logo--white {
+    display: block;
+  }
+  :global(.is-on-dark) .nav-bar-link {
+    color: var(--cseed-white);
+  }
+  :global(.is-on-dark) .nav-bar-link--join {
+    background: none;
+  }
+  :global(.is-on-dark) .nav-bar :global(.nav-bar-rule) {
+    background: rgba(255, 255, 255, 0.4) !important;
+  }
+  :global(.is-on-dark) .nav-bar-dropdown {
+    background: transparent;
+  }
+  :global(.is-on-dark) .nav-bar-dropdown :global(.dropdown-nav-item) {
+    color: var(--cseed-white);
   }
   .nav-bar-mark {
     position: absolute;
@@ -89,6 +130,13 @@ const height = 72;
   .nav-bar-items:has(.nav-bar-item:hover) .nav-bar-item:not(:hover) .nav-bar-link {
     opacity: 0.45;
   }
+  /* "programs" only opens its dropdown; the program links do the navigating. */
+  .nav-bar-link--menu {
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: default;
+  }
   .nav-bar-link--join {
     padding: 0 8px;
     margin: 0 -8px;
@@ -105,23 +153,32 @@ const height = 72;
     min-width: 100%;
     transform: translateX(-50%) translateY(-12px);
     opacity: 0;
-    pointer-events: none;
-    padding: 0 32px 24px;
+    visibility: hidden;
+    padding: 0 27px 20px;
     box-sizing: border-box;
     background: var(--surface-page);
+    /* Closing waits 250ms, so a mouse that briefly slips off "programs" on its way
+       down (e.g. heading diagonally for "saturdays") can still reach the menu. */
     transition:
-      opacity var(--dur-hover) var(--ease-soft),
-      transform var(--dur-hover) var(--ease-soft);
+      opacity var(--dur-hover) var(--ease-soft) 250ms,
+      transform var(--dur-hover) var(--ease-soft) 250ms,
+      visibility 0s linear calc(var(--dur-hover) + 250ms);
     z-index: 4;
   }
-  .nav-bar-item:hover .nav-bar-dropdown {
+  .nav-bar-item:hover .nav-bar-dropdown,
+  .nav-bar-item:focus-within .nav-bar-dropdown {
     opacity: 1;
-    pointer-events: auto;
+    visibility: visible;
     transform: translateX(-50%) translateY(0);
+    transition:
+      opacity var(--dur-hover) var(--ease-soft),
+      transform var(--dur-hover) var(--ease-soft),
+      visibility 0s;
   }
   .nav-bar :global(.nav-bar-rule) {
     position: absolute;
     left: 0;
     bottom: 0;
+    pointer-events: none;
   }
 </style>

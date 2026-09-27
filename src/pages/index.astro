@@ -9,7 +9,6 @@ import MissionPrompt from '../components/sections/MissionPrompt.astro';
 import Footer from '../components/landing/Footer.astro';
 
 const sponsors = [
-  { src: '/images/sponsors/madrona.png', alt: 'Madrona Venture Labs' },
   { src: '/images/sponsors/allen-school.png', alt: 'Paul G. Allen School of Computer Science & Engineering' },
   { src: '/images/sponsors/pioneer-square-labs.png', alt: 'Pioneer Square Labs' },
   { src: '/images/sponsors/a.png', alt: 'Partner' },
@@ -24,16 +23,24 @@ const sponsors = [
       <div class="navbar-wrap" data-navbar-wrap>
         <NavBar />
       </div>
-      <div style="height:96px"></div>
+      <div style="height:82px"></div>
       <div id="about"></div>
-      <ProgramsCollage />
-      <CommunityBand />
-      <div id="sponsors" style="height:176px"></div>
-      <SponsorStrip logos={sponsors} />
-      <div style="height:176px"></div>
-      <MissionPrompt />
-      <div style="height:240px"></div>
-      <Footer />
+      <div class="shrink">
+        <ProgramsCollage />
+        <CommunityBand />
+      </div>
+      <div id="sponsors" style="height:150px"></div>
+      <div class="shrink-bleed sponsor-band">
+        <SponsorStrip logos={sponsors} />
+      </div>
+      <div style="height:150px"></div>
+      <div class="shrink">
+        <MissionPrompt />
+      </div>
+      <div style="height:204px"></div>
+      <div class="shrink-bleed">
+        <Footer />
+      </div>
     </div>
   </div>
 </BaseLayout>
@@ -46,6 +53,23 @@ const sponsors = [
   .canvas {
     width: 2083px;
     background: var(--surface-page);
+  }
+  /* Everything below the hero renders at 85%. Content sections keep their
+     2083px authored layout and sit centered; full-bleed bands widen by
+     1/0.85 so they still span the canvas after zoom. */
+  .shrink {
+    zoom: 0.85;
+    width: 2083px;
+    margin-inline: auto;
+  }
+  .shrink-bleed {
+    zoom: 0.85;
+    width: calc(2083px / 0.85);
+  }
+  /* The sponsor band renders at half the size of the rest (0.85 * 0.5). */
+  .shrink-bleed.sponsor-band {
+    zoom: 0.425;
+    width: calc(2083px / 0.425);
   }
   .navbar-wrap {
     position: fixed;

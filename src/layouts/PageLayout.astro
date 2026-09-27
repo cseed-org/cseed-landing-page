@@ -8,8 +8,10 @@ import Footer from '../components/landing/Footer.astro';
 interface Props {
   title: string;
   description?: string;
+  /** Render the footer at 85%, like the landing page. */
+  compactFooter?: boolean;
 }
-const { title, description } = Astro.props;
+const { title, description, compactFooter = false } = Astro.props;
 ---
 
 <BaseLayout title={title} description={description}>
@@ -17,10 +19,34 @@ const { title, description } = Astro.props;
     <div class="canvas page-canvas" id="top">
       <div class="page-nav"><NavBar /></div>
       <slot />
-      <Footer />
+      {
+        compactFooter ? (
+          <div class="footer-compact">
+            <Footer />
+          </div>
+        ) : (
+          <Footer />
+        )
+      }
     </div>
   </div>
 </BaseLayout>
+
+<script>
+  /* Pages with a dark hero mark it data-nav-dark-hero; the nav goes transparent with
+     white type until the hero has scrolled out from behind it. */
+  const hero = document.querySelector<HTMLElement>('[data-nav-dark-hero]');
+  const nav = document.querySelector<HTMLElement>('.page-nav');
+  if (hero && nav) {
+    const update = () => {
+      const navBottom = nav.getBoundingClientRect().bottom;
+      nav.classList.toggle('is-on-dark', hero.getBoundingClientRect().bottom > navBottom);
+    };
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+  }
+</script>
 
 <style>
   .canvas-frame {
@@ -31,6 +57,10 @@ const { title, description } = Astro.props;
     width: 2083px;
     background: var(--surface-page);
     overflow: hidden;
+  }
+  .footer-compact {
+    zoom: 0.85;
+    width: calc(2083px / 0.85);
   }
   .page-nav {
     position: fixed;
