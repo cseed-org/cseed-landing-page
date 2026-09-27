@@ -17,21 +17,24 @@ Neither package imports the other's code or dependencies.
    to **remote Cloudflare D1**, then deploys the Worker. You can also run
    `npm run deploy` manually from this directory. Update the workflow branch if
    your production branch is different. Feature branch pushes do not deploy.
-5. Set `PUBLIC_MEMBERSHIP_API_URL` in the frontend host's build environment to
+5. Set the GitHub Actions repository secret `PUBLIC_MEMBERSHIP_API_URL` to
    `https://cseed-membership-api.YOUR-SUBDOMAIN.workers.dev/api/membership`, then
-   rebuild the Astro site. `.env.example` is the local frontend template.
+   run the frontend build workflow. `.env.example` is the local frontend template.
 6. Create a Cloudflare Turnstile widget restricted to the frontend hostnames.
-   Set `PUBLIC_TURNSTILE_SITE_KEY` in the frontend build environment. From this
+   Set the GitHub Actions repository secret `PUBLIC_TURNSTILE_SITE_KEY`. The
+   frontend workflow injects both public settings into its build and uploads a
+   static-site artifact; see the root README for hosting and local setup. From this
    directory, run `npx wrangler secret put TURNSTILE_SECRET_KEY` to store the
    matching secret on the Worker, then rebuild the frontend. Never put the secret
    in a `PUBLIC_` variable or Git. Missing configuration blocks submissions.
    Use a separate widget and Worker for staging. If your host has a CSP, allow
    `https://challenges.cloudflare.com` in `script-src` and `frame-src`.
 
-Only schema SQL and application code belong in Git. The deployment workflow never
+Only schema SQL and application code belong in Git. The backend deployment workflow never
 exports, downloads, or commits submitted records. Requests go directly from the
 browser to Cloudflare; D1 stores the records. The Worker does not log request bodies
-or database errors and exposes no read endpoint. No browser local/session storage
+or database errors. Its only read endpoint is an authenticated names-only export,
+described below. No browser local/session storage
 is used. Keep real submissions out of fixtures, logs, screenshots, and SQL files.
 Database files, Wrangler state, local secrets, and `backend/exports/` are ignored.
 
@@ -111,6 +114,57 @@ additional cheap check. No system guarantees zero spam; email ownership checks
 and optional WAF policies remain separate future protections.
 
 ## Schema changes and verification
+
+### Automatic public member wall
+
+The join page publishes preferred name plus last name, falling back to first name
+when preferred name is blank. Display names are normalized, deduplicated exactly,
+and sorted alphabetically. Everyone in `People` is included. The displayed count
+is the number of unique display names, not the number of database records.
+
+`GET /internal/member-names` requires a bearer secret and returns only
+`{ "names": ["Display Name"] }`. The SQL selects only a constructed display name:
+emails, IDs, answers, demographics, and all other fields never enter the export.
+There is no browser CORS access. Names are fetched in Astro page frontmatter at
+build time, escaped into static HTML, and never committed as an export file.
+Production builds fail if export configuration, authentication, or validation
+fails, keeping the existing deployed site intact. Local development without export
+configuration shows an empty wall.
+
+One-time configuration:
+
+1. Generate a random secret (at least 32 random bytes). Store the same value as
+   Worker secret `MEMBER_NAMES_EXPORT_TOKEN` using `npx wrangler secret put
+   MEMBER_NAMES_EXPORT_TOKEN`, and as a GitHub Actions secret of that name.
+2. Set GitHub Actions secret `MEMBER_NAMES_EXPORT_URL` to the Worker's HTTPS URL
+   ending in `/internal/member-names`. Do not use a `PUBLIC_` prefix for either setting.
+3. Create a fine-grained GitHub token restricted to this repository, with
+   **Actions: write** permission. Store it only as Worker secret
+   `GITHUB_REBUILD_TOKEN` using `npx wrangler secret put GITHUB_REBUILD_TOKEN`.
+   Set `GITHUB_REPOSITORY` in `wrangler.jsonc` if this repository is renamed/copied.
+   Keep the token current; expired tokens leave updates pending until replaced.
+4. Configure the Cloudflare Pages deployment described in the root README.
+   Merge the frontend workflow onto `main` before deploying the backend.
+5. Deploy the backend (including migration `0002_member_wall.sql`), then manually
+   run **Build frontend** once to publish all existing members.
+
+Successful signups immediately request a GitHub workflow run in the background.
+The trigger contains only the branch name, no member information. D1 triggers
+atomically mark a pending revision when people are inserted, renamed, or deleted.
+A five-minute Worker cron retries failed GitHub requests and picks up direct
+administrator changes. Acknowledgement preserves changes made during dispatch.
+GitHub serializes frontend runs, and an hourly recovery build covers accepted
+dispatches whose build or deployment subsequently failed. Updates normally appear
+after the GitHub build and Pages deployment finish, not instantly for other visitors.
+The signup user's own wall updates immediately after a successful save.
+
+The protected export credential grants access to display names only, not D1.
+GitHub has no need to download private membership records. The existing backend
+deployment token has D1 administrative permissions; keep all repository secrets
+restricted to trusted maintainers. Only `dist/` is uploaded/deployed by the frontend.
+
+References: [GitHub workflow dispatch](https://docs.github.com/en/rest/actions/workflows#create-a-workflow-dispatch-event),
+[Cloudflare cron triggers](https://developers.cloudflare.com/workers/configuration/cron-triggers/).
 
 `migrations/0001_membership.sql` is the consolidated initial schema, including all
 three tables, membership flags, email-domain triggers, and the graduation index.

@@ -1,0 +1,68 @@
+name: Build frontend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'astro.config.mjs'
+      - 'tsconfig.json'
+      - '.github/workflows/frontend-build.yml'
+  workflow_dispatch:
+  # Recover from a build/hosting outage after GitHub accepted a dispatch.
+  schedule:
+    - cron: '23 * * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: frontend-production
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - name: Build with repository configuration
+        env:
+          PUBLIC_MEMBERSHIP_API_URL: ${{ secrets.PUBLIC_MEMBERSHIP_API_URL }}
+          PUBLIC_TURNSTILE_SITE_KEY: ${{ secrets.PUBLIC_TURNSTILE_SITE_KEY }}
+          MEMBER_NAMES_EXPORT_URL: ${{ secrets.MEMBER_NAMES_EXPORT_URL }}
+          MEMBER_NAMES_EXPORT_TOKEN: ${{ secrets.MEMBER_NAMES_EXPORT_TOKEN }}
+        run: |
+          if [ -z "$PUBLIC_MEMBERSHIP_API_URL" ] || [ -z "$PUBLIC_TURNSTILE_SITE_KEY" ]; then
+            echo "Configure PUBLIC_MEMBERSHIP_API_URL and PUBLIC_TURNSTILE_SITE_KEY in repository Actions secrets."
+            exit 1
+          fi
+          npm run build
+      - name: Upload static site
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: dist/
+          if-no-files-found: error
+      - name: Install pinned deployment CLI
+        run: npm ci --prefix backend
+      - name: Publish to Cloudflare Pages
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_PAGES_PROJECT: ${{ vars.CLOUDFLARE_PAGES_PROJECT }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ] || [ -z "$CLOUDFLARE_PAGES_PROJECT" ]; then
+            echo "Configure Cloudflare credentials and the CLOUDFLARE_PAGES_PROJECT repository variable."
+            exit 1
+          fi
+          node backend/node_modules/wrangler/bin/wrangler.js pages deploy dist --project-name "$CLOUDFLARE_PAGES_PROJECT" --branch main

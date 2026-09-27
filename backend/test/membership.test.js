@@ -4,6 +4,8 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { DatabaseSync } from 'node:sqlite';
 import worker from '../src/index.js';
 import { validateMembership } from '../src/appropriateness.js';
+import { dispatchMemberWall } from '../src/member-wall.js';
+import { loadMemberNames } from '../../src/data/member-names.mjs';
 
 const origin = 'https://membership.example';
 const payload = () => ({
@@ -139,7 +141,15 @@ function setup(t) {
     TOTAL_LIMITER: { limit: async () => ({ success: true }) },
     DB: {
       prepare(sql) {
-        return { bind: (...args) => ({ sql, args }) };
+        const statement = (args = []) => ({
+          sql,
+          args,
+          bind: (...values) => statement(values),
+          first: async () => db.prepare(sql).get(...args) ?? null,
+          all: async () => ({ success: true, results: db.prepare(sql).all(...args) }),
+          run: async () => ({ success: true, meta: db.prepare(sql).run(...args) }),
+        });
+        return statement();
       },
       async batch(statements) {
         batches++;
@@ -223,6 +233,104 @@ test('persists requested columns and cleaned JSON atomically; retries do not dup
   assert.equal((await send(data)).status, 201);
   assert.equal(db.prepare('SELECT count(*) AS n FROM People').get().n, 1);
   assert.equal(db.prepare('SELECT count(*) AS n FROM Membership_submissions').get().n, 1);
+});
+
+test('protected export returns only deduplicated display names, with preferred-name fallback', async (t) => {
+  const { send, env } = setup(t);
+  for (const fields of [
+    { first_name: 'Zoe', last_name: 'Test', preferred_name: 'Amy' },
+    { first_name: 'Other', last_name: 'Test', preferred_name: 'Amy' },
+    { first_name: 'Ben', last_name: 'Example', preferred_name: '' },
+  ])
+    assert.equal((await send({ ...payload(), ...fields })).status, 201);
+  const request = (token) =>
+    new Request('https://api.example/internal/member-names', {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+  assert.equal((await worker.fetch(request(), env)).status, 503);
+  env.MEMBER_NAMES_EXPORT_TOKEN = 'synthetic-export-secret';
+  for (const token of [undefined, 'wrong'])
+    assert.equal((await worker.fetch(request(token), env)).status, 401);
+  const response = await worker.fetch(request(env.MEMBER_NAMES_EXPORT_TOKEN), env);
+  assert.equal(response.headers.get('Access-Control-Allow-Origin'), null);
+  assert.equal(response.headers.get('Cache-Control'), 'no-store');
+  assert.deepEqual(await response.json(), { names: ['Amy Test', 'Ben Example'] });
+  env.DB.prepare = () => {
+    throw new Error('private database error');
+  };
+  assert.deepEqual(await (await worker.fetch(request(env.MEMBER_NAMES_EXPORT_TOKEN), env)).json(), {
+    error: 'Export unavailable.',
+  });
+});
+
+test('signups dispatch without member data; failed dispatch is retried by cron', async (t) => {
+  const { send, env, db } = setup(t);
+  env.GITHUB_REBUILD_TOKEN = 'synthetic-github-secret';
+  env.GITHUB_REPOSITORY = 'example/test';
+  let dispatches = 0;
+  let failing = true;
+  globalThis.fetch.mock.mockImplementation(async (url, options) => {
+    if (String(url).startsWith('https://api.github.com/')) {
+      dispatches++;
+      assert.deepEqual(JSON.parse(options.body), { ref: 'main' });
+      return new Response(null, { status: failing ? 503 : 204 });
+    }
+    return Response.json({ success: true, hostname: 'membership.example', action: 'membership' });
+  });
+  const data = payload();
+  assert.equal((await send(data)).status, 201);
+  assert.equal(dispatches, 1);
+  assert.equal(
+    db.prepare('SELECT dispatched_revision FROM Member_wall_sync').get().dispatched_revision,
+    0,
+  );
+  failing = false;
+  await worker.scheduled({}, env);
+  assert.equal(dispatches, 2);
+  await worker.scheduled({}, env);
+  assert.equal(dispatches, 2);
+  assert.equal((await send(data)).status, 201);
+  assert.equal(dispatches, 2);
+  db.prepare("UPDATE People SET preferred_name = 'Changed'").run();
+  await worker.scheduled({}, env);
+  assert.equal(dispatches, 3);
+});
+
+test('dispatch acknowledgement never drops a concurrent membership change', async (t) => {
+  const { env, db } = setup(t);
+  env.GITHUB_REBUILD_TOKEN = 'synthetic-token';
+  env.GITHUB_REPOSITORY = 'example/test';
+  globalThis.fetch.mock.mockImplementation(async () => {
+    db.exec('UPDATE Member_wall_sync SET revision = revision + 1');
+    return new Response(null, { status: 204 });
+  });
+  await dispatchMemberWall(env);
+  const state = db.prepare('SELECT * FROM Member_wall_sync').get();
+  assert.equal(state.revision, 2);
+  assert.equal(state.dispatched_revision, 1);
+});
+
+test('build loader fails closed on private fields, bad responses and missing configuration', async (t) => {
+  const config = { url: 'https://api.example/internal/member-names', token: 'synthetic' };
+  t.mock.method(globalThis, 'fetch', async () =>
+    Response.json({ names: ['Z Test', 'Amy Test', 'Amy Test'] }),
+  );
+  assert.deepEqual(await loadMemberNames(config), ['Amy Test', 'Z Test']);
+  for (const body of [
+    { names: ['A Test'], email: 'private@example.invalid' },
+    { names: [{ name: 'A' }] },
+    { names: ['<script>'] },
+  ]) {
+    globalThis.fetch.mock.mockImplementation(async () => Response.json(body));
+    await assert.rejects(loadMemberNames(config), /Invalid names-only/);
+  }
+  globalThis.fetch.mock.mockImplementation(
+    async () => new Response('private failure', { status: 503 }),
+  );
+  await assert.rejects(loadMemberNames(config), /Member name export failed/);
+  await assert.rejects(loadMemberNames({}), /Configure/);
+  await assert.rejects(loadMemberNames({ ...config, url: 'http://api.example' }), /HTTPS/);
+  assert.deepEqual(await loadMemberNames({ development: true }), []);
 });
 
 test('email domains and agreement are enforced; public intake cannot set officer history', async (t) => {

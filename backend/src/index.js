@@ -1,5 +1,6 @@
 import { validateMembership, ValidationError } from './appropriateness.js';
 import { verifyTurnstile } from './turnstile.js';
+import { exportMemberNames, dispatchMemberWall } from './member-wall.js';
 
 const MAX_BYTES = 16 * 1024;
 const PERSON_FIELDS = [
@@ -52,7 +53,13 @@ async function readPayload(request) {
 }
 
 export default {
-  async fetch(request, env) {
+  async scheduled(_event, env) {
+    await dispatchMemberWall(env);
+  },
+  async fetch(request, env, ctx) {
+    if (new URL(request.url).pathname === '/internal/member-names') {
+      return exportMemberNames(request, env);
+    }
     const origin = request.headers.get('Origin');
     const allowed = (env.ALLOWED_ORIGINS || '').split(',').map((s) => s.trim());
     const headers = {
@@ -141,6 +148,11 @@ export default {
         ).bind(id, id, JSON.stringify(payload), now),
       ]);
       if (results.some((result) => !result.success)) throw new Error('Write failed');
+      // The database trigger records pending changes atomically with the signup.
+      // Cron retries failures; dispatch failures must not undo a saved membership.
+      const notification = dispatchMemberWall(env).catch(() => {});
+      if (ctx) ctx.waitUntil(notification);
+      else await notification;
       return reply(201, { ok: true });
     } catch (error) {
       if (error instanceof ValidationError) return reply(400, { error: error.message });

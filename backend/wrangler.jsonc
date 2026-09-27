@@ -6,10 +6,12 @@
   "workers_dev": true,
   "preview_urls": false,
   "observability": { "enabled": false },
+  "triggers": { "crons": ["*/5 * * * *"] },
   "vars": {
     // TURNSTILE_SECRET_KEY must be set with wrangler secret put, never here.
     "ALLOWED_ORIGINS": "https://replace-with-your-site.example",
     "SUBMISSIONS_ENABLED": "true",
+    "GITHUB_REPOSITORY": "cseed-org/cseed-landing-page",
   },
   "d1_databases": [
     {
