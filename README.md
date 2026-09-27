@@ -33,8 +33,12 @@ Then open **http://localhost:4321**. All five pages are linked from the nav and 
 | `npm run preview`   | Serve the built `dist/` locally, to check the real output |
 | `npm run check`     | Typecheck `.astro` and `.ts` files                        |
 
-There is no backend. The join application runs entirely in the browser and does not send anything
-anywhere yet — submitting it just shows the "welcome in." state with your name on the wall.
+The join form sends JSON directly to a separate Cloudflare Worker, which stores membership
+records in Cloudflare D1. The frontend remains static Astro. See
+[backend setup and migrations](backend/README.md) for the one-time Cloudflare setup,
+push-triggered schema deployment, request limits, and API contract. Set
+`PUBLIC_MEMBERSHIP_API_URL` before building the frontend (see `.env.example`).
+No submitted membership records are written to this repository.
 
 ## How it's built
 

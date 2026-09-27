@@ -11,18 +11,10 @@ import codeOfConduct from '../data/code-of-conduct.md?raw';
 
 // Graduation term/year list -- generated so it's never out of date, instead of hand-maintained.
 const gradTerms = ['Winter', 'Spring', 'Summer', 'Autumn'];
-const gradStartYear = new Date().getFullYear();
+const gradStartYear = new Date().getUTCFullYear();
 const graduationOptions = Array.from({ length: 6 }, (_, i) => gradStartYear + i).flatMap((y) =>
   gradTerms.map((t) => `${t} ${y}`),
 );
-
-// Majors whose members should give us their CSE email instead of their general UW email.
-const CSE_EMAIL_MAJORS = [
-  'Computer Science',
-  'Computer Engineering',
-  'Electrical Engineering',
-  'Intended CSE',
-];
 
 const options = {
   graduation: graduationOptions,
@@ -119,6 +111,9 @@ let last = '';
     </header>
 
     <form class="jn-form" data-jn-form hidden novalidate>
+      <div class="jn-trap" aria-hidden="true" inert>
+        <label>Leave this empty<input name="website" tabindex="-1" autocomplete="off" /></label>
+      </div>
       <div class="jn-form-head">
         <div class="jn-progress">
           <div class="jn-bar" data-jn-bar></div>
@@ -130,14 +125,28 @@ let last = '';
       <div class="jn-track" data-jn-track>
         <div class="jn-panel" data-jn-panel>
           <FormBlock title="about you">
-            <Field label="Name" required
-              ><input class="jn-input" name="name" placeholder="First and last" required /></Field
-            >
+            <Field label="First Name" required>
+              <input class="jn-input" name="first_name" autocomplete="given-name" required />
+            </Field>
+            <Field label="Last Name" required>
+              <input class="jn-input" name="last_name" autocomplete="family-name" required />
+            </Field>
             <Field label="Preferred Name" optional>
               <input class="jn-input" name="pref" placeholder="What should we call you?" />
             </Field>
+            <Field label="Pronouns" optional>
+              <input class="jn-input" name="pronouns" />
+            </Field>
+            <SelectField
+              name="campus"
+              allowOther={false}
+              label="Campus"
+              options={['Seattle', 'Bothell', 'Tacoma']}
+              optional
+            />
             <SelectField
               name="grad"
+              allowOther={false}
               label="Graduation Date"
               options={options.graduation}
               required
@@ -264,6 +273,14 @@ let last = '';
         </div>
       </div>
 
+      <div
+        data-jn-verification
+        hidden
+        style="display:flex; justify-content:center; margin-top:30px"
+      >
+        <div data-jn-turnstile></div>
+      </div>
+      <p data-jn-status role="status" aria-live="polite" class="jn-submit-status" hidden></p>
       <div class="jn-controls">
         <button type="button" class="jn-back" data-jn-back hidden>← back</button>
         <button type="submit" class="jn-step-btn">
@@ -413,6 +430,8 @@ let last = '';
     const nextNames = ['next — why cseed', 'next — the agreement', 'send application'];
     nextLabel.textContent = nextNames[step];
     stepLabel.textContent = `step ${step + 1} of 3`;
+    verification.hidden = step !== 2;
+    if (stage === 'form' && step === 2) void loadVerification();
 
     if (stage !== prevStage && (stage === 'done' || prevStage === 'done')) {
       root.querySelectorAll('[data-jn-rekey]').forEach(replayReveals);
@@ -440,12 +459,42 @@ let last = '';
     const box = label.querySelector<HTMLInputElement>('input[type="checkbox"]');
     if (box) return box.checked;
     const input = label.querySelector<HTMLInputElement | HTMLTextAreaElement>('input, textarea');
+    if (input?.name === 'uw') return /^[^@\s]+@uw\.edu$/i.test(input.value);
+    if (input?.name === 'cse') return /^[^@\s]+@cs\.washington\.edu$/i.test(input.value);
     return !!input?.value.trim();
   }
 
   function validateStep(i: number): boolean {
+    let textOk = true;
+    for (const input of panels[i].querySelectorAll<HTMLInputElement | HTMLTextAreaElement>(
+      'input:not([type="checkbox"]), textarea',
+    )) {
+      if (input.closest('[hidden]')) continue;
+      const invalid =
+        /[<>\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f-\u009f\u200b\u202a-\u202e\u2066-\u2069\ufeff]/u.test(
+          input.value,
+        );
+      input.value = input.value.normalize('NFC').replace(/\r\n?/g, '\n').trim();
+      if (input.name !== 'more') input.value = input.value.replace(/\s+/gu, ' ');
+      if (input.name === 'uw' || input.name === 'cse') input.value = input.value.toLowerCase();
+      const tooLong = input.maxLength >= 0 && input.value.length > input.maxLength;
+      input.setCustomValidity(
+        invalid
+          ? 'Use plain text without markup or control characters.'
+          : tooLong
+            ? `Use at most ${input.maxLength} characters.`
+            : '',
+      );
+      input.setAttribute('aria-invalid', String(invalid || tooLong));
+      const select = input.closest<HTMLElement>('[data-jn-select]');
+      if (select && !input.hidden) values[select.dataset.jnSelect!] = input.value;
+      if (invalid || tooLong) {
+        if (textOk) input.reportValidity();
+        textOk = false;
+      }
+    }
     const required = [...panels[i].querySelectorAll<HTMLElement>('[data-jn-required]')];
-    let ok = true;
+    let ok = textOk;
     required.forEach((label) => {
       const valid = fieldOk(label);
       label.classList.toggle('is-invalid', !valid);
@@ -459,21 +508,210 @@ let last = '';
     return ok;
   }
 
-  form.addEventListener('submit', (e) => {
+  const submitButton = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+  const submitStatus = form.querySelector<HTMLElement>('[data-jn-status]')!;
+  const verification = form.querySelector<HTMLElement>('[data-jn-verification]')!;
+  type Turnstile = {
+    render: (el: HTMLElement, options: Record<string, unknown>) => string;
+    reset: (id: string) => void;
+  };
+  const turnstileWindow = window as typeof window & { turnstile?: Turnstile };
+  let token = '';
+  let widget: string | undefined;
+  let loadingVerification = false;
+  function verificationStatus(message: string) {
+    token = '';
+    submitStatus.hidden = false;
+    submitStatus.textContent = message;
+  }
+  async function loadVerification() {
+    if (widget !== undefined || loadingVerification) return;
+    const sitekey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
+    if (!sitekey) {
+      verificationStatus('Membership submissions are not available yet. Please try again later.');
+      return;
+    }
+    loadingVerification = true;
+    try {
+      if (!turnstileWindow.turnstile)
+        await new Promise<void>((resolve, reject) => {
+          const script = document.createElement('script');
+          const timeout = window.setTimeout(() => {
+            script.remove();
+            reject(new Error('timeout'));
+          }, 12000);
+          script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+          script.async = true;
+          script.onload = () => {
+            clearTimeout(timeout);
+            resolve();
+          };
+          script.onerror = () => {
+            clearTimeout(timeout);
+            script.remove();
+            reject(new Error('load'));
+          };
+          document.head.append(script);
+        });
+      widget = turnstileWindow.turnstile!.render(
+        form.querySelector<HTMLElement>('[data-jn-turnstile]')!,
+        {
+          sitekey,
+          action: 'membership',
+          callback: (value: string) => {
+            token = value;
+            submitStatus.hidden = true;
+          },
+          'expired-callback': () =>
+            verificationStatus('Verification expired. Please verify again before sending.'),
+          'error-callback': () =>
+            verificationStatus('Verification could not load. Check your connection and try again.'),
+        },
+      );
+    } catch {
+      verificationStatus(
+        'Verification could not load. Check your connection and try sending again.',
+      );
+    } finally {
+      loadingVerification = false;
+    }
+  }
+  const limits: Record<string, number> = {
+    first_name: 100,
+    last_name: 100,
+    pref: 100,
+    pronouns: 80,
+    uw: 254,
+    cse: 254,
+    why: 1000,
+    more: 3000,
+  };
+  for (const [name, limit] of Object.entries(limits)) {
+    const input = form.elements.namedItem(name) as HTMLInputElement;
+    input.maxLength = limit;
+  }
+  form.querySelector<HTMLInputElement>('[data-jn-heard-other]')!.maxLength = 200;
+  let submitting = false;
+  // In-memory only. Preserve the exact request across uncertain network failures.
+  let pendingSubmission: string | null = null;
+  let submittedName = '';
+
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (submitting) return;
     if (!validateStep(step)) return;
     if (step < 2) {
       step += 1;
       render(stage);
       return;
     }
-    const fd = new FormData(form);
-    const me = String(fd.get('pref') || '').trim() || String(fd.get('name') || '').trim() || 'you';
-    renderWall(me);
-    setStage('done');
-    // The only stage change that still scrolls: the form this tall disappearing would
-    // otherwise leave you stranded somewhere in the members list.
-    top();
+    if (!pendingSubmission) {
+      for (let i = 0; i < panels.length; i++) {
+        if (!validateStep(i)) {
+          step = i;
+          render(stage);
+          return;
+        }
+      }
+      if (!heardOther.hidden && !heardOther.value.trim()) {
+        step = 1;
+        render(stage);
+        heardOther.focus();
+        submitStatus.hidden = false;
+        submitStatus.textContent = 'Tell us how you heard about us.';
+        return;
+      }
+    }
+    const endpoint = import.meta.env.PUBLIC_MEMBERSHIP_API_URL;
+    submitStatus.hidden = false;
+    if (!endpoint) {
+      submitStatus.textContent =
+        'Membership submissions are not available yet. Please try again later.';
+      return;
+    }
+    if (!token) {
+      verificationStatus('Please complete the bot verification before sending.');
+      void loadVerification();
+      return;
+    }
+    if (!pendingSubmission) {
+      const fd = new FormData(form);
+      const field = (name: string) => String(fd.get(name) ?? '');
+      const wantsCse = wantsCseEmail();
+      submittedName = field('pref').trim() || `${field('first_name')} ${field('last_name')}`.trim();
+      pendingSubmission = JSON.stringify({
+        submission_id: crypto.randomUUID(),
+        first_name: field('first_name'),
+        last_name: field('last_name'),
+        preferred_name: field('pref'),
+        uw_email: wantsCse ? null : field('uw'),
+        cs_email: wantsCse ? field('cse') : null,
+        major: values.major ?? '',
+        grad_year: values.grad ?? '',
+        demographics: values.demo ?? '',
+        campus: values.campus ?? '',
+        pronouns: field('pronouns'),
+        why: field('why'),
+        heard_about: [...root.querySelectorAll<HTMLElement>('[data-chip].is-on')].map(
+          (chip) => chip.dataset.chip,
+        ),
+        heard_other: heardOther.hidden ? '' : heardOther.value,
+        more: field('more'),
+        code_of_conduct: fd.has('coc'),
+        photo_consent: fd.has('photoConsent'),
+        website: field('website'),
+      });
+    }
+    submitting = true;
+    submitButton.disabled = true;
+    (back as HTMLButtonElement).disabled = true;
+    nextLabel.textContent = 'sending...';
+    submitStatus.textContent = 'Saving your membership...';
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...JSON.parse(pendingSubmission), turnstile_token: token }),
+        credentials: 'omit',
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!response.ok) {
+        // A rejected request can be edited. For uncertain failures, retry the
+        // same immutable payload so a lost response cannot duplicate a member.
+        if ([400, 413, 415].includes(response.status)) pendingSubmission = null;
+        const detail = await response.json().catch(() => null);
+        throw new Error(
+          response.status === 429
+            ? 'Too many submissions. Please wait a minute and try again.'
+            : typeof detail?.error === 'string'
+              ? detail.error
+              : 'Your submission could not be confirmed. Please try again.',
+        );
+      }
+      const result = await response.json();
+      if (result.ok !== true)
+        throw new Error('Your submission could not be confirmed. Please try again.');
+      pendingSubmission = null;
+      renderWall(submittedName || 'you');
+      setStage('done');
+      form.reset();
+      top();
+    } catch (error) {
+      submitStatus.textContent =
+        error instanceof Error && error.name === 'Error'
+          ? error.message
+          : 'Connection interrupted. Please retry to confirm your submission.';
+      if (pendingSubmission) {
+        submitStatus.textContent += ' Retrying will send your original answers.';
+      }
+    } finally {
+      token = '';
+      if (widget !== undefined) turnstileWindow.turnstile?.reset(widget);
+      submitting = false;
+      submitButton.disabled = false;
+      (back as HTMLButtonElement).disabled = false;
+      nextLabel.textContent = 'send application';
+    }
   });
 
   // Clear the invalid flag on a required field as soon as it's fixed.
@@ -498,6 +736,7 @@ let last = '';
   window.addEventListener('resize', syncHeight);
 
   back.addEventListener('click', () => {
+    if (submitting) return;
     step = Math.max(0, step - 1);
     render(stage);
   });
@@ -506,16 +745,21 @@ let last = '';
   const selects = [...root.querySelectorAll<HTMLElement>('[data-jn-select]')];
   const values: Record<string, string> = {};
 
-  // Keep in sync with CSE_EMAIL_MAJORS in the frontmatter above.
+  // Match the backend's case-insensitive major rule, including custom answers.
   const CSE_EMAIL_MAJORS = new Set([
     'Computer Science',
     'Computer Engineering',
     'Electrical Engineering',
     'Intended CSE',
   ]);
+  function wantsCseEmail() {
+    return [...CSE_EMAIL_MAJORS].some(
+      (major) => major.toLowerCase() === values.major?.trim().toLowerCase(),
+    );
+  }
 
   function syncEmailField() {
-    const wantsCse = CSE_EMAIL_MAJORS.has(values.major);
+    const wantsCse = wantsCseEmail();
     root.querySelector<HTMLElement>('[data-jn-email="cse"]')!.hidden = !wantsCse;
     root.querySelector<HTMLElement>('[data-jn-email="uw"]')!.hidden = wantsCse;
   }
@@ -539,7 +783,7 @@ let last = '';
         if (name === 'major') syncEmailField();
       }),
     );
-    sel.querySelector('[data-other]')!.addEventListener('click', () => {
+    sel.querySelector('[data-other]')?.addEventListener('click', () => {
       values[name] = '';
       btn.hidden = true;
       other.hidden = false;
@@ -601,6 +845,25 @@ let last = '';
 </style>
 
 <style>
+  .jn-trap {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  [data-jn-verification][hidden] {
+    display: none !important;
+  }
+  .jn-submit-status {
+    text-align: center;
+    font: 300 26px/1.4 var(--font-body);
+    margin: 30px 100px 0;
+  }
+  .jn-step-btn:disabled {
+    opacity: 0.6;
+    cursor: wait;
+  }
   /* The page renders at 85%, matching the landing page. */
   .jn-shrink {
     zoom: 0.85;

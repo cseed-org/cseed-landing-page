@@ -12,6 +12,14 @@ node_modules/
 .env
 .env.production
 .dev.vars
+.env.*
+!.env.example
+.dev.vars.*
+*.sqlite
+*.sqlite-*
+*.db
+*.db-*
+backend/exports/
 
 # logs
 npm-debug.log*

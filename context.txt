@@ -1,0 +1,31 @@
+The backend is separate from the Astro frontend and runs as a Cloudflare Worker connected to D1.
+
+What’s implemented:
+
+The join form sends JSON to POST /api/membership.
+The Worker saves the person and original form answers together. Success appears only after the save is confirmed.
+People includes membership details, agreement status, officer history, and an optional personal email.
+Separate tables preserve membership submissions and future graduation email submissions.
+UW and CSE email domains are checked. Personal email is not collected by the join form, and public submissions cannot set officer history.
+Versioned SQL migrations and a GitHub deployment workflow manage database structure. Submitted records stay in Cloudflare.
+Basic protections include rate limits, request-size limits, parameterized SQL, origin restrictions, and duplicate-retry handling.
+Backend tests and the Astro build pass. Cloudflare configuration and deployment are still required.
+
+The current pages are write-only through the application API. There is no endpoint for reading, listing, editing, or deleting database records. The submission endpoint returns a success acknowledgment, not member data. The existing public members wall is static placeholder content, not a database feed.
+
+The Worker’s D1 binding itself has broader database access; “write-only” is enforced by the endpoint’s code, not by a write-only database credential.
+
+Before launch, the remaining safety work is:
+
+Bot protection: add Turnstile with server-side verification.
+Email ownership: verify submitted addresses if membership must be restricted to actual UW account holders. Domain checks alone do not prove ownership.
+Data validation: implement the currently empty cleaning and appropriateness files, including field limits and accepted values.
+Graduation invitations: require expiring, single-use tokens tied to selected members before accepting personal-email updates.
+Privacy: explain what is collected, who can access it, and how long it is retained; establish deletion procedures.
+
+To ensure only selected people can access stored data:
+
+Initially, keep access limited to designated Cloudflare account members, with minimal permissions and MFA.
+If an admin page is added, protect both the page and every data endpoint with authentication and server-side authorization—for example, Cloudflare Access restricted to approved accounts.
+Keep administrative read/update endpoints separate from public submission endpoints. Never rely on a hidden URL or frontend controls.
+Restrict deployment credentials and protect the production branch: anyone able to deploy backend code could change how database access works.

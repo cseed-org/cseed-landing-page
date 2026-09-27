@@ -1,0 +1,34 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "cseed-membership-api",
+  "main": "src/index.js",
+  "compatibility_date": "2026-09-26",
+  "workers_dev": true,
+  "preview_urls": false,
+  "observability": { "enabled": false },
+  "vars": {
+    // TURNSTILE_SECRET_KEY must be set with wrangler secret put, never here.
+    "ALLOWED_ORIGINS": "https://replace-with-your-site.example",
+    "SUBMISSIONS_ENABLED": "true",
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "cseed-membership",
+      "database_id": "REPLACE_WITH_CLOUDFLARE_D1_DATABASE_ID",
+      "migrations_dir": "migrations",
+    },
+  ],
+  "ratelimits": [
+    {
+      "name": "SUBMISSION_LIMITER",
+      "namespace_id": "1001",
+      "simple": { "limit": 5, "period": 60 },
+    },
+    {
+      "name": "TOTAL_LIMITER",
+      "namespace_id": "1002",
+      "simple": { "limit": 100, "period": 60 },
+    },
+  ],
+}

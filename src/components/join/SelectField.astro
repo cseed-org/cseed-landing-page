@@ -9,8 +9,18 @@ interface Props {
   optional?: boolean;
   required?: boolean;
   options: string[];
+  allowOther?: boolean;
 }
-const { name, label, help, span = 1, optional = false, required = false, options } = Astro.props;
+const {
+  name,
+  label,
+  help,
+  span = 1,
+  optional = false,
+  required = false,
+  options,
+  allowOther = true,
+} = Astro.props;
 ---
 
 <div class="jn-select" data-jn-select={name} style={`grid-column: span ${span}`}>
@@ -19,7 +29,7 @@ const { name, label, help, span = 1, optional = false, required = false, options
       <span data-jn-select-value>select...</span>
       <span class="jn-caret">▾</span>
     </button>
-    <input class="jn-input" data-jn-select-other placeholder="tell us" hidden />
+    <input class="jn-input" data-jn-select-other maxlength="160" placeholder="tell us" hidden />
   </Field>
   <div class="jn-select-panel">
     <div class="jn-select-list">
@@ -30,7 +40,13 @@ const { name, label, help, span = 1, optional = false, required = false, options
           </button>
         ))
       }
-      <button type="button" class="jn-option jn-option--hand" data-other>other...</button>
+      {
+        allowOther && (
+          <button type="button" class="jn-option jn-option--hand" data-other>
+            other...
+          </button>
+        )
+      }
     </div>
   </div>
 </div>
