@@ -6,7 +6,8 @@ import TextLink from '../components/core/TextLink.astro';
 import { TEAM, ABOUT_STATS } from '../data/community';
 ---
 
-<PageLayout title="about us — cseed">
+<PageLayout title="about us — cseed" compactFooter>
+  <div class="ab-shrink">
   <div style="height:330px"></div>
 
   <div class="ab-opener">
@@ -66,6 +67,7 @@ import { TEAM, ABOUT_STATS } from '../data/community';
   </section>
 
   <div style="height:260px"></div>
+  </div>
 </PageLayout>
 
 <script>
@@ -82,6 +84,12 @@ import { TEAM, ABOUT_STATS } from '../data/community';
 </script>
 
 <style>
+  /* The page renders at 85%, matching the landing page. */
+  .ab-shrink {
+    zoom: 0.85;
+    width: 2083px;
+    margin-inline: auto;
+  }
   .ab-opener {
     padding: 0 100px;
     display: grid;

@@ -74,8 +74,8 @@ let last = '';
   });
 ---
 
-<PageLayout title="join — cseed">
-  <div data-join>
+<PageLayout title="join — cseed" compactFooter>
+  <div class="jn-shrink" data-join>
     <header class="jn-header" data-jn-rekey>
       <div class="jn-header-left">
         <Reveal><div class="t-eyebrow" data-jn-eyebrow>join cseed</div></Reveal>
@@ -524,6 +524,12 @@ let last = '';
 </style>
 
 <style>
+  /* The page renders at 85%, matching the landing page. */
+  .jn-shrink {
+    zoom: 0.85;
+    width: 2083px;
+    margin-inline: auto;
+  }
   .jn-header {
     padding: 330px 100px 0;
     display: grid;
