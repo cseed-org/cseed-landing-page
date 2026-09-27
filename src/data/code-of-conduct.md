@@ -1,46 +1,54 @@
 # cseed member code of conduct
 
-_Last updated: fill in a date once this is finalized._
+## Our Core Belief
 
-cseed exists so good people can work on curious ideas together. That only works if everyone
-who shows up -- to buildspace, buildher, saturdays, or anywhere else we gather -- feels safe,
-respected, and welcome to build. This code of conduct is what we expect from every member.
+**cseed thrives when members feel safe enough to create, build, and share half-formed, imperfect, embarrassing first drafts of their ideas with each other.** That is the entire point of this organization. Everything stated below exists to protect the belief of our community as we grow.
 
-## 1. Be respectful
+We hold ourselves **and every member** to a high standard here, not because we want to be strict, but because a real community takes intentional effort to protect.
 
-Treat other members, mentors, sponsors, and guests with respect. Disagree about ideas, not
-people. Harassment, discrimination, or exclusionary behavior of any kind isn't tolerated --
-based on race, ethnicity, national origin, religion, gender, gender identity or expression,
-sexual orientation, age, disability, or anything else.
+#### How we think about this:
 
-## 2. Be honest
+Just as our officer team operates under a culture of **extreme ownership, diversity, and personalization**, we expect every member who walks into a cseed event, workshop, or program to hold themselves to a similar standard of respect and care for the people around them. **We are all responsible for the culture we build together.**
 
-Give credit for work that isn't yours. Represent your own projects, skills, and contributions
-accurately. Don't misrepresent cseed, its programs, or its members to sponsors or the public.
+> **If you ever feel unsafe, disrespected, or excluded in any cseed space, please notify the leadership team immediately. We take this matter seriously and want to know.**
 
-## 3. Show up for each other
+## Principles and Values
 
-cseed runs on people helping people: pair with someone stuck on a bug, share what you know,
-welcome someone new. Cohorts and Saturdays work best when everyone is a little bit of a mentor.
+- **Inclusion is non-negotiable**
+    - You do not need to already look like a “founder” or come from a technical background to belong in cseed. Every major, identity, and experience level is welcome here.
+    - We expect members to be proactive about making sure others feel included, not just tolerated.
+- **Low stakes, always**
+    - No one should ever leave a cseed event feeling smaller for having shared an idea.
+    - We create space for dumb ideas, unfinished ideas, and “I don’t really know what I’m doing yet”.
+- **Respect over ego**
+    - Disagreement is welcome and encouraged. Disrespect is not.
+    - You are expected to **challenge ideas, not people**.
+- **Shared ownership of culture**
+    - Community isn't something officers deliver to members. **Every member helps create the culture of this space**, and is expected to protect it accordingly.
 
-## 4. Respect the space and the gear
+## Expected Conduct
 
-Whatever room, lab, or hardware cseed gives you access to, leave it in as good shape as you
-found it. Report anything broken instead of just walking away from it.
+- **In events, workshops, and programs**
+    - Show up prepared and on time to things you have committed to, whether that's a buildspace check-in, a mentorship session, or a general meeting.
+    - Give feedback the way you would want to receive it: honest, constructive, and kind.
+    - Be truthful about whose work is whose, in applications, showcases, and conversations with sponsors or mentors.
+- **Toward other members, officers, and guests**
+    - Treat everyone with basic respect and kindness, in every space that represents cseed, whether that's Slack, Discord, Notion, an event, or in person.
+    - Do not put anyone down for their identity, background, major, or experience level.
+    - Do not act in ways that exclude others or make them feel like they do not belong.
+- **In how you represent cseed**
+    - Do not misrepresent yourself or your work to gain an advantage within cseed or in front of our partners and sponsors.
+    - Do not disrupt events or meetings in ways that take away from the experience of others.
 
-## 5. Photos and digital media
+## Reporting Procedures
 
-cseed regularly takes photos and video at events for our website, socials, and sponsor
-recaps. If you don't want to be included, let an organizer know or opt out on the join form --
-we'll do our best to keep you out of anything we publish.
+If something happens that goes against this Code of Conduct, **please tell us. Do not sit on it.**
 
-## 6. If something goes wrong
-
-If you experience or witness a violation of this code of conduct, tell any cseed organizer or
-email us. Reports are handled seriously and as privately as possible. Violations can result in
-a warning, removal from an event, or removal from cseed, depending on severity.
-
----
-
-_This document is a living one -- officers can and should revise it as cseed grows. Replace
-this note, and the placeholder sections above, with cseed's actual policies before publishing._
+- **How to report**
+    - You can go directly to any cseed officer or executive team member.
+- **What happens after you report**
+    - The executive team will look into it and keep things as confidential as possible.
+    - Depending on what happened, this could mean a conversation, mediation, or further action.
+    - **We do not tolerate retaliation** against anyone who reports something in good faith.
+- **For urgent safety concerns**
+    - Please contact UW directly through SafeCampus or UWPD, in addition to or instead of reaching out to cseed.

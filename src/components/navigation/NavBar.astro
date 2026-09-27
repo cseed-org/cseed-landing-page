@@ -1,19 +1,12 @@
 ---
 import Rule from '../core/Rule.astro';
-import DropdownNav from './DropdownNav.astro';
 
 /* Source node "nav bar" -- 2085x200, wordmark inset 41px, Playfair 80 items
    right-aligned, 1px black rule 182px down. Rendered here at a compact 72px band
    (itemSize 28 / wordmarkSize 28). */
 const items = [
-  {
-    label: 'programs',
-    children: [
-      { label: 'buildspace', href: '/buildspace/' },
-      { label: 'buildher', href: '/buildher/' },
-      { label: 'saturdays', href: '/saturdays/' },
-    ],
-  },
+  { label: 'buildspace', href: '/buildspace/' },
+  { label: 'buildher', href: '/buildher/' },
   { label: 'about us', href: '/about-us/' },
   { label: 'join', href: '/join/' },
 ];
@@ -29,23 +22,12 @@ const height = 72;
     {
       items.map((item) => (
         <div class="nav-bar-item" style={`height:${height}px`}>
-          {item.children ? (
-            <button type="button" class="nav-bar-link nav-bar-link--menu" aria-haspopup="true">
-              {item.label}
-            </button>
-          ) : (
-            <a
-              href={item.href}
-              class:list={['nav-bar-link', { 'nav-bar-link--join': item.label === 'join' }]}
-            >
-              {item.label}
-            </a>
-          )}
-          {item.children && (
-            <div class="nav-bar-dropdown" style={`top:${height}px`}>
-              <DropdownNav items={item.children} width="max-content" />
-            </div>
-          )}
+          <a
+            href={item.href}
+            class:list={['nav-bar-link', { 'nav-bar-link--join': item.label === 'join' }]}
+          >
+            {item.label}
+          </a>
         </div>
       ))
     }
@@ -89,12 +71,7 @@ const height = 72;
   :global(.is-on-dark) .nav-bar :global(.nav-bar-rule) {
     background: rgba(255, 255, 255, 0.4) !important;
   }
-  :global(.is-on-dark) .nav-bar-dropdown {
-    background: transparent;
-  }
-  :global(.is-on-dark) .nav-bar-dropdown :global(.dropdown-nav-item) {
-    color: var(--cseed-white);
-  }
+
   .nav-bar-mark {
     position: absolute;
     left: 41px;
@@ -130,13 +107,6 @@ const height = 72;
   .nav-bar-items:has(.nav-bar-item:hover) .nav-bar-item:not(:hover) .nav-bar-link {
     opacity: 0.45;
   }
-  /* "programs" only opens its dropdown; the program links do the navigating. */
-  .nav-bar-link--menu {
-    padding: 0;
-    border: 0;
-    background: none;
-    cursor: default;
-  }
   .nav-bar-link--join {
     padding: 0 8px;
     margin: 0 -8px;
@@ -146,34 +116,6 @@ const height = 72;
       var(--cseed-sun) 92%,
       transparent 92%
     );
-  }
-  .nav-bar-dropdown {
-    position: absolute;
-    left: 50%;
-    min-width: 100%;
-    transform: translateX(-50%) translateY(-12px);
-    opacity: 0;
-    visibility: hidden;
-    padding: 0 27px 20px;
-    box-sizing: border-box;
-    background: var(--surface-page);
-    /* Closing waits 250ms, so a mouse that briefly slips off "programs" on its way
-       down (e.g. heading diagonally for "saturdays") can still reach the menu. */
-    transition:
-      opacity var(--dur-hover) var(--ease-soft) 250ms,
-      transform var(--dur-hover) var(--ease-soft) 250ms,
-      visibility 0s linear calc(var(--dur-hover) + 250ms);
-    z-index: 4;
-  }
-  .nav-bar-item:hover .nav-bar-dropdown,
-  .nav-bar-item:focus-within .nav-bar-dropdown {
-    opacity: 1;
-    visibility: visible;
-    transform: translateX(-50%) translateY(0);
-    transition:
-      opacity var(--dur-hover) var(--ease-soft),
-      transform var(--dur-hover) var(--ease-soft),
-      visibility 0s;
   }
   .nav-bar :global(.nav-bar-rule) {
     position: absolute;

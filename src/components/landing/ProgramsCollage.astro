@@ -34,8 +34,8 @@ const programs = [
     eyebrow: 'come hang out',
     name: 'saturdays',
     blurb: 'Bring a project, a question, or just\nyourself. A weekly space to make\nthings and meet people.',
-    link: 'see you saturday',
-    href: '/saturdays/',
+    link: null,
+    href: null,
     photo: {
       slot: 'lp-saturdays',
       w: 1100,
@@ -93,9 +93,13 @@ const programs = [
           </Reveal>
           <Reveal delay={360}>
             <div class="program-link">
-              <TextLink href={p.href} arrowLength={22} style="font:400 26px/1 var(--font-body); gap:12px">
-                {p.link}
-              </TextLink>
+              {p.link && p.href ? (
+                <TextLink href={p.href} arrowLength={22} style="font:400 26px/1 var(--font-body); gap:12px">
+                  {p.link}
+                </TextLink>
+              ) : (
+                <span class="program-soon">coming soon</span>
+              )}
             </div>
           </Reveal>
         </div>
@@ -129,6 +133,11 @@ const programs = [
 </div>
 
 <style>
+  /* Stand-in for a program link while its page isn't ready yet (no arrow, not clickable). */
+  .program-soon {
+    font: 400 26px/1 var(--font-body);
+    color: var(--cseed-ink-soft);
+  }
   .programs-collage {
     position: relative;
     width: 2083px;
