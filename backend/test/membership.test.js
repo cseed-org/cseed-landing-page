@@ -62,7 +62,6 @@ test('invalid answers and honeypots never reach D1', async (t) => {
     { grad_year: 'soon' },
     { major: '' },
     { uw_email: null },
-    { major: 'Computer Science' },
     { photo_consent: 'true' },
     { heard_about: 'Discord' },
     { heard_about: ['unknown'] },
@@ -464,4 +463,18 @@ test('preflight, rate limits, kill switch and missing bindings never write', asy
   delete env.SUBMISSION_LIMITER;
   assert.equal((await send()).status, 503);
   assert.equal(batches(), 0);
+});
+
+test('all engineering majors can join with a UW email and no CSE email', async (t) => {
+  const { send } = setup(t);
+  for (const major of [
+    'Computer Science and Engineering',
+    'Electrical and Computer Engineering',
+    'Computer Science',
+    'Computer Engineering',
+    'Electrical Engineering',
+    'Intended CSE',
+  ]) {
+    assert.equal((await send({ ...payload(), major })).status, 201, major);
+  }
 });

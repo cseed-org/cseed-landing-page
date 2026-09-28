@@ -1,7 +1,18 @@
 ---
 import PageLayout from '../layouts/PageLayout.astro';
 import Reveal from '../components/core/Reveal.astro';
-import { TEAM, ABOUT_STATS } from '../data/community';
+import { TEAM } from '../data/community';
+import { loadMemberNames } from '../data/member-names.mjs';
+const memberNames = await loadMemberNames({
+  url: import.meta.env.MEMBER_NAMES_EXPORT_URL,
+  token: import.meta.env.MEMBER_NAMES_EXPORT_TOKEN,
+  development: import.meta.env.DEV,
+});
+const ABOUT_STATS = [
+  { value: memberNames.length.toLocaleString('en-US'), label: 'members' },
+  { value: '300+', label: 'projects' },
+  { value: 'unlimited', label: 'potential' },
+];
 ---
 
 <PageLayout title="about us — cseed" compactFooter responsive>

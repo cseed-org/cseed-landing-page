@@ -26,12 +26,6 @@ const REFERRALS = [
   'Poster on campus',
   'other...',
 ];
-const CSE_MAJORS = [
-  'Computer Science',
-  'Computer Engineering',
-  'Electrical Engineering',
-  'Intended CSE',
-];
 const fail = (message) => {
   throw new ValidationError(message);
 };
@@ -80,7 +74,9 @@ export function validateMembership(raw, now = new Date()) {
   // The form sends the 'UW …' labels; the bare names are still accepted from pages cached before that change.
   if (
     result.campus &&
-    !['UW Seattle', 'UW Bothell', 'UW Tacoma', 'Seattle', 'Bothell', 'Tacoma'].includes(result.campus)
+    !['UW Seattle', 'UW Bothell', 'UW Tacoma', 'Seattle', 'Bothell', 'Tacoma'].includes(
+      result.campus,
+    )
   )
     fail('Choose a listed campus.');
   const graduation = /^(Winter|Spring|Summer|Autumn) (\d{4})$/.exec(result.grad_year);
@@ -105,9 +101,8 @@ export function validateMembership(raw, now = new Date()) {
     )
       fail('Use a valid UW or CSE email address.');
   }
-  const needsCse = CSE_MAJORS.some((major) => major.toLowerCase() === result.major.toLowerCase());
-  if (needsCse ? !result.cs_email || result.uw_email : !result.uw_email || result.cs_email)
-    fail('Provide the school email requested for your major.');
+  // Accept either school address for every major, including older cached forms.
+  if (!result.uw_email && !result.cs_email) fail('Provide a UW or CSE email address.');
   if (raw.code_of_conduct !== true) fail('Please agree to the membership agreement.');
   if (raw.photo_consent !== undefined && typeof raw.photo_consent !== 'boolean')
     fail('Invalid photo consent.');

@@ -25,7 +25,11 @@ const options = {
   graduation: graduationOptions,
   demographics: [
     'American Indian or Alaska Native',
-    'Asian',
+    'East Asian',
+    'Southeast Asian',
+    'South Asian',
+    'Central Asian',
+    'West Asian',
     'Black or African American',
     'Hispanic or Latino',
     'Middle Eastern or North African',
@@ -35,10 +39,9 @@ const options = {
     'prefer not to say',
   ],
   major: [
-    'Computer Science',
-    'Computer Engineering',
+    'Computer Science and Engineering',
     'Informatics',
-    'Electrical Engineering',
+    'Electrical and Computer Engineering',
     'Data Science',
     'HCDE / Design',
     'Business — Foster',
@@ -205,20 +208,6 @@ let last = '';
             <div data-jn-email="uw" style="grid-column: span 2">
               <Field label="School Email" required>
                 <input class="jn-input" type="email" name="uw" placeholder="netid@uw.edu" />
-              </Field>
-            </div>
-            <div data-jn-email="cse" style="grid-column: span 2" hidden>
-              <Field
-                label="CSE Email"
-                required
-                help="Engineering/CS majors: use your CSE email, not your general UW email."
-              >
-                <input
-                  class="jn-input"
-                  type="email"
-                  name="cse"
-                  placeholder="netid@cs.washington.edu"
-                />
               </Field>
             </div>
           </FormBlock>
@@ -482,7 +471,7 @@ let last = '';
     window.scrollTo({ top: 0 });
   });
 
-  // A required field is "ok" if it's not currently hidden (e.g. the UW/CSE email swap) and
+  // A required field is "ok" if it's not currently hidden and
   // has a value -- either a plain input/textarea, or a custom select's tracked `values` entry.
   function fieldOk(label: HTMLElement): boolean {
     if (label.closest('[hidden]')) return true;
@@ -493,7 +482,6 @@ let last = '';
     if (box) return box.checked;
     const input = label.querySelector<HTMLInputElement | HTMLTextAreaElement>('input, textarea');
     if (input?.name === 'uw') return /^[^@\s]+@uw\.edu$/i.test(input.value);
-    if (input?.name === 'cse') return /^[^@\s]+@cs\.washington\.edu$/i.test(input.value);
     return !!input?.value.trim();
   }
 
@@ -509,7 +497,7 @@ let last = '';
         );
       input.value = input.value.normalize('NFC').replace(/\r\n?/g, '\n').trim();
       if (input.name !== 'more') input.value = input.value.replace(/\s+/gu, ' ');
-      if (input.name === 'uw' || input.name === 'cse') input.value = input.value.toLowerCase();
+      if (input.name === 'uw') input.value = input.value.toLowerCase();
       const tooLong = input.maxLength >= 0 && input.value.length > input.maxLength;
       input.setCustomValidity(
         invalid
@@ -615,7 +603,6 @@ let last = '';
     pref: 100,
     pronouns: 80,
     uw: 254,
-    cse: 254,
     why: 1000,
     more: 3000,
   };
@@ -670,7 +657,6 @@ let last = '';
     if (!pendingSubmission) {
       const fd = new FormData(form);
       const field = (name: string) => String(fd.get(name) ?? '');
-      const wantsCse = wantsCseEmail();
       submittedName = `${field('pref').trim() || field('first_name')} ${field('last_name')}`
         .normalize('NFC')
         .replace(/\s+/gu, ' ')
@@ -680,8 +666,8 @@ let last = '';
         first_name: field('first_name'),
         last_name: field('last_name'),
         preferred_name: field('pref'),
-        uw_email: wantsCse ? null : field('uw'),
-        cs_email: wantsCse ? field('cse') : null,
+        uw_email: field('uw'),
+        cs_email: null,
         major: values.major ?? '',
         grad_year: values.grad ?? '',
         demographics: values.demo ?? '',
@@ -764,7 +750,7 @@ let last = '';
     if (label && target.checked) label.classList.remove('is-invalid');
   });
 
-  // Anything that changes a step's height -- the UW/CSE email swap, an "other..."
+  // Anything that changes a step's height -- an "other..."
   // input appearing, a textarea being dragged taller -- has to re-sit the track.
   if (window.ResizeObserver) {
     const ro = new ResizeObserver(() => syncHeight());
@@ -782,25 +768,6 @@ let last = '';
   const selects = [...root.querySelectorAll<HTMLElement>('[data-jn-select]')];
   const values: Record<string, string> = {};
 
-  // Match the backend's case-insensitive major rule, including custom answers.
-  const CSE_EMAIL_MAJORS = new Set([
-    'Computer Science',
-    'Computer Engineering',
-    'Electrical Engineering',
-    'Intended CSE',
-  ]);
-  function wantsCseEmail() {
-    return [...CSE_EMAIL_MAJORS].some(
-      (major) => major.toLowerCase() === values.major?.trim().toLowerCase(),
-    );
-  }
-
-  function syncEmailField() {
-    const wantsCse = wantsCseEmail();
-    root.querySelector<HTMLElement>('[data-jn-email="cse"]')!.hidden = !wantsCse;
-    root.querySelector<HTMLElement>('[data-jn-email="uw"]')!.hidden = wantsCse;
-  }
-
   selects.forEach((sel) => {
     const name = sel.dataset.jnSelect!;
     const btn = sel.querySelector<HTMLElement>('[data-jn-select-btn]')!;
@@ -817,7 +784,6 @@ let last = '';
         opts.forEach((x) => x.classList.toggle('is-active', x === o));
         sel.classList.remove('is-open');
         sel.querySelector('.jn-field')?.classList.remove('is-invalid');
-        if (name === 'major') syncEmailField();
       }),
     );
     sel.querySelector('[data-other]')?.addEventListener('click', () => {
@@ -826,11 +792,9 @@ let last = '';
       other.hidden = false;
       sel.classList.remove('is-open');
       other.focus();
-      if (name === 'major') syncEmailField();
     });
     other.addEventListener('input', () => {
       values[name] = other.value;
-      if (name === 'major') syncEmailField();
     });
   });
 
@@ -1317,7 +1281,8 @@ let last = '';
     column-gap: 28px;
     font: 300 17px/1.75 var(--font-body);
     color: var(--cseed-ink);
-    white-space: nowrap;
+    white-space: normal;
+    overflow-wrap: anywhere;
   }
   .jn-members :global(.jn-letter) {
     font: 400 44px/1 var(--font-display);
