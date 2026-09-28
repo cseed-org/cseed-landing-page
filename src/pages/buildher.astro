@@ -106,10 +106,8 @@ const launchFacts = [
           </div>
         </Reveal>
         <Reveal delay={600}>
-          <div style="margin-top:70px">
-            <TextLink href="/join/" arrowLength={26} style="font:400 34px/1 var(--font-body); gap:14px">
-              apply for launchpad
-            </TextLink>
+          <div class="bh-launch-status" style="margin-top:70px">
+            <span class="bh-launch-dot"></span>application opening in the spring
           </div>
         </Reveal>
       </div>
@@ -418,6 +416,20 @@ const launchFacts = [
     letter-spacing: 0.04em;
     color: var(--bh-lily-deep);
     transform: rotate(-6deg);
+  }
+  .bh-launch-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    font: 300 28px/1 var(--font-body);
+    color: var(--cseed-ink);
+  }
+  .bh-launch-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #9cc07a;
+    flex: none;
   }
 
   .bh-scene {
