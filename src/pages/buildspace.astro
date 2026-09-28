@@ -44,7 +44,7 @@ const introPhotos: {
   },
   {
     id: 'bs-intro-2',
-    l: 490,
+    l: 480,
     t: 0,
     w: 480,
     h: 360,
@@ -54,7 +54,7 @@ const introPhotos: {
   },
   {
     id: 'bs-intro-3',
-    l: 560,
+    l: 620,
     t: 400,
     w: 400,
     h: 380,
@@ -908,6 +908,15 @@ void main() {
     box-shadow:
       0 14px 34px -16px rgba(40, 34, 20, 0.28),
       0 2px 6px rgba(40, 34, 20, 0.06);
+    transition:
+      transform 500ms var(--ease-soft),
+      box-shadow 500ms var(--ease-soft);
+  }
+  .bs-photo-frame:hover {
+    transform: rotate(0deg) translateY(-10px) !important;
+    box-shadow:
+      0 30px 56px -20px rgba(40, 34, 20, 0.4),
+      0 4px 12px rgba(40, 34, 20, 0.1);
   }
   .bs-photo-img {
     display: block;
