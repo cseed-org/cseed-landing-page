@@ -6,12 +6,13 @@
   "workers_dev": true,
   "preview_urls": false,
   "observability": { "enabled": false },
-  "triggers": { "crons": ["*/5 * * * *"] },
+  // 07:00 UTC = midnight PDT / 11pm PST. Rebuilds the member wall once a day.
+  "triggers": { "crons": ["0 7 * * *"] },
   "vars": {
-    // TURNSTILE_SECRET_KEY must be set with wrangler secret put, never here.
+    // TURNSTILE_SECRET_KEY, MEMBER_NAMES_EXPORT_TOKEN and SITE_DEPLOY_HOOK_URL
+    // must be set with wrangler secret put, never here.
     "ALLOWED_ORIGINS": "https://replace-with-your-site.example",
     "SUBMISSIONS_ENABLED": "true",
-    "GITHUB_REPOSITORY": "cseed-org/cseed-landing-page",
   },
   "d1_databases": [
     {

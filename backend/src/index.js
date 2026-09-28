@@ -53,10 +53,11 @@ async function readPayload(request) {
 }
 
 export default {
+  // Daily: rebuild the site only if People changed since the last rebuild.
   async scheduled(_event, env) {
     await dispatchMemberWall(env);
   },
-  async fetch(request, env, ctx) {
+  async fetch(request, env) {
     if (new URL(request.url).pathname === '/internal/member-names') {
       return exportMemberNames(request, env);
     }
@@ -148,11 +149,7 @@ export default {
         ).bind(id, id, JSON.stringify(payload), now),
       ]);
       if (results.some((result) => !result.success)) throw new Error('Write failed');
-      // The database trigger records pending changes atomically with the signup.
-      // Cron retries failures; dispatch failures must not undo a saved membership.
-      const notification = dispatchMemberWall(env).catch(() => {});
-      if (ctx) ctx.waitUntil(notification);
-      else await notification;
+      // The database trigger marks the wall pending; the daily cron rebuilds the site.
       return reply(201, { ok: true });
     } catch (error) {
       if (error instanceof ValidationError) return reply(400, { error: error.message });

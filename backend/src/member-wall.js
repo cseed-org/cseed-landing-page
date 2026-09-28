@@ -41,29 +41,20 @@ export async function exportMemberNames(request, env) {
   }
 }
 
+const DEPLOY_HOOK_PREFIX = 'https://api.cloudflare.com/client/v4/workers/builds/deploy_hooks/';
+
 export async function dispatchMemberWall(env) {
-  if (!env.GITHUB_REBUILD_TOKEN || !/^[\w.-]+\/[\w.-]+$/.test(env.GITHUB_REPOSITORY || '')) return;
+  if (!env.SITE_DEPLOY_HOOK_URL?.startsWith(DEPLOY_HOOK_PREFIX)) return;
   const state = await env.DB.prepare(
     'SELECT revision, dispatched_revision FROM Member_wall_sync WHERE singleton = 1',
   ).first();
   if (!state || state.revision <= state.dispatched_revision) return;
-  const response = await fetch(
-    `https://api.github.com/repos/${env.GITHUB_REPOSITORY}/actions/workflows/frontend-build.yml/dispatches`,
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${env.GITHUB_REBUILD_TOKEN}`,
-        Accept: 'application/vnd.github+json',
-        'Content-Type': 'application/json',
-        'User-Agent': 'cseed-membership-worker',
-        'X-GitHub-Api-Version': '2022-11-28',
-      },
-      // No names, identifiers, or other member data in GitHub trigger payloads.
-      body: JSON.stringify({ ref: 'main' }),
-      signal: AbortSignal.timeout(8000),
-      redirect: 'error',
-    },
-  );
+  // Empty request: no names, identifiers, or other member data in the rebuild trigger.
+  const response = await fetch(env.SITE_DEPLOY_HOOK_URL, {
+    method: 'POST',
+    signal: AbortSignal.timeout(8000),
+    redirect: 'error',
+  });
   if (!response.ok) throw new Error('Member wall dispatch failed');
   // A concurrent signup remains pending; an older dispatch cannot move this backwards.
   await env.DB.prepare(

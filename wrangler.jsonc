@@ -1,0 +1,7 @@
+// Static site Worker. Cloudflare Workers Builds runs `npm run build`, then `npx wrangler deploy`.
+// The dashboard Worker name must match "name". The membership API has its own config in backend/.
+{
+  "name": "cseed-site",
+  "compatibility_date": "2026-09-26",
+  "assets": { "directory": "./dist" },
+}

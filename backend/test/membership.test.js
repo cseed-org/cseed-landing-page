@@ -263,22 +263,24 @@ test('protected export returns only deduplicated display names, with preferred-n
   });
 });
 
-test('signups dispatch without member data; failed dispatch is retried by cron', async (t) => {
+test('signups wait for the daily cron; failed dispatch is retried next run', async (t) => {
   const { send, env, db } = setup(t);
-  env.GITHUB_REBUILD_TOKEN = 'synthetic-github-secret';
-  env.GITHUB_REPOSITORY = 'example/test';
+  env.SITE_DEPLOY_HOOK_URL =
+    'https://api.cloudflare.com/client/v4/workers/builds/deploy_hooks/synthetic-hook';
   let dispatches = 0;
   let failing = true;
   globalThis.fetch.mock.mockImplementation(async (url, options) => {
-    if (String(url).startsWith('https://api.github.com/')) {
+    if (url === env.SITE_DEPLOY_HOOK_URL) {
       dispatches++;
-      assert.deepEqual(JSON.parse(options.body), { ref: 'main' });
+      assert.equal(options.body, undefined);
       return new Response(null, { status: failing ? 503 : 204 });
     }
     return Response.json({ success: true, hostname: 'membership.example', action: 'membership' });
   });
   const data = payload();
   assert.equal((await send(data)).status, 201);
+  assert.equal(dispatches, 0);
+  await assert.rejects(worker.scheduled({}, env));
   assert.equal(dispatches, 1);
   assert.equal(
     db.prepare('SELECT dispatched_revision FROM Member_wall_sync').get().dispatched_revision,
@@ -298,8 +300,8 @@ test('signups dispatch without member data; failed dispatch is retried by cron',
 
 test('dispatch acknowledgement never drops a concurrent membership change', async (t) => {
   const { env, db } = setup(t);
-  env.GITHUB_REBUILD_TOKEN = 'synthetic-token';
-  env.GITHUB_REPOSITORY = 'example/test';
+  env.SITE_DEPLOY_HOOK_URL =
+    'https://api.cloudflare.com/client/v4/workers/builds/deploy_hooks/synthetic-hook';
   globalThis.fetch.mock.mockImplementation(async () => {
     db.exec('UPDATE Member_wall_sync SET revision = revision + 1');
     return new Response(null, { status: 204 });

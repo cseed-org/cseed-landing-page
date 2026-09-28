@@ -1,186 +1,287 @@
 # Membership API
 
-The Astro app stays in the repository root (`src/`, `public/`). This independent
-Worker package owns the API, D1 schema, security limits, and future processing.
-Neither package imports the other's code or dependencies.
+Cloudflare Worker + D1 behind the `/join/` form and member wall. Two Workers total:
+
+| Worker                 | Config                       | What                                         | Deployed by                   |
+| ---------------------- | ---------------------------- | -------------------------------------------- | ----------------------------- |
+| `cseed-membership-api` | `backend/wrangler.jsonc`     | API + D1 + daily cron                        | GitHub Actions (push to main) |
+| `cseed-site`           | `wrangler.jsonc` (repo root) | Static Astro site (`dist/` as static assets) | Cloudflare Workers Builds     |
+
+- Browser → API `POST /api/membership` → D1 (`People`, `Membership_submissions`)
+- Daily (midnight Pacific) → API calls site deploy hook if members changed → site build
+  fetches names from `GET /internal/member-names` → deploy
+- Independent packages. Frontend (repo root) and backend share no code/deps.
+
+## Layout
+
+```
+backend/
+├── src/
+│   ├── index.js           Router, CORS/origin, rate limits, body cap, D1 writes, daily cron
+│   ├── appropriateness.js Field validation (types, required, allowed values, lengths)
+│   ├── cleaning.js        Unicode/whitespace normalization
+│   ├── turnstile.js       Turnstile Siteverify
+│   └── member-wall.js     Names-only export + site deploy hook trigger
+├── migrations/            D1 schema (0001 membership, 0002 member wall)
+├── test/                  node:test, synthetic data, in-memory SQLite
+└── wrangler.jsonc         API Worker config, D1 binding, rate limits, cron
+```
+
+## Config reference
+
+**API Worker vars** (`backend/wrangler.jsonc` → `vars`)
+
+| Name                  | Value                                                         |
+| --------------------- | ------------------------------------------------------------- |
+| `ALLOWED_ORIGINS`     | Exact site origin(s), comma-separated, no trailing slash      |
+| `SUBMISSIONS_ENABLED` | `"true"` to accept signups. Anything else = kill switch (503) |
+
+Also in `backend/wrangler.jsonc`: `database_id` (D1 UUID), rate limiters, daily cron
+`0 7 * * *` (07:00 UTC = midnight PDT / 11pm PST; edit to change refresh time).
+
+**API Worker secrets** (`npx wrangler secret put <NAME>`, run in `backend/`)
+
+| Name                        | What                                                         |
+| --------------------------- | ------------------------------------------------------------ |
+| `TURNSTILE_SECRET_KEY`      | Turnstile widget secret. Missing → all submissions fail      |
+| `MEMBER_NAMES_EXPORT_TOKEN` | Random bearer secret for `/internal/member-names`            |
+| `SITE_DEPLOY_HOOK_URL`      | Site Worker deploy hook. Missing → member wall never updates |
+
+**Site build variables**: see [setup step D](#d-cloudflare-dashboard-site-build-variables).
+**GitHub Actions secrets**: see [setup step C](#c-github-website-repo-settings--secrets-and-variables--actions).
+
+Only the two `PUBLIC_` values reach browser code. Never prefix the others with `PUBLIC_`.
 
 ## One-time setup
 
-1. Run `npm ci` in this directory, then `npx wrangler login` and
-   `npx wrangler d1 create cseed-membership` in your Cloudflare account.
-2. Set the returned database UUID in `wrangler.jsonc`. Set `ALLOWED_ORIGINS`
-   to the exact frontend origin, with no trailing slash (comma-separated if needed).
-   Add `http://localhost:4321` only when testing the frontend against a test deployment.
-3. Add GitHub Actions secrets `CLOUDFLARE_API_TOKEN` (Workers Scripts Edit and
-   D1 Edit permissions scoped to your account) and `CLOUDFLARE_ACCOUNT_ID`.
-4. Merge to `main`. The workflow tests the backend, applies unapplied SQL migrations
-   to **remote Cloudflare D1**, then deploys the Worker. You can also run
-   `npm run deploy` manually from this directory. Update the workflow branch if
-   your production branch is different. Feature branch pushes do not deploy.
-5. Set the GitHub Actions repository secret `PUBLIC_MEMBERSHIP_API_URL` to
-   `https://cseed-membership-api.YOUR-SUBDOMAIN.workers.dev/api/membership`, then
-   run the frontend build workflow. `.env.example` is the local frontend template.
-6. Create a Cloudflare Turnstile widget restricted to the frontend hostnames.
-   Set the GitHub Actions repository secret `PUBLIC_TURNSTILE_SITE_KEY`. The
-   frontend workflow injects both public settings into its build and uploads a
-   static-site artifact; see the root README for hosting and local setup. From this
-   directory, run `npx wrangler secret put TURNSTILE_SECRET_KEY` to store the
-   matching secret on the Worker, then rebuild the frontend. Never put the secret
-   in a `PUBLIC_` variable or Git. Missing configuration blocks submissions.
-   Use a separate widget and Worker for staging. If your host has a CSP, allow
-   `https://challenges.cloudflare.com` in `script-src` and `frame-src`.
+**Where things live:** Cloudflare owns the DB (D1), both Workers, and all secrets.
+Your PC stores nothing. It only runs `wrangler`, a CLI that sends commands to your
+Cloudflare account. After setup, pushes to `main` deploy automatically. PC not needed.
 
-Only schema SQL and application code belong in Git. The backend deployment workflow never
-exports, downloads, or commits submitted records. Requests go directly from the
-browser to Cloudflare; D1 stores the records. The Worker does not log request bodies
-or database errors. Its only read endpoint is an authenticated names-only export,
-described below. No browser local/session storage
-is used. Keep real submissions out of fixtures, logs, screenshots, and SQL files.
-Database files, Wrangler state, local secrets, and `backend/exports/` are ignored.
+| Step | Where                | What                                                |
+| ---- | -------------------- | --------------------------------------------------- |
+| A    | Cloudflare dashboard | API token, Turnstile widget, site Worker + hook     |
+| B    | Your PC (`wrangler`) | Create DB + API Worker on Cloudflare, store secrets |
+| C    | GitHub website       | Secrets for API auto-deploy                         |
+| D    | Cloudflare dashboard | Site build variables, first build                   |
 
-## Schema and JSON contract
+Before starting: root `wrangler.jsonc` must be on `main` (site Worker config).
 
-`People` contains `person_id`, `uw_email`, `first_name`, `last_name`,
-`preferred_name`, `major`, `grad_year`, `pronouns`, `demographics`, `cs_email`,
-`join_date`, `campus`, `agreed_to_membership_agreement`, and
-`has_been_cseed_officer`. SQL uses snake_case for your requested column names.
-The two booleans are SQLite INTEGER columns constrained to 0/1. Agreement comes
-from the form's existing `code_of_conduct` checkbox and must be true to submit.
-Officer history defaults to false and cannot be set through the public intake API;
-it can be maintained by administrators in D1. The initial migration creates both
-flags with false defaults.
-Email domains are enforced by the API and database insert/update triggers:
-`uw_email` must end in exactly `@uw.edu`, `cs_email` in exactly
-`@cs.washington.edu` (case-insensitive). Inactive email fields may remain null.
+### A. Cloudflare dashboard (dash.cloudflare.com)
 
-`People.personal_email` is nullable and is not collected or populated by the join
-form. `Graduation_email_submissions` stores responses for a future form sent to
-selected graduating members: `submission_id`, `person_id` (foreign key to People),
-`personal_email`, and `submitted_at` (UTC). Multiple submissions per person can
-be retained as history. That future form/API will own recipient selection,
-access verification, and updating `People.personal_email`; those features are
-not implemented here. Personal emails are not restricted to UW domains.
-`cs_email` holds the form's CSE email. The existing major-dependent email choice
-is preserved, so the inactive email column is null. `grad_year` is TEXT to retain
-the selected term/year. Accepted terms are Winter, Spring, Summer, and Autumn,
-from the current UTC year through five years ahead. Rebuild the static frontend
-each year to refresh its graduation options.
+1. Copy **Account ID** (account home → right sidebar) → needed in C
+2. **API token**: My Profile → API Tokens → Create → Custom. Account permissions:
+   Workers Scripts Edit, D1 Edit → needed in C
+3. **Site Worker (Git-integrated, auto-pulls on push)**: Workers & Pages → **Create application**
+   → **Import a repository** → Get started → GitHub → pick this repo.
+   - Project name: `cseed-site` (must match `name` in root `wrangler.jsonc`)
+   - Build command: `npm run build`
+   - Deploy command: `npx wrangler deploy` (default)
+   - Root directory: `/` (default). No branch picker here: uses repo's default branch
+   - Build variables: skip for now; added in D (values come from B)
+   - Save and Deploy. First build fails until D done. Expected
+   - After creation, Settings → Build → **Branch control**:
+     - Production branch dropdown: confirm/select `main`
+     - Uncheck **Enable Preview Builds** (previews need the same secrets)
+   - Repo or `main` missing from lists → GitHub → org `cseed-org` Settings → GitHub Apps →
+     Cloudflare Workers and Pages → grant access to this repo (needs org owner)
+   - Note site URL: `https://cseed-site.<SUBDOMAIN>.workers.dev`, or add a custom domain
+     (Settings → Domains & Routes). Used for Turnstile + `ALLOWED_ORIGINS`
+4. **Deploy hook**: site Worker → Settings → Builds → Deploy Hooks. Name `member-wall`, branch
+   `main` → Create. Copy URL (used in B). Treat as secret: anyone with it can trigger builds
+5. **Turnstile**: Turnstile → Add widget, hostname = site domain (A3). Copy site key + secret key
 
-`Membership_submissions` retains validated, normalized answers, including the
-why/referral/additional answers and consent fields, linked to People. Raw requests,
-Turnstile tokens, and honeypot values are never saved. Both rows save in one
-atomic D1 batch. `join_date` and `received_at` are server UTC timestamps.
-The browser generates a UUID v4 `submission_id`; this also identifies the person
-for this intake. Retrying the same ID is a no-op; it does not update a prior row.
-Separate submissions from the same email are not deduplicated at this stage.
+If site has a CSP: allow `https://challenges.cloudflare.com` in `script-src` + `frame-src`.
 
-POST `/api/membership` requires `submission_id` (UUID v4), `first_name`,
-`last_name`, `major`, `grad_year`, `why`, boolean-true `code_of_conduct`,
-`turnstile_token`, and the school email selected by major. CSE majors use
-`cs_email`; other majors use `uw_email`, with the inactive email empty/null.
-Optional fields are `preferred_name`, `pronouns`, `demographics`, `campus`,
-`more`, `heard_about` (listed referral choices), `heard_other` (required only
-for the other referral choice), boolean `photo_consent`, and empty `website`
-(honeypot). Unknown fields, including personal email and officer history, reject
-the entire request. Verification checks success, action `membership`, and the
-hostname matching the allowed request origin before any database write.
-Success is HTTP 201 `{ "ok": true }`. The frontend only displays success then.
+### B. Your PC (one time, from `backend/`)
 
-`src/cleaning.js` normalizes Unicode to NFC, trims text, collapses whitespace,
-and preserves line breaks in additional notes. Emails are lowercased.
-`src/appropriateness.js` enforces field types, required answers, accepted values,
-and maximum lengths: names 100, pronouns 80, major/demographics 160, emails 254
-(local part 64), why 1000, referral details 200, and notes 3000 characters.
-Campus is Seattle, Bothell, or Tacoma. Majors/demographics retain custom answers.
-Markup delimiters and unsafe control characters are rejected; punctuation,
-non-Latin names, and ordinary prose are preserved. This is structural plain-text
-validation, not a profanity or semantic moderation service. Future displays
-must still escape output, and email domains do not prove account ownership.
+```bash
+cd backend
+npm ci
+npx wrangler login                       # browser login, links CLI to your account
+npx wrangler d1 create cseed-membership  # creates DB on Cloudflare, prints database_id
+```
 
-## Abuse controls
+Edit `backend/wrangler.jsonc`: paste `database_id`, set `ALLOWED_ORIGINS` to site origin (A3).
+Then:
 
-The configurable templates in `wrangler.jsonc` enforce 5 requests per minute per
-IP and 100 total per minute **per Cloudflare location**, before reaching D1.
-Cloudflare rate limiting is approximate, not a strict global quota. Tune for
-campus networks where many members may share an IP. The endpoint also enforces
-a streamed 16 KiB body cap, JSON-only POSTs, an exact origin allowlist, parameterized
-SQL, and a `SUBMISSIONS_ENABLED` kill switch. Missing limiter bindings fail closed.
-Origin checks are browser protections; scripts can spoof an Origin header.
-Turnstile is mandatory, with an eight-second Siteverify timeout and no fail-open
-fallback. The frontend refreshes tokens after requests and handles expiration and
-loading errors. A retry keeps the same submission UUID and answers but carries a
-fresh token, since Turnstile tokens are single-use. A hidden honeypot provides an
-additional cheap check. No system guarantees zero spam; email ownership checks
-and optional WAF policies remain separate future protections.
+```bash
+npm run deploy   # runs migrations on the Cloudflare DB + creates API Worker; prints its URL
+npx wrangler secret put TURNSTILE_SECRET_KEY       # paste Turnstile secret (A5)
+npx wrangler secret put SITE_DEPLOY_HOOK_URL       # paste deploy hook URL (A4)
+npx wrangler secret put MEMBER_NAMES_EXPORT_TOKEN  # paste new random value, keep a copy
+```
 
-## Schema changes and verification
+Random value: `openssl rand -base64 32` (or any ≥32-byte random string).
+Commit + push `backend/wrangler.jsonc`.
 
-### Automatic public member wall
+### C. GitHub website: repo Settings → Secrets and variables → Actions
 
-The join page publishes preferred name plus last name, falling back to first name
-when preferred name is blank. Display names are normalized, deduplicated exactly,
-and sorted alphabetically. Everyone in `People` is included. The displayed count
-is the number of unique display names, not the number of database records.
+| Name                    | Value |
+| ----------------------- | ----- |
+| `CLOUDFLARE_API_TOKEN`  | A2    |
+| `CLOUDFLARE_ACCOUNT_ID` | A1    |
 
-`GET /internal/member-names` requires a bearer secret and returns only
-`{ "names": ["Display Name"] }`. The SQL selects only a constructed display name:
-emails, IDs, answers, demographics, and all other fields never enter the export.
-There is no browser CORS access. Names are fetched in Astro page frontmatter at
-build time, escaped into static HTML, and never committed as an export file.
-Production builds fail if export configuration, authentication, or validation
-fails, keeping the existing deployed site intact. Local development without export
-configuration shows an empty wall.
+Used only to auto-deploy the API Worker + run migrations. Site builds need no GitHub secrets.
 
-One-time configuration:
+### D. Cloudflare dashboard: site build variables
 
-1. Generate a random secret (at least 32 random bytes). Store the same value as
-   Worker secret `MEMBER_NAMES_EXPORT_TOKEN` using `npx wrangler secret put
-   MEMBER_NAMES_EXPORT_TOKEN`, and as a GitHub Actions secret of that name.
-2. Set GitHub Actions secret `MEMBER_NAMES_EXPORT_URL` to the Worker's HTTPS URL
-   ending in `/internal/member-names`. Do not use a `PUBLIC_` prefix for either setting.
-3. Create a fine-grained GitHub token restricted to this repository, with
-   **Actions: write** permission. Store it only as Worker secret
-   `GITHUB_REBUILD_TOKEN` using `npx wrangler secret put GITHUB_REBUILD_TOKEN`.
-   Set `GITHUB_REPOSITORY` in `wrangler.jsonc` if this repository is renamed/copied.
-   Keep the token current; expired tokens leave updates pending until replaced.
-4. Configure the Cloudflare Pages deployment described in the root README.
-   Merge the frontend workflow onto `main` before deploying the backend.
-5. Deploy the backend (including migration `0002_member_wall.sql`), then manually
-   run **Build frontend** once to publish all existing members.
+Site Worker → Settings → Build → **Variables and secrets** (build-time, not runtime):
 
-Successful signups immediately request a GitHub workflow run in the background.
-The trigger contains only the branch name, no member information. D1 triggers
-atomically mark a pending revision when people are inserted, renamed, or deleted.
-A five-minute Worker cron retries failed GitHub requests and picks up direct
-administrator changes. Acknowledgement preserves changes made during dispatch.
-GitHub serializes frontend runs, and an hourly recovery build covers accepted
-dispatches whose build or deployment subsequently failed. Updates normally appear
-after the GitHub build and Pages deployment finish, not instantly for other visitors.
-The signup user's own wall updates immediately after a successful save.
+| Name                        | Type   | Value                                         |
+| --------------------------- | ------ | --------------------------------------------- |
+| `NODE_VERSION`              | text   | `22`                                          |
+| `PUBLIC_TURNSTILE_SITE_KEY` | text   | A5 site key                                   |
+| `PUBLIC_MEMBERSHIP_API_URL` | text   | API Worker URL (B) + `/api/membership`        |
+| `MEMBER_NAMES_EXPORT_URL`   | secret | API Worker URL (B) + `/internal/member-names` |
+| `MEMBER_NAMES_EXPORT_TOKEN` | secret | same random value as B                        |
 
-The protected export credential grants access to display names only, not D1.
-GitHub has no need to download private membership records. The existing backend
-deployment token has D1 administrative permissions; keep all repository secrets
-restricted to trusted maintainers. Only `dist/` is uploaded/deployed by the frontend.
+Then Deployments → retry latest build (or push to `main`). Site live.
 
-References: [GitHub workflow dispatch](https://docs.github.com/en/rest/actions/workflows#create-a-workflow-dispatch-event),
-[Cloudflare cron triggers](https://developers.cloudflare.com/workers/configuration/cron-triggers/).
+**After setup:** push to `main` → API redeploys via GitHub Actions, site rebuilds via Workers
+Builds. Member wall rebuilds once a day, only if members changed. New migrations run on
+Cloudflare's DB via GitHub Actions, not your PC.
 
-`migrations/0001_membership.sql` is the consolidated initial schema, including all
-three tables, membership flags, email-domain triggers, and the graduation index.
-This pre-launch baseline is for a fresh database; it does not upgrade databases
-that already recorded the earlier migration files. No remote data was changed
-when consolidating these files.
+Staging: use separate Turnstile widget, Workers, and D1 DB. Never test against production DB.
 
-Add a new numbered SQL file under `migrations/`; never rewrite a migration already
-applied in production. Keep migrations compatible with the currently deployed
-Worker because migrations run first. A failed deploy after a successful migration
-does not roll the schema back. D1 tracks which migrations have already run.
+## Local dev
 
-`npm test` uses synthetic data and an in-memory SQLite database only.
-`npm run deploy:check` validates Worker bundling without deploying. Do not submit
-real member information through local database emulators. To test against D1,
-use a separate Cloudflare test database/Worker, never the production database.
+Backend (`backend/`):
 
-References: [D1 migrations](https://developers.cloudflare.com/d1/reference/migrations/)
-and [Workers rate limits](https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/).
+```bash
+npm test              # synthetic data, in-memory SQLite
+npm run deploy:check  # bundle check, no deploy
+```
+
+Frontend (repo root): copy `.env.example` → `.env`, fill both `PUBLIC_` values. Leave
+`MEMBER_NAMES_EXPORT_*` unset → empty wall in dev (production builds fail without them).
+`TURNSTILE_SECRET_KEY` never goes in `.env`.
+
+No real member data in local emulators, fixtures, logs, or screenshots.
+
+## Deploy pipeline
+
+| What                          | Trigger                                        | Does                                                |
+| ----------------------------- | ---------------------------------------------- | --------------------------------------------------- |
+| Workers Builds: `cseed-site`  | push to `main`; deploy hook (daily); dashboard | `npm run build` (fetches names) → `wrangler deploy` |
+| GitHub: Deploy membership API | push to `main` touching `backend/**`; manual   | `npm ci` → `npm test` → migrate remote D1 → deploy  |
+| GitHub: Check frontend        | push to `main` touching frontend; PRs; manual  | `npm run check` only, no deploy                     |
+
+One site build per push, max one per day for the member wall. Missing build variables fail
+the build; last good deploy stays live. After changing a build variable, retry latest build.
+
+## Member wall flow
+
+1. Signup saved → D1 trigger bumps `Member_wall_sync.revision` (same on rename/delete in `People`)
+2. Daily cron: `revision` > `dispatched_revision`? → API POSTs site deploy hook (empty body,
+   no member data). No changes → no build
+3. On success, `dispatched_revision` advanced. Failure → retried next day (or manually: site
+   Worker → Deployments, or POST the hook URL)
+4. Site build calls `/internal/member-names` → escapes names into static HTML
+   (`src/data/member-names.mjs`)
+5. `wrangler deploy` publishes `dist/`. Failed build → retry from dashboard (no auto-recovery)
+
+Display name = `preferred_name` (else `first_name`) + `last_name`, normalized, deduped, sorted.
+Count shown = unique names. Signup user sees own name immediately (browser-side only);
+everyone else after next daily build. Code pushes to `main` also rebuild → include new names.
+
+## API
+
+### `POST /api/membership`
+
+JSON only, ≤16 KiB, `Origin` must be in `ALLOWED_ORIGINS`.
+
+| Field                     | Req | Notes                                                                                            |
+| ------------------------- | --- | ------------------------------------------------------------------------------------------------ |
+| `submission_id`           | ✓   | UUID v4 from browser. Also `person_id`. Retry with same ID = no-op                               |
+| `first_name`, `last_name` | ✓   | ≤100                                                                                             |
+| `major`                   | ✓   | ≤160, custom allowed                                                                             |
+| `grad_year`               | ✓   | `Winter\|Spring\|Summer\|Autumn YYYY`, current UTC year to +5                                    |
+| `why`                     | ✓   | ≤1000                                                                                            |
+| `code_of_conduct`         | ✓   | must be `true`                                                                                   |
+| `turnstile_token`         | ✓   | fresh per request (single-use)                                                                   |
+| `cs_email` / `uw_email`   | ✓   | CSE majors → `cs_email` (`@cs.washington.edu`), others → `uw_email` (`@uw.edu`). Other one empty |
+| `preferred_name`          |     | ≤100                                                                                             |
+| `pronouns`                |     | ≤80                                                                                              |
+| `demographics`            |     | ≤160                                                                                             |
+| `campus`                  |     | `Seattle`, `Bothell`, `Tacoma`                                                                   |
+| `heard_about`             |     | array of listed choices                                                                          |
+| `heard_other`             |     | ≤200, required iff `other...` selected                                                           |
+| `more`                    |     | ≤3000, line breaks kept                                                                          |
+| `photo_consent`           |     | boolean                                                                                          |
+| `website`                 |     | honeypot, must be empty                                                                          |
+
+Unknown fields (incl. `personal_email`, officer flag) → reject whole request.
+CSE majors: Computer Science, Computer Engineering, Electrical Engineering, Intended CSE.
+
+| Status | When                                                         |
+| ------ | ------------------------------------------------------------ |
+| 201    | `{ "ok": true }` saved                                       |
+| 204    | CORS preflight                                               |
+| 400    | validation / bad JSON                                        |
+| 403    | origin not allowed, no client IP, Turnstile failed           |
+| 404    | unknown route                                                |
+| 405    | not POST                                                     |
+| 413    | body >16 KiB                                                 |
+| 415    | not `application/json`                                       |
+| 429    | rate limited (`Retry-After: 60`)                             |
+| 503    | `SUBMISSIONS_ENABLED` off, missing config, D1/Turnstile down |
+
+### `GET /internal/member-names`
+
+`Authorization: Bearer <MEMBER_NAMES_EXPORT_TOKEN>`. No CORS (build server only).
+Returns `{ "names": [...] }` — SQL selects display name only. 401 bad token, 503 unconfigured/DB error.
+
+## Schema
+
+| Table                          | Purpose                                                                                                                                                        |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `People`                       | One row per member. Form fields + `join_date`, `agreed_to_membership_agreement`, `has_been_cseed_officer` (0/1, admin-only), `personal_email` (unused by form) |
+| `Membership_submissions`       | Cleaned full answers as `payload_json`, linked to `People`. No raw body/token/honeypot                                                                         |
+| `Graduation_email_submissions` | For future grad follow-up form (not implemented). History per person                                                                                           |
+| `Member_wall_sync`             | Singleton `revision` / `dispatched_revision` counters. No member data                                                                                          |
+
+- Both signup inserts in one atomic D1 batch. Timestamps server UTC.
+- DB triggers enforce `uw_email` → `@uw.edu`, `cs_email` → `@cs.washington.edu` on insert/update.
+- Same email submitted twice = two people (no dedup yet).
+- `grad_year` options are baked into static frontend → rebuild each year.
+
+## Validation & abuse controls
+
+- Rate limits: 5/min per IP, 100/min per Cloudflare location (approximate). Tune for shared campus IPs
+- Missing limiter bindings / Turnstile secret → fail closed
+- Turnstile: must pass, action `membership`, hostname = request origin, 8s timeout, no fail-open
+- Text: NFC, trimmed, whitespace collapsed; emails lowercased. Rejects `<`, `>`, control/bidi chars
+- Structural validation only, not moderation. Escape on any future display
+- Origin check is browser-only protection; email domain ≠ proven ownership
+
+## Migrations
+
+- Add new numbered file in `migrations/`. Never edit an applied one
+- Migrations run **before** Worker deploy → keep compatible with currently deployed Worker
+- Failed deploy after migration does not roll back schema
+- `0001_membership.sql` is a fresh-DB baseline; doesn't upgrade DBs that ran older pre-launch files
+
+Docs: [D1 migrations](https://developers.cloudflare.com/d1/reference/migrations/),
+[rate limits](https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/),
+[cron triggers](https://developers.cloudflare.com/workers/configuration/cron-triggers/),
+[workflow dispatch](https://docs.github.com/en/rest/actions/workflows#create-a-workflow-dispatch-event).
+
+## Privacy rules
+
+- Only schema + code in Git. Workflows never export/download/commit records
+- Worker never logs bodies, IPs, or DB errors
+- Export exposes display names only; token grants nothing else
+- `CLOUDFLARE_API_TOKEN` has D1 admin rights → secrets for trusted maintainers only
+- Ignored: DB files, Wrangler state, local secrets, `backend/exports/`
+
+## Troubleshooting
+
+| Symptom                               | Fix                                                                |
+| ------------------------------------- | ------------------------------------------------------------------ |
+| 403 "Origin not allowed"              | `ALLOWED_ORIGINS` exact match, no trailing slash, redeploy Worker  |
+| 503 on every submit                   | `SUBMISSIONS_ENABLED` = `"true"`? `TURNSTILE_SECRET_KEY` set?      |
+| 403 bot verification                  | Site key / secret from same widget? Hostname allowed on widget?    |
+| Build fails "Configure MEMBER_NAMES…" | Set both `MEMBER_NAMES_EXPORT_*` in site build variables (D)       |
+| Build fails "export failed"           | Token mismatch API Worker vs site build vars, or wrong URL         |
+| Wall not updated next day             | `SITE_DEPLOY_HOOK_URL` missing/wrong/deleted; check site build log |
