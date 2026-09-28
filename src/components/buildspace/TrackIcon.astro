@@ -17,7 +17,7 @@ function star(n: number, ro: number, ri: number, rot = -90) {
 const wildcardRays = Array.from({ length: 8 }, (_, i) => i * 45);
 ---
 
-<svg width="220" height="220" viewBox={bare ? '-66 -66 132 132' : '-110 -110 220 220'} aria-hidden="true">
+<svg width="220" height="220" viewBox={bare ? (kind === 'xra' ? '-82 -82 164 164' : '-66 -66 132 132') : '-110 -110 220 220'} aria-hidden="true">
   {
     kind === 'hardware' && (
       <g>
@@ -91,7 +91,8 @@ const wildcardRays = Array.from({ length: 8 }, (_, i) => i * 45);
   {
     kind === 'xra' && (
       <g>
-        {!bare && <circle r="64" fill="none" stroke="#A9C7FF" stroke-width="30" />}
+        {/* The ring stays in bare mode too, a shade deeper so it reads on the pastel card. */}
+        <circle r="64" fill="none" stroke={bare ? '#7FA6FF' : '#A9C7FF'} stroke-width="30" />
         <path
           d="M0 -58 C 6 -14, 14 -6, 58 0 C 14 6, 6 14, 0 58 C -6 14, -14 6, -58 0 C -14 -6, -6 -14, 0 -58 Z"
           fill="#2F5BFF"

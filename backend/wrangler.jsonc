@@ -11,14 +11,14 @@
   "vars": {
     // TURNSTILE_SECRET_KEY, MEMBER_NAMES_EXPORT_TOKEN and SITE_DEPLOY_HOOK_URL
     // must be set with wrangler secret put, never here.
-    "ALLOWED_ORIGINS": "https://replace-with-your-site.example",
+    "ALLOWED_ORIGINS": "https://cseed.co",
     "SUBMISSIONS_ENABLED": "true",
   },
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "cseed-membership",
-      "database_id": "REPLACE_WITH_CLOUDFLARE_D1_DATABASE_ID",
+      "database_id": "e441a235-0501-439e-bdf7-8dbb4060571f",
       "migrations_dir": "migrations",
     },
   ],

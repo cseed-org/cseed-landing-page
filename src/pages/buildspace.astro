@@ -14,7 +14,8 @@ const facts = [
 const details = [
   ['six weeks', 'One build night a week, in person, start to demo.'],
   ['new skills', 'Learn by making, with mentors in the room.'],
-  ['real connections', 'People who think differently than you, building next to you.'],
+  ['mentor support', 'Paired with engineers, designers, and founders who guide you all six weeks.'],
+  ['real friendships', 'People who think differently than you, building next to you.'],
   ['the gear', 'Access to the software and hardware you need to try it.'],
 ];
 
@@ -203,6 +204,70 @@ const tracks = [
       }
     </div>
 
+    <div class="bs-what">
+      <div class="bs-head bs-what-head">
+        <Reveal><h2 class="t-serif">What is Buildspace?</h2></Reveal>
+        <Reveal delay={120}>
+          <p class="bs-body bs-what-copy">
+            Buildspace is for you to come and build what you want. It’s a place where creators find
+            <span class="bs-what-highlight">passion</span>, <span class="bs-what-highlight">community</span>, and
+            <span class="bs-what-highlight">accountability</span> - values that shape how we collaborate, create, and
+            show up for one another.
+          </p>
+        </Reveal>
+      </div>
+      <div class="bs-what-steps">
+        {
+          [
+            {
+              n: '1.',
+              title: 'Build your passion',
+              body: 'Commit to a project you’re passionate about, and report your weekly progress.',
+              src: '/images/buildspace/what-passion.webp',
+              alt: 'A Buildspace member working on their project',
+              r: -2,
+            },
+            {
+              n: '2.',
+              title: 'Meet the community',
+              body: 'Connect with a space of other amazing people, and learn from experienced mentors.',
+              src: '/images/buildspace/what-community.webp',
+              alt: 'The Buildspace community gathered together',
+              r: 1.5,
+            },
+            {
+              n: '3.',
+              title: 'Showcase your project!',
+              body: 'At the end of the 6 weeks, showcase your project and display the fruition of your work.',
+              src: '/images/buildspace/what-showcase.webp',
+              alt: 'A Buildspace member showcasing their project',
+              r: -1,
+            },
+          ].map((s, i) => (
+            <Reveal delay={i * 120}>
+              <div class="bs-what-step">
+                <div class="bs-photo-frame bs-what-frame" style={`transform:rotate(${s.r}deg)`}>
+                  <img
+                    class="bs-photo-img bs-what-img"
+                    src={s.src}
+                    alt={s.alt}
+                    width="1200"
+                    height="800"
+                    loading="lazy"
+                  />
+                </div>
+                <Rule width="100%" weight={1} animate delay={i * 120} />
+                <div class="bs-what-title">
+                  <span class="bs-what-num">{s.n}</span>{' '}{s.title}
+                </div>
+                <p class="bs-body bs-what-body">{s.body}</p>
+              </div>
+            </Reveal>
+          ))
+        }
+      </div>
+    </div>
+
     <div class="bs-details" data-bs-details>
       {
         details.map(([k, v], i) => (
@@ -240,6 +305,55 @@ const tracks = [
       />
     </section>
   </div>
+
+  <section class="bs-section bs-endless">
+    <div class="bs-endless-copy">
+      <Reveal
+        ><h2 class="t-serif bs-endless-title" style="font-size:130px">
+          Endless<br />Possibilities
+        </h2></Reveal
+      >
+      <ul class="bs-endless-list">
+        {
+          [
+            'Maybe you want to create your own app.',
+            'Maybe you want to turn a hobby into something more.',
+            'Maybe you want to launch a business.',
+            'Maybe you want to build your tech startup.',
+            'Maybe you want to launch your youtube channel.',
+            'Maybe you want to experiment with large language models.',
+            'Maybe you want to write your own book.',
+          ].map((line, i) => (
+            <li>
+              <Reveal delay={i * 80}>
+                <Rule width="100%" weight={1} animate delay={i * 80} />
+                <p class="bs-body bs-endless-line">{line}</p>
+              </Reveal>
+            </li>
+          ))
+        }
+      </ul>
+      <Reveal delay={640}>
+        <p class="bs-motto bs-endless-motto">
+          <span class="bs-motto-highlight">Buildspace is the place for you 💫</span>
+        </p>
+      </Reveal>
+    </div>
+    <div class="bs-endless-media">
+    <Reveal delay={200}>
+      <div class="bs-photo-frame bs-endless-frame" style="transform:rotate(3deg)">
+        <img
+          class="bs-photo-img bs-endless-img"
+          src="/images/buildspace/endless.webp"
+          alt="A cseed Buildspace cohort posing together in a classroom"
+          width="1800"
+          height="1200"
+          loading="lazy"
+        />
+      </div>
+    </Reveal>
+    </div>
+  </section>
 
   <section class="bs-section">
     <div class="bs-head" style="margin-bottom:140px">
@@ -934,8 +1048,8 @@ void main() {
   }
   .bs-details {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 60px;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 44px;
     margin-top: 180px;
   }
   .bs-detail {
@@ -967,13 +1081,69 @@ void main() {
     transform: scale(1);
   }
   .bs-detail-title {
-    font: 400 48px/1 var(--font-display);
+    font: 400 44px/1 var(--font-display);
     letter-spacing: -0.03em;
   }
   .bs-head {
     display: flex;
     flex-direction: column;
     gap: 34px;
+  }
+
+  /* "What is Buildspace?" -- ported from the old Buildspace site (copy verbatim). */
+  .bs-what {
+    margin-top: 180px;
+  }
+  .bs-what-head {
+    max-width: 1100px;
+  }
+  .bs-what-copy {
+    font-size: 36px;
+    line-height: 1.45;
+  }
+  .bs-what-highlight {
+    padding: 0 6px;
+    margin: 0 -6px;
+    background: linear-gradient(
+      transparent 50%,
+      var(--cseed-sun) 50%,
+      var(--cseed-sun) 92%,
+      transparent 92%
+    );
+  }
+  .bs-what-steps {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 60px;
+    margin-top: 120px;
+  }
+  .bs-what-step {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+  }
+  .bs-what-frame {
+    margin-bottom: 30px;
+  }
+  .bs-what-img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+  }
+  .bs-what-title {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    font: 400 48px/1 var(--font-display);
+    letter-spacing: -0.03em;
+  }
+  .bs-what-num {
+    font: 400 20px/1 var(--font-mono);
+    letter-spacing: 0.04em;
+    color: var(--cseed-ink-soft);
+  }
+  .bs-what-body {
+    font-size: 26px;
   }
 
   /* "Experimenting is empowering." */
@@ -1010,6 +1180,37 @@ void main() {
     max-width: none;
     display: block;
     pointer-events: none;
+  }
+
+  /* "Endless Possibilities": heading + ruled list on the left, tilted polaroid right. */
+  .bs-endless {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 860px;
+    column-gap: 120px;
+    align-items: center;
+  }
+  .bs-endless-title {
+    margin: 0 0 70px;
+  }
+  .bs-endless-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-bottom: 1px solid var(--rule-ink);
+  }
+  .bs-endless-line {
+    padding: 22px 0;
+  }
+  .bs-endless-motto {
+    margin-top: 60px;
+  }
+  .bs-endless-media {
+    padding: 40px 20px 40px 0;
+  }
+  .bs-endless-img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
   }
 
   /* tracks: a horizontal accordion inside a fixed 1883x618 box. Hovering (or
@@ -1218,10 +1419,38 @@ void main() {
       gap: 64px 44px;
       margin-top: 120px;
     }
+    /* Odd tile out: the fifth tile spans both columns. */
+    .bs-details > :global(.reveal:nth-child(5)) {
+      grid-column: 1 / -1;
+    }
     .bs-detail-title {
       font-size: 44px;
     }
 
+    .bs-what {
+      margin-top: 140px;
+    }
+    .bs-what-head :global(.t-serif) {
+      font-size: 84px;
+    }
+    .bs-what-copy {
+      font-size: 32px;
+    }
+    .bs-what-steps {
+      grid-template-columns: 1fr;
+      gap: 90px;
+      margin-top: 80px;
+    }
+    .bs-what-frame {
+      margin-bottom: 20px;
+    }
+    .bs-what-img {
+      width: 100%;
+      height: auto;
+    }
+    .bs-what-title {
+      font-size: 44px;
+    }
     .bs-explode {
       margin: 200px 40px 0;
     }
@@ -1241,6 +1470,27 @@ void main() {
     .bs-cutout {
       right: 20px;
       height: 420px;
+    }
+
+    .bs-endless {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 80px;
+    }
+    .bs-endless-title {
+      font-size: 96px !important;
+      margin-bottom: 50px;
+    }
+    .bs-endless-line {
+      font-size: 30px;
+      padding: 18px 0;
+    }
+    .bs-endless-motto {
+      margin-top: 44px;
+    }
+    .bs-endless-media {
+      padding: 0 10px;
     }
 
     /* No hover on touch screens: stack the cards with descriptions showing. */
