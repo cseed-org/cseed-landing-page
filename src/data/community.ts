@@ -5,6 +5,7 @@ export const TEAM: { name: string; photo: string }[] = [
   ['Ishaan Awasthi', 'ishaan-awasthi'],
   ['Shiloh Dhasan', 'shiloh-dhasan'],
   ['Talal Kheiry', 'talal-kheiry'],
+  ['Angela Yang', 'angela-yang'],
   ['Adam Esayas', 'adam-esayas'],
   ['Avi Agola', 'avi-agola'],
   ['Maia Womack', 'maia-womack'],
