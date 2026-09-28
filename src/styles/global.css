@@ -21,6 +21,16 @@ body {
   font-family: var(--font-body);
 }
 
+/* soft sage text-selection highlight */
+::selection {
+  background: #c5e0b4;
+  color: var(--cseed-ink);
+}
+::-moz-selection {
+  background: #c5e0b4;
+  color: var(--cseed-ink);
+}
+
 img,
 svg {
   display: block;
