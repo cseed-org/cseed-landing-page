@@ -41,7 +41,7 @@ const launchFacts = [
 ];
 ---
 
-<PageLayout title="buildher — cseed">
+<PageLayout title="buildher — cseed" compactFooter responsive>
   <div class="bh-page">
   <PondHero>
     <div class="bh-hero-copy">
@@ -505,6 +505,24 @@ const launchFacts = [
 
   @media (prefers-reduced-motion: reduce) {
     .bh-float, .bh-drift { animation: none; }
+  }
+
+  /* ---------- mobile canvas ---------- */
+  @media (max-width: 900px) {
+    :global(html[data-responsive]) .bh-hero-title { font-size: 104px; }
+    :global(html[data-responsive]) .bh-hero-sub { font-size: 25px; }
+
+    :global(html[data-responsive]) .bh-section { padding: 90px 40px 20px; }
+    :global(html[data-responsive]) .bh-head { margin: 50px 0 70px !important; }
+    :global(html[data-responsive]) .bh-events { grid-template-columns: 1fr; gap: 96px; }
+    :global(html[data-responsive]) .bh-event { margin-top: 0 !important; }
+    :global(html[data-responsive]) .bh-event-title { font-size: 46px; }
+
+    :global(html[data-responsive]) .bh-launch { padding: 60px 40px 0; }
+    :global(html[data-responsive]) .bh-launch-inner { grid-template-columns: 1fr; gap: 24px; }
+    :global(html[data-responsive]) .bh-launch-title { font-size: 100px; }
+    :global(html[data-responsive]) .bh-launch-facts { gap: 24px; max-width: none; }
+    :global(html[data-responsive]) .bh-scene { height: 700px; margin-top: 20px; }
   }
 </style>
 
