@@ -60,8 +60,9 @@
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   document.querySelectorAll<HTMLCanvasElement>('[data-pond]').forEach((canvas) => {
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    const context = canvas.getContext('2d');
+    if (!context) return;
+    const ctx = context;
     const host = canvas.closest<HTMLElement>('.pond-hero')!;
 
     const padImg = new Image();
@@ -272,10 +273,7 @@
       }
     }
 
-    let last = performance.now();
     function frame(now: number) {
-      const dt = Math.min(40, now - last);
-      last = now;
       ctx.clearRect(0, 0, W, H);
       drawWater(now);
 
@@ -334,7 +332,7 @@
     }
 
     let running = false;
-    const start = () => { if (!running) { running = true; last = performance.now(); requestAnimationFrame(frame); } };
+    const start = () => { if (!running) { running = true; requestAnimationFrame(frame); } };
     const stop = () => { running = false; };
 
     if (reduce) {
