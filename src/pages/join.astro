@@ -4,7 +4,6 @@ import Reveal from '../components/core/Reveal.astro';
 import Field from '../components/join/Field.astro';
 import SelectField from '../components/join/SelectField.astro';
 import FormBlock from '../components/join/FormBlock.astro';
-import JoinMarquee from '../components/join/JoinMarquee.astro';
 import Rule from '../components/core/Rule.astro';
 import { loadMemberNames } from '../data/member-names.mjs';
 const memberNames = await loadMemberNames({
@@ -12,6 +11,7 @@ const memberNames = await loadMemberNames({
   token: import.meta.env.MEMBER_NAMES_EXPORT_TOKEN,
   development: import.meta.env.DEV,
 });
+import { marked } from 'marked';
 import codeOfConduct from '../data/code-of-conduct.md?raw';
 
 // Graduation term/year list -- generated so it's never out of date, instead of hand-maintained.
@@ -58,25 +58,41 @@ const heard = [
   'other...',
 ];
 
-// The last step is the member agreement, so it has to say what the code of conduct
-// actually says. Both the belief line and the principles are read out of the markdown
-// the /code-of-conduct/ page renders, rather than restated here and left to drift.
-// The file is checked in with CRLF endings, so normalise before matching on newlines.
-const cocRaw = codeOfConduct.replace(/\r\n/g, '\n');
-function cocSection(heading: string): string {
-  const parts = cocRaw.split(`\n## ${heading}\n`);
-  return parts.length > 1 ? parts[1].split('\n## ')[0] : '';
-}
-const unbold = (t: string) => t.replace(/\*\*/g, '').replace(/\s+/g, ' ').trim();
-
-const cocBelief = unbold(cocSection('Our Core Belief').match(/\*\*(.+?)\*\*/s)?.[1] ?? '');
-const cocPrinciples = [
-  ...cocSection('Principles and Values').matchAll(/^- \*\*(.+?)\*\*\n +- (.+)$/gm),
-].map((m) => ({ name: unbold(m[1]), detail: unbold(m[2]) }));
+// The last step is the member agreement, so it shows the full code of conduct -- the same
+// markdown the /code-of-conduct/ page renders, minus its "# ..." title.
+const cocHtml = marked.parse(
+  codeOfConduct.replace(/\r\n/g, '\n').replace(/^#[^\n]*\n/, ''),
+) as string;
 
 // The hero blurb, from the source frame. Keep in sync with `copy.intro` in the script below.
 const INTRO_BLURB =
-  "Fill out one short form and you're in. No application, no dues, no prior startup experience — just a room full of people at UW who like building things.";
+  'Become part of a community of builders, dreamers, and curious people. Learn new things, experiment with ideas, build something fun, and make memories along the way.';
+
+// Event photos for the hero's scrolling band, shown in black and white behind the title.
+// The join-band/ shots are pre-cropped to the tile shape.
+const bandPhotos = [
+  'buildspace.webp',
+  'join-band/img-5004.webp',
+  'join-band/img-0710.webp',
+  'saturdays.webp',
+  'join-band/img-5082.webp',
+  'join-band/img-0802.webp',
+  'buildher-wide.webp',
+  'join-band/img-5058.webp',
+  'join-band/img-0797.webp',
+  'community-wide.webp',
+  'join-band/img-5190.webp',
+  'join-band/img-0696.webp',
+  'buildspace/intro-cohort3.webp',
+  'join-band/img-5140.webp',
+  'join-band/img-0752.webp',
+  'buildspace/intro-demo-day.webp',
+  'join-band/img-0731.webp',
+  'buildher/matcha1.webp',
+  'join-band/img-0747.webp',
+  'hero.webp',
+  'buildher/launchpad.webp',
+].map((f) => `/images/${f}`);
 
 // Members wall, grouped by first letter (the source's `MembersWall letters`).
 const wall: { letter?: string; name?: string }[] = [];
@@ -96,23 +112,38 @@ let last = '';
 <PageLayout title="join — cseed" compactFooter>
   <div class="jn-shrink" data-join>
     <header class="jn-header" data-jn-rekey>
-      <JoinMarquee />
-      <div class="jn-hand jn-hand-majors">open to all majors!</div>
-      <Reveal delay={120}>
-        <h1 class="t-serif jn-heading" data-jn-heading>become a member</h1>
-      </Reveal>
-      <Reveal delay={240}>
-        <p class="jn-sub" data-jn-sub>{INTRO_BLURB}</p>
-      </Reveal>
-      <Reveal delay={360}>
-        <div class="jn-cta" data-jn-cta>
-          <div class="jn-hand jn-hand-weekly">we meet every week</div>
-          <button type="button" class="jn-step-btn" data-jn-start>
-            <span>become a member now!</span><span class="jn-step-arrow">→</span>
-          </button>
-          <div class="jn-hand jn-hand-quick">takes about 2 minutes!</div>
+      <div class="jn-band" aria-hidden="true">
+        <div class="jn-band-track">
+          {
+            [...bandPhotos, ...bandPhotos].map((src) => (
+              <img class="jn-band-photo" src={src} alt="" loading="lazy" />
+            ))
+          }
         </div>
-      </Reveal>
+      </div>
+      <div class="jn-header-top">
+        <div class="jn-header-left">
+          <Reveal><div class="t-eyebrow">cseed membership</div></Reveal>
+          <Reveal delay={120}>
+            <h1 class="t-serif jn-heading" data-jn-heading>join cseed.</h1>
+          </Reveal>
+        </div>
+      </div>
+      <div class="jn-lower">
+        <div class="jn-cta" data-jn-cta>
+          <Reveal delay={240}>
+            <button type="button" class="jn-step-btn" data-jn-start>
+              <span>become a member now!</span><span class="jn-step-arrow">→</span>
+            </button>
+          </Reveal>
+          <Reveal delay={320}>
+            <p class="jn-facts">Open to all majors. We meet every week. Takes about 2 minutes.</p>
+          </Reveal>
+        </div>
+        <Reveal delay={400}>
+          <p class="jn-sub" data-jn-sub>{INTRO_BLURB}</p>
+        </Reveal>
+      </div>
     </header>
 
     <form class="jn-form" data-jn-form hidden novalidate>
@@ -136,18 +167,17 @@ let last = '';
             <Field label="Last Name" required>
               <input class="jn-input" name="last_name" autocomplete="family-name" required />
             </Field>
-            <Field label="Preferred Name" optional>
+            <Field label="Preferred Name">
               <input class="jn-input" name="pref" placeholder="What should we call you?" />
             </Field>
-            <Field label="Pronouns" optional>
+            <Field label="Pronouns">
               <input class="jn-input" name="pronouns" />
             </Field>
             <SelectField
               name="campus"
               allowOther={false}
               label="Campus"
-              options={['Seattle', 'Bothell', 'Tacoma']}
-              optional
+              options={['UW Seattle', 'UW Bothell', 'UW Tacoma']}
             />
             <SelectField
               name="grad"
@@ -162,13 +192,7 @@ let last = '';
               options={options.major}
               required
             />
-            <SelectField
-              name="demo"
-              label="Demographics"
-              span={2}
-              optional
-              options={options.demographics}
-            />
+            <SelectField name="demo" label="Demographics" options={options.demographics} />
             <div data-jn-email="uw" style="grid-column: span 2">
               <Field label="School Email" required>
                 <input class="jn-input" type="email" name="uw" placeholder="netid@uw.edu" />
@@ -223,17 +247,15 @@ let last = '';
             <div class="jn-more">
               <Field
                 label="Anything you want us to know?"
-                optional
                 help="Fun fact, accommodations, thoughts, something funny, projects you are working on..."
               >
                 <textarea
                   class="jn-input"
                   name="more"
-                  rows="4"
+                  rows="2"
                   placeholder="Type away."
                   style="resize:vertical; display:block"></textarea>
               </Field>
-              <div class="jn-weird">be as weird as you like :)</div>
             </div>
           </FormBlock>
         </div>
@@ -244,38 +266,21 @@ let last = '';
               Your preferred name (or first name) and last name will appear on our public member
               list. Your other form answers stay private.
             </p>
-            <div class="jn-coc">
-              <p class="jn-coc-lead">{cocBelief}</p>
-              <ul class="jn-coc-list">
-                {
-                  cocPrinciples.map((pr) => (
-                    <li class="jn-coc-item">
-                      <span class="jn-coc-name">{pr.name}</span>
-                      <span class="jn-coc-detail">{pr.detail}</span>
-                    </li>
-                  ))
-                }
-              </ul>
-              <p class="jn-coc-more">
-                That is the short version. The whole thing lives on the <a
-                  href="/code-of-conduct/"
-                  target="_blank"
-                  rel="noopener">member code of conduct</a
-                > page.
-              </p>
+            <div class="jn-coc" data-jn-coc>
+              <article class="jn-coc-doc" set:html={cocHtml} />
             </div>
-            <label class="jn-consent" data-jn-required style="grid-column: span 2">
-              <input type="checkbox" class="jn-checkbox" name="coc" />
+            <label
+              class="jn-consent is-locked"
+              data-jn-required
+              data-jn-coc-consent
+              style="grid-column: span 2"
+            >
+              <input type="checkbox" class="jn-checkbox" name="coc" disabled />
               <span>
-                I have read the cseed member code of conduct and agree to hold myself to it.
+                I have read the cseed member code of conduct and agree to hold myself to it. By
+                agreeing, I also agree to the photo release: photos and video of me taken at cseed
+                events may be used publicly.
                 <span class="jn-req">*</span>
-              </span>
-            </label>
-            <label class="jn-consent" style="grid-column: span 2; margin-top: 34px">
-              <input type="checkbox" class="jn-checkbox" name="photoConsent" />
-              <span>
-                I allow photos and video of me to be taken at cseed events and used publicly
-                (digital release).
               </span>
             </label>
           </FormBlock>
@@ -310,12 +315,7 @@ let last = '';
           <Reveal delay={120}>
             <h2 class="t-serif">our <span class="jn-mark">wonderful</span> members</h2>
           </Reveal>
-          <Reveal delay={240}>
-            <p class="jn-wall-sub">everyone who has signed up, listed alphabetically</p>
-          </Reveal>
         </div>
-        <div class="jn-hand jn-hand-growing">and still growing!</div>
-        <div class="jn-hand jn-hand-build">come build with us</div>
         <Reveal mode="fade">
           <div class="jn-members" data-jn-members>
             {
@@ -348,24 +348,36 @@ let last = '';
   const startBtn = root.querySelector<HTMLElement>('[data-jn-start]')!;
   const heading = root.querySelector<HTMLElement>('[data-jn-heading]')!;
   const subline = root.querySelector<HTMLElement>('[data-jn-sub]')!;
-  // The two handwritten notes flank the button, so the whole cluster hides together.
+  // The fact row sits under the button, so the whole cluster hides together.
   const ctaWrap = root.querySelector<HTMLElement>('[data-jn-cta]')!;
   const stepLabel = root.querySelector<HTMLElement>('[data-jn-step-label]')!;
   const wall = root.querySelector<HTMLElement>('[data-jn-wall]')!;
   const members = root.querySelector<HTMLElement>('[data-jn-members]')!;
   const count = root.querySelector<HTMLElement>('[data-jn-count]')!;
+  const cocBox = root.querySelector<HTMLElement>('[data-jn-coc]')!;
+  const cocConsent = root.querySelector<HTMLElement>('[data-jn-coc-consent]')!;
+  const cocCheck = cocConsent.querySelector<HTMLInputElement>('input')!;
+  // The agreement can only be ticked after scrolling to the end of the code of conduct.
+  function checkCocRead() {
+    if (!cocCheck.disabled || !cocBox.clientHeight) return;
+    if (cocBox.scrollTop + cocBox.clientHeight >= cocBox.scrollHeight - 4) {
+      cocCheck.disabled = false;
+      cocConsent.classList.remove('is-locked');
+    }
+  }
+  cocBox.addEventListener('scroll', checkCocRead, { passive: true });
   const baseNames = [...members.querySelectorAll('.jn-member')].map((el) => el.textContent!.trim());
 
   let stage: 'intro' | 'form' | 'done' = 'intro';
   let step = 0;
 
-  // Intro and form read the same, so starting the application changes nothing above
-  // the fold -- only the form underneath appears. Keep in sync with INTRO_BLURB above.
+  // Intro and form share the blurb (the hero is hidden during the form). Keep in sync
+  // with INTRO_BLURB above.
   const BLURB =
-    "Fill out one short form and you're in. No application, no dues, no prior startup experience — just a room full of people at UW who like building things.";
+    'Become part of a community of builders, dreamers, and curious people. Learn new things, experiment with ideas, build something fun, and make memories along the way.';
   const copy = {
-    intro: ['become a member', BLURB],
-    form: ['become a member', BLURB],
+    intro: ['join cseed.', BLURB],
+    form: ['join cseed.', BLURB],
     done: ['welcome in.', "You're on the wall now.\nWe'll be in touch soon."],
   };
 
@@ -421,6 +433,8 @@ let last = '';
     heading.textContent = head;
     subline.textContent = sub;
     ctaWrap.hidden = stage !== 'intro';
+    // The form takes the whole screen, so the hero steps aside while it is up.
+    root.dataset.stage = stage;
     form.hidden = stage !== 'form';
     wall.hidden = stage === 'form';
 
@@ -435,12 +449,13 @@ let last = '';
       b.style.width = i === step ? '60px' : '20px';
       b.style.background = i <= step ? 'var(--cseed-ink)' : 'var(--cseed-mist)';
     });
-    // The source frames name the step you are moving to, rather than just "next".
-    const nextNames = ['next — why cseed', 'next — the agreement', 'send application'];
-    nextLabel.textContent = nextNames[step];
+    nextLabel.textContent = step === 2 ? 'send application' : 'next';
     stepLabel.textContent = `step ${step + 1} of 3`;
     verification.hidden = step !== 2;
-    if (stage === 'form' && step === 2) void loadVerification();
+    if (stage === 'form' && step === 2) {
+      void loadVerification();
+      checkCocRead();
+    }
 
     if (stage !== prevStage && (stage === 'done' || prevStage === 'done')) {
       root.querySelectorAll('[data-jn-rekey]').forEach(replayReveals);
@@ -456,6 +471,7 @@ let last = '';
   startBtn.addEventListener('click', () => {
     step = 0;
     setStage('form');
+    window.scrollTo({ top: 0 });
   });
 
   // A required field is "ok" if it's not currently hidden (e.g. the UW/CSE email swap) and
@@ -537,7 +553,7 @@ let last = '';
     if (widget !== undefined || loadingVerification) return;
     const sitekey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     if (!sitekey) {
-      verificationStatus('Membership submissions are not available yet. Please try again later.');
+      // Not configured (e.g. local dev): leave the step quiet; sending still reports it.
       return;
     }
     loadingVerification = true;
@@ -670,7 +686,8 @@ let last = '';
         heard_other: heardOther.hidden ? '' : heardOther.value,
         more: field('more'),
         code_of_conduct: fd.has('coc'),
-        photo_consent: fd.has('photoConsent'),
+        // The photo release is part of the agreement checkbox.
+        photo_consent: fd.has('coc'),
         website: field('website'),
       });
     }
@@ -839,8 +856,8 @@ let last = '';
     border: 0;
     border-bottom: 1px solid var(--cseed-ink);
     border-radius: 0;
-    padding: 14px 0 18px;
-    font: 300 32px/1.3 var(--font-body);
+    padding: 8px 0 10px;
+    font: 300 26px/1.3 var(--font-body);
     color: var(--cseed-ink);
     outline: none;
   }
@@ -882,64 +899,80 @@ let last = '';
     width: 2083px;
     margin-inline: auto;
   }
-  /* The source frame stacks the hero on one centred axis under the marquee,
-     instead of the left heading / right tagline split this page used to have. */
+  /* The hero follows the site's page-header pattern (see /saturdays/): eyebrow and
+     display title over the photo band, then the button and blurb beneath it. */
   .jn-header {
     position: relative;
-    padding: 300px 100px 0;
+    padding: 330px 100px 0;
+  }
+  /* A slow loop of black-and-white event photos behind the title. Two copies of
+     the set, moved exactly one copy's width per loop, so the wrap is seamless. */
+  .jn-band {
+    position: absolute;
+    /* Bleeds past the 85% canvas to both edges of the window, like the members wall. */
+    left: calc((2083px - 2083px / 0.85) / 2);
+    right: calc((2083px - 2083px / 0.85) / 2);
+    top: 230px;
+    height: 470px;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .jn-band-track {
+    display: flex;
+    gap: 24px;
+    width: max-content;
+    height: 100%;
+    /* ~10s per photo, so adding photos doesn't speed the band up. */
+    animation: jn-band 210s linear infinite;
+  }
+  .jn-band-photo {
+    flex: none;
+    width: 640px;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(1) contrast(0.9) brightness(1.15);
+    opacity: 0.32;
+  }
+  @keyframes jn-band {
+    to {
+      transform: translateX(calc(-50% - 12px));
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .jn-band-track {
+      animation: none;
+    }
+  }
+  .jn-header-top {
+    position: relative;
+  }
+  .jn-lower {
+    margin-top: 150px;
+  }
+  .jn-header-left {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    text-align: center;
+    gap: 40px;
   }
-  .jn-header > :global([data-reveal]),
   .jn-wall-head > :global([data-reveal]) {
     width: 100%;
   }
   .jn-heading {
-    /* The marquee carries the page's display weight; this sits under it. */
-    font-size: 96px;
-    margin-top: 80px;
+    font-size: 240px;
   }
   .jn-sub {
-    margin: 44px auto 0;
-    max-width: 1000px;
-    font: 300 34px/1.5 var(--font-body);
+    margin: 36px 0 0;
+    max-width: 900px;
+    font: 300 30px/1.5 var(--font-body);
     color: var(--cseed-ink);
     white-space: pre-line;
-    text-align: center;
+    text-wrap: pretty;
   }
-  .jn-cta {
-    position: relative;
-    width: 100%;
-    margin-top: 70px;
-    display: flex;
-    justify-content: center;
-  }
-
-  /* The source's Caveat annotations, set in this design system's own hand. */
-  .jn-hand {
-    position: absolute;
-    font: 400 40px/1 var(--font-hand);
-    letter-spacing: 0.04em;
-    color: var(--cseed-ink);
-    white-space: nowrap;
-    transform: rotate(var(--rot));
-  }
-  .jn-hand-majors {
-    top: 224px;
-    left: 300px;
-    --rot: -3deg;
-  }
-  .jn-hand-weekly {
-    top: 14px;
-    left: 230px;
-    --rot: 5deg;
-  }
-  .jn-hand-quick {
-    top: 22px;
-    right: 180px;
-    --rot: -5deg;
+  /* The quick facts, as one plain line under the button. */
+  .jn-facts {
+    margin: 28px 0 0;
+    font: 300 24px/1.5 var(--font-body);
+    color: var(--cseed-ink-soft);
   }
 
   .jn-step-btn {
@@ -971,7 +1004,10 @@ let last = '';
   .jn-form {
     /* The tail spacer lives inside the wall now, so the form stage -- which
        hides the wall -- carries its own room above the footer. */
-    padding: 80px 0 200px;
+    padding: 150px 0 160px;
+  }
+  .jn-shrink[data-stage='form'] .jn-header {
+    display: none;
   }
   .jn-form-head {
     display: flex;
@@ -994,7 +1030,7 @@ let last = '';
     left: 0;
     width: 100%;
     box-sizing: border-box;
-    padding: 0 100px 40px;
+    padding: 0 100px 20px;
     opacity: 0;
     visibility: hidden;
     transition:
@@ -1014,28 +1050,28 @@ let last = '';
     gap: 8px;
   }
   .jn-heard-label {
-    font: 400 30px/1.2 var(--font-body);
+    font: 400 24px/1.2 var(--font-body);
     color: var(--cseed-ink);
   }
   .jn-heard-help {
-    font: 300 20px/1.4 var(--font-body);
+    font: 300 18px/1.4 var(--font-body);
     color: var(--cseed-ink-soft);
   }
   .jn-chips {
     display: flex;
     flex-wrap: wrap;
-    gap: 16px;
-    margin-top: 26px;
+    gap: 12px;
+    margin-top: 16px;
   }
   .jn-chip {
     appearance: none;
     cursor: pointer;
     border-radius: 999px;
-    padding: 16px 30px;
+    padding: 12px 24px;
     border: 1px solid var(--cseed-ink);
     background: transparent;
     color: var(--cseed-ink);
-    font: 300 24px/1 var(--font-body);
+    font: 300 21px/1 var(--font-body);
     transition: background 300ms var(--ease-soft);
   }
   .jn-chip:hover {
@@ -1049,66 +1085,67 @@ let last = '';
     grid-column: span 2;
     position: relative;
   }
-  .jn-weird {
-    position: absolute;
-    right: 0;
-    bottom: -64px;
-    font: 400 34px/1 var(--font-hand);
-    letter-spacing: 0.04em;
-    color: var(--cseed-ink);
-    transform: rotate(-4deg);
-  }
 
-  /* The code-of-conduct step: the belief line and the four principles are read
-     out of the markdown, so this only has to lay them out. */
+  /* The code-of-conduct step: the whole document in a box you scroll through. */
   .jn-coc {
     grid-column: span 2;
+    max-height: 440px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border: 1px solid var(--cseed-ink);
+    background: var(--cseed-white);
+    padding: 48px 56px;
   }
-  .jn-coc-lead {
+  .jn-coc-doc {
+    font: 300 22px/1.6 var(--font-body);
+    color: var(--cseed-ink);
+  }
+  .jn-coc-doc :global(h2) {
+    margin: 52px 0 16px;
+    font: 400 36px/1.15 var(--font-display);
+    letter-spacing: -0.02em;
+  }
+  .jn-coc-doc :global(h2:first-child) {
+    margin-top: 0;
+  }
+  .jn-coc-doc :global(h4) {
+    margin: 32px 0 10px;
+    font: 500 22px/1.3 var(--font-body);
+  }
+  .jn-coc-doc :global(p) {
+    margin: 0 0 20px;
+  }
+  .jn-coc-doc :global(strong) {
+    font-weight: 500;
+  }
+  .jn-coc-doc :global(blockquote) {
+    margin: 32px 0;
+    padding: 24px 32px;
+    background: var(--cseed-sun);
+  }
+  .jn-coc-doc :global(blockquote p) {
     margin: 0;
-    max-width: 1300px;
-    font: 300 32px/1.5 var(--font-body);
-    color: var(--cseed-ink);
-    text-wrap: pretty;
   }
-  .jn-coc-list {
-    margin: 54px 0 0;
-    padding: 0;
-    list-style: none;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: 80px;
-    row-gap: 40px;
+  .jn-coc-doc :global(ul) {
+    margin: 0 0 20px;
+    padding-left: 1.2em;
   }
-  .jn-coc-item {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    border-top: 1px solid var(--cseed-ink);
-    padding-top: 20px;
+  .jn-coc-doc :global(li) {
+    margin: 0 0 8px;
   }
-  .jn-coc-name {
-    font: 400 28px/1.2 var(--font-body);
-    color: var(--cseed-ink);
+  .jn-coc-doc :global(li > ul) {
+    margin: 8px 0 0;
   }
-  .jn-coc-detail {
-    font: 300 21px/1.5 var(--font-body);
-    color: var(--cseed-ink-soft);
-    text-wrap: pretty;
+  .jn-coc-doc :global(li > ul > li) {
+    list-style: circle;
+  }
+  .jn-coc-doc :global(> :last-child) {
+    margin-bottom: 0;
   }
   .jn-coc-more {
-    margin: 46px 0 0;
+    margin: 0;
     font: 300 22px/1.5 var(--font-body);
     color: var(--cseed-ink-soft);
-  }
-  .jn-coc-more a {
-    color: var(--cseed-ink);
-    background: linear-gradient(
-      transparent 60%,
-      var(--cseed-sun) 60%,
-      var(--cseed-sun) 96%,
-      transparent 96%
-    );
   }
 
   .jn-consent {
@@ -1116,7 +1153,7 @@ let last = '';
     align-items: flex-start;
     gap: 20px;
     cursor: pointer;
-    margin-top: 56px;
+    margin-top: 8px;
   }
   /* Flagged by the step validation when the agreement is left unticked. */
   .jn-consent.is-invalid .jn-checkbox {
@@ -1136,6 +1173,13 @@ let last = '';
     cursor: pointer;
     position: relative;
   }
+  .jn-consent.is-locked {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+  .jn-consent.is-locked .jn-checkbox {
+    cursor: not-allowed;
+  }
   .jn-checkbox:checked {
     background: var(--cseed-sun);
   }
@@ -1150,7 +1194,7 @@ let last = '';
     color: var(--cseed-ink);
   }
   .jn-consent span {
-    font: 300 24px/1.5 var(--font-body);
+    font: 300 22px/1.5 var(--font-body);
     color: var(--cseed-ink);
   }
   .jn-consent a {
@@ -1160,7 +1204,7 @@ let last = '';
   /* The source centres the forward button and leaves "back" on the margin. */
   .jn-controls {
     position: relative;
-    padding: 60px 100px 0;
+    padding: 36px 100px 0;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -1168,7 +1212,7 @@ let last = '';
   .jn-back {
     position: absolute;
     left: 100px;
-    top: calc(50% + 30px);
+    top: calc(50% + 18px);
     transform: translateY(-50%);
     appearance: none;
     border: 0;
@@ -1194,7 +1238,7 @@ let last = '';
   .jn-bleed {
     width: calc(2083px / 0.85);
     margin-left: calc(2083px * (1 - 1 / 0.85) / 2);
-    margin-top: 220px;
+    margin-top: 140px;
   }
   .jn-wall {
     position: relative;
@@ -1222,24 +1266,6 @@ let last = '';
       var(--cseed-sun) 92%,
       transparent 92%
     );
-  }
-  .jn-wall-sub {
-    margin: 0;
-    font: 300 24px/1.4 var(--font-body);
-    color: var(--cseed-ink-soft);
-  }
-  /* The head is right-aligned and its heading runs nearly the full measure,
-     so these sit in the two bands that stay clear: the eyebrow's own row, and
-     the gap between the subtitle and the first column of names. */
-  .jn-hand-growing {
-    top: 112px;
-    left: calc(100px + (2083px / 0.85 - 2083px) / 2);
-    --rot: 3deg;
-  }
-  .jn-hand-build {
-    top: 408px;
-    left: calc(280px + (2083px / 0.85 - 2083px) / 2);
-    --rot: -5deg;
   }
   .jn-members {
     column-count: 12;

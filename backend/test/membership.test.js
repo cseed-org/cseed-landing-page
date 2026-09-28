@@ -197,7 +197,7 @@ test('persists requested columns and cleaned JSON atomically; retries do not dup
     ...payload(),
     cs_email: null,
     major: 'Testing',
-    campus: 'Seattle',
+    campus: 'UW Seattle',
     pronouns: 'they/them',
     demographics: 'Unmodified answer',
     preferred_name: 'Synthetic',

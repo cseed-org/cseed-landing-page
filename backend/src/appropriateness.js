@@ -77,7 +77,11 @@ export function validateMembership(raw, now = new Date()) {
   for (const key of ['first_name', 'last_name', 'major', 'grad_year', 'why']) {
     if (!result[key]) fail(`${key}: please enter an answer.`);
   }
-  if (result.campus && !['Seattle', 'Bothell', 'Tacoma'].includes(result.campus))
+  // The form sends the 'UW …' labels; the bare names are still accepted from pages cached before that change.
+  if (
+    result.campus &&
+    !['UW Seattle', 'UW Bothell', 'UW Tacoma', 'Seattle', 'Bothell', 'Tacoma'].includes(result.campus)
+  )
     fail('Choose a listed campus.');
   const graduation = /^(Winter|Spring|Summer|Autumn) (\d{4})$/.exec(result.grad_year);
   if (

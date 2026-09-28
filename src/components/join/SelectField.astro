@@ -6,7 +6,6 @@ interface Props {
   label: string;
   help?: string;
   span?: number;
-  optional?: boolean;
   required?: boolean;
   options: string[];
   allowOther?: boolean;
@@ -16,7 +15,6 @@ const {
   label,
   help,
   span = 1,
-  optional = false,
   required = false,
   options,
   allowOther = true,
@@ -24,7 +22,7 @@ const {
 ---
 
 <div class="jn-select" data-jn-select={name} style={`grid-column: span ${span}`}>
-  <Field label={label} help={help} optional={optional} required={required}>
+  <Field label={label} help={help} required={required}>
     <button type="button" class="jn-input jn-select-btn" data-jn-select-btn>
       <span data-jn-select-value>select...</span>
       <span class="jn-caret">▾</span>
@@ -42,7 +40,7 @@ const {
       }
       {
         allowOther && (
-          <button type="button" class="jn-option jn-option--hand" data-other>
+          <button type="button" class="jn-option" data-other>
             other...
           </button>
         )
@@ -85,7 +83,7 @@ const {
     top: 100%;
     margin-top: -2px;
     background: var(--surface-page);
-    border-bottom: 1px solid var(--cseed-ink);
+    border-bottom: 0 solid var(--cseed-ink);
     box-shadow: 0 30px 50px -30px rgba(40, 34, 20, 0.35);
     max-height: 0;
     overflow: hidden;
@@ -93,6 +91,7 @@ const {
   }
   .jn-select.is-open .jn-select-panel {
     max-height: 1000px;
+    border-bottom-width: 1px;
   }
   .jn-select-list {
     display: flex;
@@ -115,8 +114,5 @@ const {
   .jn-option:hover,
   .jn-option.is-active {
     background: var(--cseed-white);
-  }
-  .jn-option--hand {
-    font: 400 30px/1.2 var(--font-hand);
   }
 </style>
