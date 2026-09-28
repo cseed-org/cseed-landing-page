@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import SEO from '../components/core/SEO.astro';
 
 interface Props {
   title?: string;
@@ -20,9 +21,17 @@ const {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <title>{title}</title>
-    <meta name="description" content={description} />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <SEO title={title} description={description} />
+    <noscript>
+      <style is:global>
+        [data-reveal] { opacity: 1 !important; transform: none !important; }
+        [data-navbar-wrap] { opacity: 1 !important; transform: none !important; pointer-events: auto !important; }
+      </style>
+    </noscript>
   </head>
   <body>
     <slot />

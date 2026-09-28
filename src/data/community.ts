@@ -1,18 +1,22 @@
-// The cseed team shown on /about-us/. Headshots live in public/images/team/<slug>.webp.
+// The cseed team shown on /about-us/. Headshots live in public/images/team/<filename>.
 export const TEAM: { name: string; photo: string }[] = [
-  ['Adam Esayas', 'adam-esayas'],
+  ['Leonard Paya', 'leonard.jpg'],
   ['Angela Wu', 'angela-wu'],
-  ['Avi Agola', 'avi-agola'],
   ['Ishaan Awasthi', 'ishaan-awasthi'],
+  ['Shiloh Dhasan', 'shiloh-dhasan'],
+  ['Talal Kheiry', 'talal-kheiry'],
+  ['Adam Esayas', 'adam-esayas'],
+  ['Avi Agola', 'avi-agola'],
   ['Maia Womack', 'maia-womack'],
   ['Maya Ma', 'maya-ma'],
   ['Nel Alaimaleata', 'nel-alaimaleata'],
-  ['Shiloh Dhasan', 'shiloh-dhasan'],
   // ['Shuhui Yang', 'shuhui-yang'], // hidden for now
   ['Surya Duraivenkatesh', 'surya-duraivenkatesh'],
-  ['Talal Kheiry', 'talal-kheiry'],
   ['Victoria Tchervenski', 'victoria-tchervenski'],
-].map(([name, slug]) => ({ name, photo: `/images/team/${slug}.webp` }));
+].map(([name, slug]) => ({
+  name,
+  photo: `/images/team/${slug.includes('.') ? slug : `${slug}.webp`}`,
+}));
 
 // Real members, pasted in one-per-line by hand: see src/data/members.txt for the format.
 // `?raw` gives us the file's text content directly, no backend needed.

@@ -1,4 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" fill="#E4E3E1"/>
-  <text x="16" y="23" text-anchor="middle" font-family="Ubuntu, Helvetica, Arial, sans-serif" font-weight="700" font-size="20" letter-spacing="-0.6" fill="#000000">c</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="14" fill="#e4e3e1"/>
+  <g transform="translate(0 -2)">
+    <g fill="#82c61b">
+      <path d="M32 37C24 38 8 36 7 24C6 15 16 12 23 16C29 20 32 29 32 37Z"/>
+      <path d="M32 37C40 38 56 36 57 24C58 15 48 12 41 16C35 20 32 29 32 37Z"/>
+    </g>
+    <g fill="none" stroke="#358b20" stroke-linecap="round">
+      <path d="M15 23Q25 27 32 36M49 23Q39 27 32 36" stroke-width="3.5"/>
+      <path d="M32 36V53" stroke-width="5"/>
+    </g>
+  </g>
 </svg>

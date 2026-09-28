@@ -1,0 +1,93 @@
+---
+import {
+  SITE_URL,
+  SOCIAL_PROFILES,
+  ORGANIZATION_DESCRIPTION,
+  SEO_PAGES,
+  canonicalPath,
+} from '../../data/seo';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const path = canonicalPath(Astro.url.pathname);
+const page = SEO_PAGES[path];
+const title = page?.title ?? Astro.props.title ?? 'cseed';
+const description = page?.description ?? Astro.props.description ?? ORGANIZATION_DESCRIPTION;
+const canonical = new URL(path, SITE_URL).href;
+const image = new URL('/images/community-wide.webp', SITE_URL).href;
+const orgId = `${SITE_URL}/#organization`;
+const siteId = `${SITE_URL}/#website`;
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': orgId,
+      name: 'cseed',
+      url: `${SITE_URL}/`,
+      description: ORGANIZATION_DESCRIPTION,
+      logo: `${SITE_URL}/images/cseed-logo.png`,
+      sameAs: SOCIAL_PROFILES,
+      areaServed: { '@type': 'City', name: 'Seattle' },
+    },
+    {
+      '@type': 'WebSite',
+      '@id': siteId,
+      name: 'cseed',
+      url: `${SITE_URL}/`,
+      inLanguage: 'en-US',
+      publisher: { '@id': orgId },
+    },
+    {
+      '@type': page?.type ?? 'WebPage',
+      '@id': `${canonical}#webpage`,
+      url: canonical,
+      name: title,
+      description,
+      inLanguage: 'en-US',
+      isPartOf: { '@id': siteId },
+      about: { '@id': orgId },
+      ...(path !== '/' && page ? { breadcrumb: { '@id': `${canonical}#breadcrumb` } } : {}),
+    },
+    ...(path !== '/' && page
+      ? [
+          {
+            '@type': 'BreadcrumbList',
+            '@id': `${canonical}#breadcrumb`,
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_URL}/` },
+              { '@type': 'ListItem', position: 2, name: page.label, item: canonical },
+            ],
+          },
+        ]
+      : []),
+  ],
+};
+---
+
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+<meta
+  name="robots"
+  content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+/>
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="cseed" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={image} />
+<meta property="og:image:alt" content="The cseed community gathered together" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={image} />
+<meta name="twitter:image:alt" content="The cseed community gathered together" />
+<script
+  type="application/ld+json"
+  set:html={JSON.stringify(structuredData).replace(/</g, '\\u003c')}
+/>

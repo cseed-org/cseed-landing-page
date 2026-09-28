@@ -87,7 +87,11 @@ const introPhotos: {
 
 // Descriptions from the buildspace FAQ's tracks section; revealed when a card expands.
 const tracks = [
-  { kind: 'software', label: 'software', desc: 'Apps, AI, web dev, systems, all the code-y things.' },
+  {
+    kind: 'software',
+    label: 'software',
+    desc: 'Apps, AI, web dev, systems, all the code-y things.',
+  },
   {
     kind: 'hardware',
     label: 'hardware',
@@ -154,245 +158,250 @@ const tracks = [
   </section>
 
   <div class="bs-shrink">
-  <section class="bs-section">
-    <div class="bs-intro">
-      <Reveal delay={120}>
-        <h1 class="t-serif bs-intro-title" style="font-size:160px">
-          what do you <span class="bs-dream"
-            >dream<svg viewBox="-50 -50 100 100" aria-hidden="true"
-              ><path
-                d="M0 -48 C 5 -12, 12 -5, 48 0 C 12 5, 5 12, 0 48 C -5 12, -12 5, -48 0 C -12 -5, -5 -12, 0 -48 Z"
-                fill="#E0636F"></path></svg
-            ></span
-          ><br />of making?
-        </h1>
-      </Reveal>
-      <Reveal delay={260}>
-        <div class="bs-intro-right">
-          <p class="bs-body bs-intro-copy">
-            Buildspace is a place to follow that half-formed thought.
-          </p>
-          <p class="bs-motto">
-            <span class="bs-motto-highlight">build things that don’t scale.</span>
-          </p>
-        </div>
-      </Reveal>
-    </div>
-
-    <div class="bs-photo-collage">
-      {
-        introPhotos.map((p, i) => (
-          <Reveal delay={i * 110} style={`position:absolute; left:${p.l}px; top:${p.t}px`}>
-            <div class="bs-photo-frame" style={`transform:rotate(${p.r}deg)`}>
-              {p.src ? (
-                <img
-                  class="bs-photo-img"
-                  src={p.src}
-                  alt={p.alt}
-                  width={p.w}
-                  height={p.h}
-                  style={`width:${p.w}px; height:${p.h}px`}
-                />
-              ) : (
-                <div class="bs-photo-slot" style={`width:${p.w}px; height:${p.h}px`}>
-                  <span>photo</span>
-                </div>
-              )}
-            </div>
-          </Reveal>
-        ))
-      }
-    </div>
-
-    <div class="bs-what">
-      <div class="bs-head bs-what-head">
-        <Reveal><h2 class="t-serif">What is Buildspace?</h2></Reveal>
+    <section class="bs-section">
+      <div class="bs-intro">
         <Reveal delay={120}>
-          <p class="bs-body bs-what-copy">
-            Buildspace is for you to come and build what you want. It’s a place where creators find
-            <span class="bs-what-highlight">passion</span>, <span class="bs-what-highlight">community</span>, and
-            <span class="bs-what-highlight">accountability</span> - values that shape how we collaborate, create, and
-            show up for one another.
+          <h1 class="t-serif bs-intro-title" style="font-size:160px">
+            what do you <span class="bs-dream"
+              >dream<svg viewBox="-50 -50 100 100" aria-hidden="true"
+                ><path
+                  d="M0 -48 C 5 -12, 12 -5, 48 0 C 12 5, 5 12, 0 48 C -5 12, -12 5, -48 0 C -12 -5, -5 -12, 0 -48 Z"
+                  fill="#E0636F"></path></svg
+              ></span
+            ><br />of making?
+          </h1>
+        </Reveal>
+        <Reveal delay={260}>
+          <div class="bs-intro-right">
+            <p class="bs-body bs-intro-copy">
+              Buildspace is a place to follow that half-formed thought.
+            </p>
+            <p class="bs-motto">
+              <span class="bs-motto-highlight">build things that don’t scale.</span>
+            </p>
+          </div>
+        </Reveal>
+      </div>
+
+      <div class="bs-photo-collage">
+        {
+          introPhotos.map((p, i) => (
+            <Reveal delay={i * 110} style={`position:absolute; left:${p.l}px; top:${p.t}px`}>
+              <div class="bs-photo-frame" style={`transform:rotate(${p.r}deg)`}>
+                {p.src ? (
+                  <img
+                    class="bs-photo-img"
+                    src={p.src}
+                    alt={p.alt}
+                    width={p.w}
+                    height={p.h}
+                    style={`width:${p.w}px; height:${p.h}px`}
+                  />
+                ) : (
+                  <div class="bs-photo-slot" style={`width:${p.w}px; height:${p.h}px`}>
+                    <span>photo</span>
+                  </div>
+                )}
+              </div>
+            </Reveal>
+          ))
+        }
+      </div>
+
+      <div class="bs-what">
+        <div class="bs-head bs-what-head">
+          <Reveal><h2 class="t-serif">What is Buildspace?</h2></Reveal>
+          <Reveal delay={120}>
+            <p class="bs-body bs-what-copy">
+              Buildspace is for you to come and build what you want. It’s a place where creators
+              find
+              <span class="bs-what-highlight">passion</span>, <span class="bs-what-highlight"
+                >community</span
+              >, and
+              <span class="bs-what-highlight">accountability</span> - values that shape how we collaborate,
+              create, and show up for one another.
+            </p>
+          </Reveal>
+        </div>
+        <div class="bs-what-steps">
+          {
+            [
+              {
+                n: '1.',
+                title: 'Build your passion',
+                body: 'Commit to a project you’re passionate about, and report your weekly progress.',
+                src: '/images/buildspace/what-passion.webp',
+                alt: 'A Buildspace member working on their project',
+                r: -2,
+              },
+              {
+                n: '2.',
+                title: 'Meet the community',
+                body: 'Connect with a space of other amazing people, and learn from experienced mentors.',
+                src: '/images/buildspace/what-community.webp',
+                alt: 'The Buildspace community gathered together',
+                r: 1.5,
+              },
+              {
+                n: '3.',
+                title: 'Showcase your project!',
+                body: 'At the end of the 6 weeks, showcase your project and display the fruition of your work.',
+                src: '/images/buildspace/what-showcase.webp',
+                alt: 'A Buildspace member showcasing their project',
+                r: -1,
+              },
+            ].map((s, i) => (
+              <Reveal delay={i * 120}>
+                <div class="bs-what-step">
+                  <div class="bs-photo-frame bs-what-frame" style={`transform:rotate(${s.r}deg)`}>
+                    <img
+                      class="bs-photo-img bs-what-img"
+                      src={s.src}
+                      alt={s.alt}
+                      width="1200"
+                      height="800"
+                      loading="lazy"
+                    />
+                  </div>
+                  <Rule width="100%" weight={1} animate delay={i * 120} />
+                  <div class="bs-what-title">
+                    <span class="bs-what-num">{s.n}</span> {s.title}
+                  </div>
+                  <p class="bs-body bs-what-body">{s.body}</p>
+                </div>
+              </Reveal>
+            ))
+          }
+        </div>
+      </div>
+
+      <div class="bs-details" data-bs-details>
+        {
+          details.map(([k, v], i) => (
+            <Reveal delay={i * 120}>
+              <div class="bs-detail" data-bs-detail>
+                <div class="bs-detail-highlight" aria-hidden="true" />
+                <Rule width="100%" weight={1} animate delay={i * 120} />
+                <div class="bs-detail-title">{k}</div>
+                <p class="bs-body" style="font-size:26px">
+                  {v}
+                </p>
+              </div>
+            </Reveal>
+          ))
+        }
+      </div>
+    </section>
+
+    <div class="bs-explode">
+      <section class="bs-explode-block">
+        <div class="bs-explode-copy">
+          <Reveal
+            ><h2 class="t-serif" style="font-size:130px">
+              experimenting<br />is empowering.
+            </h2></Reveal
+          >
+          <Reveal delay={150}
+            ><div class="bs-explode-tag">explore. experiment. experience.</div></Reveal
+          >
+        </div>
+        <img
+          class="bs-cutout"
+          src="/images/buildspace/explode-cutout.webp"
+          alt="A cseed member presenting a hardware project"
+          width="1342"
+          height="1172"
+        />
+      </section>
+    </div>
+
+    <section class="bs-section bs-endless">
+      <div class="bs-endless-copy">
+        <Reveal
+          ><h2 class="t-serif bs-endless-title" style="font-size:130px">
+            Endless<br />Possibilities
+          </h2></Reveal
+        >
+        <ul class="bs-endless-list">
+          {
+            [
+              'Make the app you wish existed.',
+              'Take your favorite hobby a little further.',
+              'Turn a bold idea into a business.',
+              'Build your first startup prototype.',
+              'Share your perspective on YouTube.',
+              'See what you can create with AI.',
+              'Write the book only you could write.',
+            ].map((line, i) => (
+              <li>
+                <Reveal delay={i * 80}>
+                  <Rule width="100%" weight={1} animate delay={i * 80} />
+                  <p class="bs-body bs-endless-line">{line}</p>
+                </Reveal>
+              </li>
+            ))
+          }
+        </ul>
+        <Reveal delay={640}>
+          <p class="bs-motto bs-endless-motto">
+            <span class="bs-motto-highlight">Buildspace is the place for you 💫</span>
           </p>
         </Reveal>
       </div>
-      <div class="bs-what-steps">
-        {
-          [
-            {
-              n: '1.',
-              title: 'Build your passion',
-              body: 'Commit to a project you’re passionate about, and report your weekly progress.',
-              src: '/images/buildspace/what-passion.webp',
-              alt: 'A Buildspace member working on their project',
-              r: -2,
-            },
-            {
-              n: '2.',
-              title: 'Meet the community',
-              body: 'Connect with a space of other amazing people, and learn from experienced mentors.',
-              src: '/images/buildspace/what-community.webp',
-              alt: 'The Buildspace community gathered together',
-              r: 1.5,
-            },
-            {
-              n: '3.',
-              title: 'Showcase your project!',
-              body: 'At the end of the 6 weeks, showcase your project and display the fruition of your work.',
-              src: '/images/buildspace/what-showcase.webp',
-              alt: 'A Buildspace member showcasing their project',
-              r: -1,
-            },
-          ].map((s, i) => (
-            <Reveal delay={i * 120}>
-              <div class="bs-what-step">
-                <div class="bs-photo-frame bs-what-frame" style={`transform:rotate(${s.r}deg)`}>
-                  <img
-                    class="bs-photo-img bs-what-img"
-                    src={s.src}
-                    alt={s.alt}
-                    width="1200"
-                    height="800"
-                    loading="lazy"
-                  />
-                </div>
-                <Rule width="100%" weight={1} animate delay={i * 120} />
-                <div class="bs-what-title">
-                  <span class="bs-what-num">{s.n}</span>{' '}{s.title}
-                </div>
-                <p class="bs-body bs-what-body">{s.body}</p>
-              </div>
-            </Reveal>
-          ))
-        }
-      </div>
-    </div>
-
-    <div class="bs-details" data-bs-details>
-      {
-        details.map(([k, v], i) => (
-          <Reveal delay={i * 120}>
-            <div class="bs-detail" data-bs-detail>
-              <div class="bs-detail-highlight" aria-hidden="true" />
-              <Rule width="100%" weight={1} animate delay={i * 120} />
-              <div class="bs-detail-title">{k}</div>
-              <p class="bs-body" style="font-size:26px">
-                {v}
-              </p>
-            </div>
-          </Reveal>
-        ))
-      }
-    </div>
-  </section>
-
-  <div class="bs-explode">
-    <section class="bs-explode-block">
-      <div class="bs-explode-copy">
-        <Reveal
-          ><h2 class="t-serif" style="font-size:130px">
-            experimenting<br />is empowering.
-          </h2></Reveal
-        >
-        <Reveal delay={150}><div class="bs-explode-tag">explore. experiment. experience.</div></Reveal>
-      </div>
-      <img
-        class="bs-cutout"
-        src="/images/buildspace/explode-cutout.webp"
-        alt="A cseed member presenting a hardware project"
-        width="1342"
-        height="1172"
-      />
-    </section>
-  </div>
-
-  <section class="bs-section bs-endless">
-    <div class="bs-endless-copy">
-      <Reveal
-        ><h2 class="t-serif bs-endless-title" style="font-size:130px">
-          Endless<br />Possibilities
-        </h2></Reveal
-      >
-      <ul class="bs-endless-list">
-        {
-          [
-            'Maybe you want to create your own app.',
-            'Maybe you want to turn a hobby into something more.',
-            'Maybe you want to launch a business.',
-            'Maybe you want to build your tech startup.',
-            'Maybe you want to launch your youtube channel.',
-            'Maybe you want to experiment with large language models.',
-            'Maybe you want to write your own book.',
-          ].map((line, i) => (
-            <li>
-              <Reveal delay={i * 80}>
-                <Rule width="100%" weight={1} animate delay={i * 80} />
-                <p class="bs-body bs-endless-line">{line}</p>
-              </Reveal>
-            </li>
-          ))
-        }
-      </ul>
-      <Reveal delay={640}>
-        <p class="bs-motto bs-endless-motto">
-          <span class="bs-motto-highlight">Buildspace is the place for you 💫</span>
-        </p>
-      </Reveal>
-    </div>
-    <div class="bs-endless-media">
-    <Reveal delay={200}>
-      <div class="bs-photo-frame bs-endless-frame" style="transform:rotate(3deg)">
-        <img
-          class="bs-photo-img bs-endless-img"
-          src="/images/buildspace/endless.webp"
-          alt="A cseed Buildspace cohort posing together in a classroom"
-          width="1800"
-          height="1200"
-          loading="lazy"
-        />
-      </div>
-    </Reveal>
-    </div>
-  </section>
-
-  <section class="bs-section">
-    <div class="bs-head" style="margin-bottom:140px">
-      <Reveal><div class="t-eyebrow">cohort 06 tracks</div></Reveal>
-      <Reveal delay={120}><h2 class="t-serif">pick your track</h2></Reveal>
-    </div>
-    <div class="bs-tracks">
-      {
-        tracks.map((t, i) => (
-          <div class="bs-track-cell" tabindex="0">
-            <Reveal delay={i * 120}>
-              <div class="bs-track" data-kind={t.kind}>
-                <div class="bs-track-icon">
-                  <TrackIcon kind={t.kind} bare />
-                </div>
-                <div class="bs-track-label">
-                  {t.label.split(' ').map((w) => (
-                    <div>{w}</div>
-                  ))}
-                </div>
-                <p class="bs-track-desc">{t.desc}</p>
-              </div>
-            </Reveal>
+      <div class="bs-endless-media">
+        <Reveal delay={200}>
+          <div class="bs-photo-frame bs-endless-frame" style="transform:rotate(3deg)">
+            <img
+              class="bs-photo-img bs-endless-img"
+              src="/images/buildspace/endless.webp"
+              alt="A cseed Buildspace cohort posing together in a classroom"
+              width="1800"
+              height="1200"
+              loading="lazy"
+            />
           </div>
-        ))
-      }
-    </div>
-  </section>
+        </Reveal>
+      </div>
+    </section>
 
-  <div class="bs-group">
-    <img
-      class="bs-group-cutout"
-      src="/images/buildspace/group-cutout.webp"
-      alt="A collage of buildspace members cut out in black and white"
-      width="1798"
-      height="875"
-      loading="lazy"
-    />
-  </div>
+    <section class="bs-section">
+      <div class="bs-head" style="margin-bottom:140px">
+        <Reveal><div class="t-eyebrow">cohort 06 tracks</div></Reveal>
+        <Reveal delay={120}><h2 class="t-serif">pick your track</h2></Reveal>
+      </div>
+      <div class="bs-tracks">
+        {
+          tracks.map((t, i) => (
+            <div class="bs-track-cell" tabindex="0">
+              <Reveal delay={i * 120}>
+                <div class="bs-track" data-kind={t.kind}>
+                  <div class="bs-track-icon">
+                    <TrackIcon kind={t.kind} bare />
+                  </div>
+                  <div class="bs-track-label">
+                    {t.label.split(' ').map((w) => (
+                      <div>{w}</div>
+                    ))}
+                  </div>
+                  <p class="bs-track-desc">{t.desc}</p>
+                </div>
+              </Reveal>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <div class="bs-group">
+      <img
+        class="bs-group-cutout"
+        src="/images/buildspace/group-cutout.webp"
+        alt="A collage of buildspace members cut out in black and white"
+        width="1798"
+        height="875"
+        loading="lazy"
+      />
+    </div>
   </div>
 </PageLayout>
 
@@ -1095,15 +1104,30 @@ void main() {
     margin-top: 180px;
   }
   .bs-what-head {
-    max-width: 1100px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 110px;
+    align-items: center;
+  }
+  .bs-what-head > :global(.reveal:first-child) {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .bs-what-head > :global(.reveal:last-child) {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .bs-what-head h2 {
+    font-size: 120px;
+    text-wrap: balance;
   }
   .bs-what-copy {
     font-size: 36px;
     line-height: 1.45;
   }
   .bs-what-highlight {
-    padding: 0 6px;
-    margin: 0 -6px;
+    padding: 0;
+    margin: 0;
     background: linear-gradient(
       transparent 50%,
       var(--cseed-sun) 50%,
@@ -1185,12 +1209,12 @@ void main() {
   /* "Endless Possibilities": heading + ruled list on the left, tilted polaroid right. */
   .bs-endless {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 860px;
-    column-gap: 120px;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    column-gap: 90px;
     align-items: center;
   }
   .bs-endless-title {
-    margin: 0 0 70px;
+    margin: 0 0 44px;
   }
   .bs-endless-list {
     margin: 0;
@@ -1199,7 +1223,9 @@ void main() {
     border-bottom: 1px solid var(--rule-ink);
   }
   .bs-endless-line {
-    padding: 22px 0;
+    padding: 18px 0;
+    font-size: 30px;
+    line-height: 1.4;
   }
   .bs-endless-motto {
     margin-top: 60px;
@@ -1429,6 +1455,12 @@ void main() {
 
     .bs-what {
       margin-top: 140px;
+    }
+    .bs-what-head {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 36px;
     }
     .bs-what-head :global(.t-serif) {
       font-size: 84px;

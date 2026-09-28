@@ -1,87 +1,86 @@
 ---
 import PageLayout from '../layouts/PageLayout.astro';
 import Reveal from '../components/core/Reveal.astro';
-import Rule from '../components/core/Rule.astro';
-import TextLink from '../components/core/TextLink.astro';
 import { TEAM, ABOUT_STATS } from '../data/community';
 ---
 
 <PageLayout title="about us — cseed" compactFooter responsive>
   <div class="ab-shrink">
-  <div style="height:330px"></div>
+    <div class="ab-top-space"></div>
 
-  <div class="ab-opener">
-    <div class="ab-stats">
-      {
-        ABOUT_STATS.map((s, i) => (
-          <Reveal delay={i * 120}>
-            <div class="ab-stat">
-              <div class="ab-stat-value">{s.value}</div>
-              <div class="ab-stat-bar" />
-              <div class="t-eyebrow">{s.label}</div>
-            </div>
-          </Reveal>
-        ))
-      }
+    <div class="ab-opener">
+      <div class="ab-stats">
+        {
+          ABOUT_STATS.map((s, i) => (
+            <Reveal delay={i * 120}>
+              <div class="ab-stat">
+                <div class="ab-stat-value">{s.value}</div>
+                <div class="ab-stat-bar" />
+                <div class="t-eyebrow">{s.label}</div>
+              </div>
+            </Reveal>
+          ))
+        }
+      </div>
+      <div class="ab-opener-copy">
+        <Reveal delay={150}>
+          <div class="t-eyebrow">our vision</div>
+          <h1 class="t-serif ab-vision">
+            Inspire engineers, designers, and creators to turn what they care about into reality.
+          </h1>
+        </Reveal>
+        <Reveal delay={300}>
+          <div class="ab-execution">
+            <div class="t-eyebrow">how we make it happen</div>
+            <p>
+              By creating the warmest, most welcoming community of builders at the University of
+              Washington and across Seattle.
+            </p>
+          </div>
+        </Reveal>
+      </div>
     </div>
-    <div class="ab-opener-copy">
-      <Reveal delay={150}><h1 class="t-serif">build things<br />you imagine.</h1></Reveal>
-      <Reveal delay={300}>
-        <h1 class="t-serif" style="margin-top:60px; font-style:italic">build things<br />that don't scale.</h1>
-      </Reveal>
-      <Reveal delay={450}>
-        <div style="margin-top:110px">
-          <TextLink href="/join/" arrowLength={26} style="font:400 30px/1 var(--font-body); gap:14px">join cseed</TextLink>
-        </div>
-      </Reveal>
-    </div>
-  </div>
 
-  <div style="padding:0 100px; margin-top:280px"><Rule width="100%" weight={0.5} animate /></div>
-
-  <section class="ab-team">
-    <div class="ab-section-head">
-      <Reveal><div class="t-eyebrow">the cseed team</div></Reveal>
-      <Reveal delay={120}><h2 class="t-serif">meet the team</h2></Reveal>
+    <div class="ab-divider">
+      <div class="ab-slogans" aria-label="Build things you imagine. Build things that don't scale.">
+        <span aria-hidden="true">build things you imagine.</span>
+        <span aria-hidden="true">build things that don't scale.</span>
+      </div>
     </div>
-    <div class="ab-wall">
-      {
-        TEAM.map(({ name, photo }, i) => (
-          <Reveal mode="fade" delay={(i % 5) * 80}>
-            <div class="ab-person">
-              <a class="team-photo" href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer" aria-label={`${name} on LinkedIn`}>
-                <div class="team-photo-slot">
-                  <img src={photo} alt={name} width="720" height="900" loading="lazy" decoding="async" />
+
+    <section class="ab-team">
+      <div class="ab-section-head">
+        <Reveal><div class="t-eyebrow">the cseed team</div></Reveal>
+        <Reveal delay={120}><h2 class="t-serif">meet the team</h2></Reveal>
+      </div>
+      <div class="ab-wall">
+        {
+          TEAM.map(({ name, photo }, i) => (
+            <Reveal mode="fade" delay={(i % 5) * 80}>
+              <div class="ab-person">
+                <div class="team-photo">
+                  <div class="team-photo-slot">
+                    <img
+                      src={photo}
+                      alt={name}
+                      width="720"
+                      height="900"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </div>
                 </div>
-                <div class="team-photo-pill">
-                  <span>linkedin ↗</span>
-                </div>
-                <div class="team-photo-dot" />
-              </a>
-              <div class="ab-person-name">{name}</div>
-            </div>
-          </Reveal>
-        ))
-      }
-    </div>
-  </section>
+                <div class="ab-person-name">{name}</div>
+              </div>
+            </Reveal>
+          ))
+        }
+      </div>
+    </section>
 
-  <div style="height:260px"></div>
+    <div style="height:260px"></div>
   </div>
 </PageLayout>
-
-<script>
-  document.querySelectorAll<HTMLElement>('.team-photo').forEach((el) => {
-    el.addEventListener('mousemove', (e) => {
-      const r = el.getBoundingClientRect();
-      const z = r.width / el.offsetWidth || 1;
-      el.style.setProperty('--x', `${(e.clientX - r.left) / z}px`);
-      el.style.setProperty('--y', `${(e.clientY - r.top) / z}px`);
-      el.classList.add('is-on');
-    });
-    el.addEventListener('mouseleave', () => el.classList.remove('is-on'));
-  });
-</script>
 
 <style>
   /* The page renders at 85%, matching the landing page. */
@@ -90,11 +89,14 @@ import { TEAM, ABOUT_STATS } from '../data/community';
     width: var(--canvas-width);
     margin-inline: auto;
   }
+  .ab-top-space {
+    height: 230px;
+  }
   .ab-opener {
     padding: 0 100px;
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
-    column-gap: 160px;
+    column-gap: 130px;
     align-items: start;
   }
   .ab-stats {
@@ -117,21 +119,80 @@ import { TEAM, ABOUT_STATS } from '../data/community';
     background: var(--cseed-ink);
   }
   .ab-opener-copy {
-    text-align: right;
+    text-align: left;
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
-    padding-top: 20px;
+    align-items: flex-start;
+    padding-top: 0;
+  }
+  .ab-vision {
+    font-size: 100px;
+    line-height: 1.05;
+    margin-top: 30px;
+    text-wrap: balance;
+  }
+  .ab-execution {
+    margin-top: 44px;
+    max-width: 880px;
+  }
+  .ab-execution p {
+    font: 400 34px/1.45 var(--font-body);
+    margin: 24px 0 0;
+  }
+  .ab-divider {
+    position: relative;
+    margin: 100px 100px 0;
+    padding: 16px 0;
+    border-block: 1px solid var(--cseed-ink);
+  }
+  .ab-slogans {
+    display: grid;
+    overflow: hidden;
+    font: italic 400 60px/1.2 var(--font-display);
+    text-align: center;
+  }
+  .ab-slogans span {
+    grid-area: 1 / 1;
+    animation: slogan-rotate 10s infinite;
+  }
+  .ab-slogans span + span {
+    animation-delay: -5s;
+  }
+  @keyframes slogan-rotate {
+    0%,
+    40% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    48% {
+      opacity: 0;
+      transform: translateY(-100%);
+    }
+    49%,
+    90% {
+      opacity: 0;
+      transform: translateY(100%);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ab-slogans span {
+      animation: none;
+      grid-area: auto;
+    }
   }
   .ab-team {
-    padding: 220px 100px 0;
+    padding: 120px 100px 0;
   }
   .ab-section-head {
     display: flex;
     flex-direction: column;
     gap: 34px;
     align-items: flex-end;
-    margin-bottom: 130px;
+    margin-bottom: 80px;
   }
   .ab-wall {
     display: grid;
@@ -150,17 +211,12 @@ import { TEAM, ABOUT_STATS } from '../data/community';
   }
 
   .team-photo {
-    --x: 0px;
-    --y: 0px;
     position: relative;
     display: block;
     aspect-ratio: 4 / 5;
-    cursor: none;
     z-index: 1;
   }
-  .team-photo.is-on {
-    z-index: 3;
-  }
+
   .team-photo-slot {
     position: absolute;
     inset: 0;
@@ -176,65 +232,20 @@ import { TEAM, ABOUT_STATS } from '../data/community';
     max-width: none;
     object-fit: cover;
   }
-  .team-photo-pill {
-    position: absolute;
-    left: calc(var(--x) + 18px);
-    top: calc(var(--y) - 22px);
-    pointer-events: none;
-    display: flex;
-    align-items: center;
-    height: 44px;
-    background: var(--cseed-sun);
-    color: var(--cseed-ink);
-    overflow: hidden;
-    white-space: nowrap;
-    max-width: 0;
-    opacity: 0;
-    padding: 0;
-    transition: opacity 150ms;
-  }
-  .team-photo.is-on .team-photo-pill {
-    max-width: 200px;
-    opacity: 1;
-    padding: 0 18px;
-    transition:
-      max-width 450ms var(--ease-soft),
-      padding 450ms var(--ease-soft),
-      opacity 200ms;
-  }
-  .team-photo-pill span {
-    font: 400 20px/1 var(--font-body);
-    letter-spacing: 0.02em;
-  }
-  .team-photo-dot {
-    position: absolute;
-    left: calc(var(--x) - 5px);
-    top: calc(var(--y) - 5px);
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--cseed-ink);
-    pointer-events: none;
-    opacity: 0;
-  }
-  .team-photo.is-on .team-photo-dot {
-    opacity: 1;
-  }
-
   /* ---------- Mobile canvas (780px, phones and small tablets) ---------- */
   @media (max-width: 900px) {
     .ab-shrink {
       zoom: 1;
       width: auto;
     }
-    .ab-shrink > div:first-child {
-      height: 220px !important;
+    .ab-top-space {
+      height: 170px;
     }
     .ab-opener {
       padding: 0 40px;
       display: flex;
       flex-direction: column;
-      gap: 110px;
+      gap: 72px;
     }
     .ab-opener-copy {
       order: -1;
@@ -243,11 +254,9 @@ import { TEAM, ABOUT_STATS } from '../data/community';
       padding-top: 0;
     }
     .ab-opener-copy h1 {
-      font-size: 96px;
+      font-size: 76px;
     }
-    .ab-opener-copy h1[style] {
-      margin-top: 40px !important;
-    }
+
     .ab-stats {
       align-self: stretch;
       gap: 64px;
@@ -255,12 +264,18 @@ import { TEAM, ABOUT_STATS } from '../data/community';
     .ab-stat-value {
       font-size: 120px;
     }
-    .ab-shrink > div[style*='padding:0 100px'] {
-      padding: 0 40px !important;
-      margin-top: 160px !important;
+    .ab-divider {
+      margin: 80px 40px 0;
+      padding-block: 14px;
+    }
+    .ab-slogans {
+      font-size: 40px;
+    }
+    .ab-execution p {
+      font-size: 32px;
     }
     .ab-team {
-      padding: 150px 40px 0;
+      padding: 90px 40px 0;
     }
     .ab-section-head {
       align-items: flex-start;
