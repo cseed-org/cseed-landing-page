@@ -273,6 +273,10 @@ const programs = [
       font-size: 30px;
       white-space: normal;
     }
+    :global(html[data-responsive]) .programs-eyebrow,
+    :global(html[data-responsive]) .program-eyebrow {
+      font-size: 24px;
+    }
 
     :global(html[data-responsive]) :global(.program-photo) {
       margin-top: 90px;
@@ -316,6 +320,11 @@ const programs = [
       width: auto;
       font-size: 29px;
       white-space: normal;
+    }
+    /* The link's size is set inline on the TextLink, hence !important. */
+    :global(html[data-responsive]) .program-link :global(.text-link),
+    :global(html[data-responsive]) .program-soon {
+      font-size: 30px !important;
     }
   }
 </style>

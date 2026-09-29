@@ -3,25 +3,24 @@ import Rule from '../core/Rule.astro';
 
 /* Source node "nav bar" -- 2085x200, wordmark inset 41px, Playfair 80 items
    right-aligned, 1px black rule 182px down. Rendered here at a compact 72px band
-   (itemSize 28 / wordmarkSize 28). */
+   (itemSize 28 / wordmarkSize 28); the band height is `--nav-h` below. */
 const items = [
   { label: 'buildspace', href: '/buildspace/' },
   { label: 'buildher', href: '/buildher/' },
   { label: 'about us', href: '/about-us/' },
   { label: 'join', href: '/join/' },
 ];
-const height = 72;
 ---
 
-<div class="nav-bar" style={`height:${height}px`}>
-  <a class="nav-bar-mark" href="/" style={`height:${height}px`}>
+<div class="nav-bar">
+  <a class="nav-bar-mark" href="/">
     <img class="nav-bar-logo" src="/images/cseed-logo.png" alt="cseed" width="69" height="16" />
     <img class="nav-bar-logo nav-bar-logo--white" src="/images/cseed-logo-white.png" alt="" aria-hidden="true" width="69" height="16" />
   </a>
-  <div class="nav-bar-items" style={`height:${height}px`}>
+  <div class="nav-bar-items">
     {
       items.map((item) => (
-        <div class="nav-bar-item" style={`height:${height}px`}>
+        <div class="nav-bar-item">
           <a
             href={item.href}
             class:list={['nav-bar-link', { 'nav-bar-link--join': item.label === 'join' }]}
@@ -42,8 +41,10 @@ const height = 72;
     height: auto;
   }
   .nav-bar {
+    --nav-h: 72px;
     position: relative;
     width: 100%;
+    height: var(--nav-h);
     background: var(--surface-page);
     transition: background-color var(--dur-hover) var(--ease-soft);
   }
@@ -76,6 +77,7 @@ const height = 72;
     position: absolute;
     left: 41px;
     top: 0;
+    height: var(--nav-h);
     display: flex;
     align-items: center;
     text-decoration: none;
@@ -84,12 +86,14 @@ const height = 72;
     position: absolute;
     right: 77px;
     top: 0;
+    height: var(--nav-h);
     display: flex;
     align-items: center;
     gap: 30px;
   }
   .nav-bar-item {
     position: relative;
+    height: var(--nav-h);
     display: flex;
     align-items: center;
   }
@@ -104,8 +108,10 @@ const height = 72;
     white-space: nowrap;
     transition: opacity var(--dur-hover) var(--ease-soft);
   }
-  .nav-bar-items:has(.nav-bar-item:hover) .nav-bar-item:not(:hover) .nav-bar-link {
-    opacity: 0.45;
+  @media (hover: hover) {
+    .nav-bar-items:has(.nav-bar-item:hover) .nav-bar-item:not(:hover) .nav-bar-link {
+      opacity: 0.45;
+    }
   }
   .nav-bar-link--join {
     padding: 0 8px;
@@ -124,8 +130,24 @@ const height = 72;
     pointer-events: none;
   }
 
-  /* Mobile canvas (responsive pages only). */
+  /* Mobile canvas (responsive pages only). The band grows to 88px (about 44px on a
+     phone), and each link's tap area stretches to the band's full height. */
   @media (max-width: 900px) {
+    :global(html[data-responsive]) .nav-bar {
+      --nav-h: 88px;
+    }
+    :global(html[data-responsive]) .nav-bar-link {
+      position: relative;
+    }
+    :global(html[data-responsive]) .nav-bar-link::after {
+      content: '';
+      position: absolute;
+      left: -13px;
+      right: -13px;
+      top: 50%;
+      height: var(--nav-h);
+      transform: translateY(-50%);
+    }
     :global(html[data-responsive]) .nav-bar-mark {
       left: 32px;
     }

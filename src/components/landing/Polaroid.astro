@@ -45,11 +45,14 @@ const { photoId, w, h, rotate = 0, position = 'center', style = '', z, src, alt 
       transform 700ms var(--ease-soft),
       box-shadow 700ms var(--ease-soft);
   }
-  .polaroid:hover {
-    transform: rotate(calc(var(--pl-rotate) * 0.35)) translateY(-12px);
-    box-shadow:
-      0 30px 60px -20px rgba(40, 34, 20, 0.32),
-      0 4px 10px rgba(40, 34, 20, 0.08);
+  /* Hover-only, so a tapped photo doesn't stay lifted on touch screens. */
+  @media (hover: hover) {
+    .polaroid:hover {
+      transform: rotate(calc(var(--pl-rotate) * 0.35)) translateY(-12px);
+      box-shadow:
+        0 30px 60px -20px rgba(40, 34, 20, 0.32),
+        0 4px 10px rgba(40, 34, 20, 0.08);
+    }
   }
   .polaroid-photo {
     overflow: hidden;

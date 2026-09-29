@@ -1,4 +1,4 @@
-# Cloudflare Workers Builds (Git integration) builds and deploys the site. This only checks types.
+# Cloudflare Workers Builds deploys the site. CI checks types and rendered SEO.
 name: Check frontend
 
 on:
@@ -7,6 +7,7 @@ on:
     paths:
       - 'src/**'
       - 'public/**'
+      - 'scripts/**'
       - 'package.json'
       - 'package-lock.json'
       - 'astro.config.mjs'
@@ -29,3 +30,16 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run check
+      - name: Check rendered SEO without production member credentials
+        shell: bash
+        run: |
+          npm run dev -- --host 127.0.0.1 > /tmp/cseed-seo.log 2>&1 &
+          site_pid=$!
+          trap 'kill "$site_pid"' EXIT
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:4321/sitemap.xml > /dev/null; then
+              break
+            fi
+            sleep 1
+          done
+          npm run check:seo -- http://127.0.0.1:4321

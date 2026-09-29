@@ -4,7 +4,7 @@ const columns = [
     title: 'programs',
     links: [
       ['buildspace', '/buildspace/'],
-      ['buildher', '/join/'],
+      ['buildher', '/buildher/'],
       ['saturdays', '/saturdays/'],
     ],
   },
@@ -199,12 +199,27 @@ const socials = [
     :global(html[data-responsive]) .site-footer-column-title {
       font-size: 26px;
     }
+    :global(html[data-responsive]) .site-footer-column {
+      gap: 4px;
+    }
+    /* Padded so each link is a comfortable tap target. */
     :global(html[data-responsive]) .site-footer-link {
-      font-size: 24px;
+      padding: 12px 0;
+      font-size: 30px;
     }
     :global(html[data-responsive]) .site-footer-note {
-      font-size: 22px;
+      font-size: 26px;
       text-align: center;
+    }
+    :global(html[data-responsive]) .site-footer-socials {
+      gap: 24px;
+    }
+    :global(html[data-responsive]) .site-footer-social {
+      padding: 12px;
+    }
+    :global(html[data-responsive]) .site-footer-social svg {
+      width: 52px;
+      height: 52px;
     }
   }
 </style>

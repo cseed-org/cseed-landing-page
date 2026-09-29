@@ -11,7 +11,7 @@ interface Props {
 
 const {
   responsive = false,
-  title = 'cseed — good people. curious ideas.',
+  title = 'cseed',
   description = 'cseed runs community programs for people who want to build something: buildspace, buildher, and saturdays.',
 } = Astro.props;
 ---
@@ -22,9 +22,11 @@ const {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
     <SEO title={title} description={description} />
     <noscript>
       <style is:global>
@@ -62,12 +64,24 @@ const {
         document.documentElement.style.setProperty('--page-zoom', String(z || 1));
       }
 
+      /* On touch screens the browser toolbar shows and hides while scrolling, which
+         changes innerHeight; refitting then makes the page jump. So there the hero
+         only refits when the width changes (a rotation). */
+      const COARSE = window.matchMedia('(pointer: coarse)').matches;
+      let heroFitWidth = 0;
+
       function fitHero() {
         const hero = document.querySelector<HTMLElement>('[data-hero]');
         if (!hero) return;
+        const w = window.innerWidth;
+        if (COARSE && w === heroFitWidth) return;
         const h = window.innerHeight || document.documentElement.clientHeight || 1293;
+        if (window.innerHeight) heroFitWidth = w;
         const next = Math.round(h / zoom());
-        hero.style.height = (Number.isFinite(next) && next > 320 ? next : 1293) + 'px';
+        /* The mobile canvas keeps room for the wordmark above the wrapped headline,
+           so landscape phones don't push the headline up under it. */
+        const min = canvasWidth() < CANVAS_WIDTH ? 760 : 320;
+        hero.style.height = (Number.isFinite(next) && next > 320 ? Math.max(next, min) : 1293) + 'px';
       }
 
       function initNavVisibility() {

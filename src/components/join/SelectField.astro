@@ -111,8 +111,26 @@ const {
     font: 300 26px/1.25 var(--font-body);
     transition: background 200ms;
   }
-  .jn-option:hover,
   .jn-option.is-active {
     background: var(--cseed-white);
+  }
+  @media (hover: hover) {
+    .jn-option:hover {
+      background: var(--cseed-white);
+    }
+  }
+
+  /* Mobile canvas: bigger options, so each is a comfortable tap target. */
+  @media (max-width: 900px) {
+    :global(html[data-responsive]) .jn-option {
+      padding: 22px 0 22px 20px;
+      font-size: 30px;
+    }
+    :global(html[data-responsive]) .jn-caret {
+      font-size: 28px;
+    }
+    :global(html[data-responsive]) .jn-select-list {
+      max-height: 640px;
+    }
   }
 </style>

@@ -66,4 +66,14 @@ const { label, help, span = 1, required = false } = Astro.props;
   .jn-field.is-invalid :global(.jn-input) {
     border-bottom-color: #b3261e;
   }
+
+  /* Mobile canvas: the page renders at about half size on phones. */
+  @media (max-width: 900px) {
+    :global(html[data-responsive]) .jn-label {
+      font-size: 28px;
+    }
+    :global(html[data-responsive]) .jn-help {
+      font-size: 24px;
+    }
+  }
 </style>

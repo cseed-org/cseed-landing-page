@@ -110,7 +110,7 @@ let last = '';
   });
 ---
 
-<PageLayout title="join — cseed" compactFooter>
+<PageLayout title="cseed | join" compactFooter responsive>
   <div class="jn-shrink" data-join>
     <header class="jn-header" data-jn-rekey>
       <div class="jn-band" aria-hidden="true">
@@ -449,6 +449,7 @@ let last = '';
     nextLabel.textContent = step === 2 ? 'send application' : 'next';
     stepLabel.textContent = `step ${step + 1} of 3`;
     verification.hidden = step !== 2;
+    fitVerification();
     if (stage === 'form' && step === 2) {
       void loadVerification();
       checkCocRead();
@@ -537,6 +538,16 @@ let last = '';
     reset: (id: string) => void;
   };
   const turnstileWindow = window as typeof window & { turnstile?: Turnstile };
+  // The page is scaled as one unit (BaseLayout's --page-zoom), which shrinks the Turnstile
+  // widget to about half size on phones; counter-zoom it there so it renders at native size.
+  const mobileCanvas = window.matchMedia('(max-width: 900px)');
+  function fitVerification() {
+    const z = parseFloat(
+      getComputedStyle(document.documentElement).getPropertyValue('--page-zoom'),
+    );
+    verification.style.zoom = mobileCanvas.matches && z > 0 ? String(1 / z) : '';
+  }
+  window.addEventListener('resize', () => requestAnimationFrame(fitVerification));
   let token = '';
   let widget: string | undefined;
   let loadingVerification = false;
@@ -798,7 +809,8 @@ let last = '';
     });
   });
 
-  document.addEventListener('mousedown', (e) => {
+  // pointerdown, not mousedown: iOS sends no mouse events for taps on non-clickable areas.
+  document.addEventListener('pointerdown', (e) => {
     selects.forEach((sel) => {
       if (!sel.contains(e.target as Node)) sel.classList.remove('is-open');
     });
@@ -842,6 +854,12 @@ let last = '';
     font-weight: 500;
     padding: 0 6px;
     margin: 0 -6px;
+  }
+  /* Mobile canvas: never render an input under 16px on screen, or iOS zooms in on focus. */
+  @media (max-width: 900px) {
+    .jn-input {
+      font-size: max(32px, calc(16px / var(--page-zoom, 1)));
+    }
   }
 </style>
 
@@ -997,16 +1015,19 @@ let last = '';
     letter-spacing: -0.02em;
     transition: all 400ms var(--ease-soft);
   }
-  .jn-step-btn:hover {
-    background: var(--cseed-ink);
-    color: var(--cseed-white);
-  }
   .jn-step-arrow {
     display: inline-block;
     transition: transform 400ms var(--ease-soft);
   }
-  .jn-step-btn:hover .jn-step-arrow {
-    transform: translateX(8px);
+  /* Hover-only, so a tapped button doesn't stay dark on touch screens. */
+  @media (hover: hover) {
+    .jn-step-btn:hover {
+      background: var(--cseed-ink);
+      color: var(--cseed-white);
+    }
+    .jn-step-btn:hover .jn-step-arrow {
+      transform: translateX(8px);
+    }
   }
 
   .jn-form {
@@ -1082,8 +1103,10 @@ let last = '';
     font: 300 21px/1 var(--font-body);
     transition: background 300ms var(--ease-soft);
   }
-  .jn-chip:hover {
-    background: var(--cseed-white);
+  @media (hover: hover) {
+    .jn-chip:hover {
+      background: var(--cseed-white);
+    }
   }
   .jn-chip.is-on {
     background: var(--cseed-sun);
@@ -1291,5 +1314,129 @@ let last = '';
   }
   .jn-members :global(.jn-member) {
     break-inside: avoid;
+  }
+
+  /* ---------- Mobile canvas (780px, phones and small tablets) ---------- */
+  @media (max-width: 900px) {
+    .jn-shrink {
+      zoom: 1;
+      width: auto;
+    }
+    .jn-header {
+      padding: 190px 40px 0;
+    }
+    .jn-band {
+      left: 0;
+      right: 0;
+      top: 150px;
+      height: 300px;
+    }
+    .jn-band-photo {
+      width: 400px;
+    }
+    .jn-lower {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 64px;
+      margin-top: 110px;
+    }
+    .jn-cta .jn-step-btn {
+      width: 100%;
+      justify-content: center;
+    }
+    .jn-facts {
+      font-size: 30px;
+    }
+    .jn-sub-lede {
+      font-size: 46px;
+    }
+
+    /* The form: one column of fields, bigger type and tap targets. */
+    .jn-form {
+      padding: 130px 0 120px;
+    }
+    .jn-panel {
+      padding: 0 40px 20px;
+    }
+    .jn-heard-label {
+      font-size: 28px;
+    }
+    .jn-heard-help {
+      font-size: 24px;
+    }
+    .jn-chip {
+      padding: 18px 28px;
+      font-size: 28px;
+    }
+    [data-jn-heard-other] {
+      max-width: 100%;
+    }
+    .jn-coc {
+      max-height: 760px;
+      padding: 32px 28px;
+    }
+    .jn-coc-doc {
+      font-size: 28px;
+    }
+    .jn-coc-doc :global(h2) {
+      font-size: 44px;
+    }
+    .jn-coc-doc :global(h4) {
+      font-size: 28px;
+    }
+    .jn-coc-more,
+    .jn-consent span {
+      font-size: 28px;
+    }
+    .jn-checkbox {
+      width: 44px;
+      height: 44px;
+    }
+    .jn-checkbox:checked::after {
+      font-size: 28px;
+    }
+    /* "back" sits in the row instead of hanging on the margin. */
+    .jn-controls {
+      justify-content: space-between;
+      padding: 36px 40px 0;
+    }
+    .jn-back {
+      position: static;
+      transform: none;
+      padding: 20px 0;
+      font-size: 30px;
+    }
+    .jn-controls .jn-step-btn {
+      margin-left: auto;
+    }
+    .jn-submit-status {
+      margin: 30px 40px 0;
+      font-size: 30px;
+    }
+
+    /* The members wall: one column of names. */
+    .jn-bleed {
+      width: auto;
+      margin-left: 0;
+      margin-top: 100px;
+    }
+    .jn-wall {
+      padding: 90px 40px 0;
+    }
+    .jn-wall-head {
+      align-items: flex-start;
+      text-align: left;
+      margin-bottom: 60px;
+    }
+    .jn-members {
+      column-count: 1;
+      font-size: 32px;
+      line-height: 1.6;
+    }
+    .jn-members :global(.jn-letter) {
+      font-size: 64px;
+      padding: 36px 0 12px;
+    }
   }
 </style>

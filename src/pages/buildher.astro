@@ -39,7 +39,7 @@ const launchFacts = [
 ];
 ---
 
-<PageLayout title="buildher — cseed" compactFooter responsive>
+<PageLayout title="cseed | buildher" compactFooter responsive>
   <div class="bh-page">
   <PondHero>
     <div class="bh-hero-copy">
@@ -96,7 +96,7 @@ const launchFacts = [
             {
               launchFacts.map(([k, v]) => (
                 <div class="bh-launch-fact">
-                  <span class="t-eyebrow" style="font-size:16px">{k}</span>
+                  <span class="t-eyebrow t-eyebrow-sm">{k}</span>
                   <span class="bh-fact-value">{v}</span>
                 </div>
               ))
@@ -317,11 +317,17 @@ const launchFacts = [
       transform 600ms var(--ease-soft),
       box-shadow 600ms var(--ease-soft);
   }
-  .bh-event:hover {
-    transform: rotate(0deg) translateY(-12px);
-    box-shadow:
-      0 30px 56px -22px rgba(40, 34, 20, 0.4),
-      0 4px 12px rgba(40, 34, 20, 0.1);
+  /* Hover-only, so a tapped card doesn't stay lifted on touch screens. */
+  @media (hover: hover) {
+    .bh-event:hover {
+      transform: rotate(0deg) translateY(-12px);
+      box-shadow:
+        0 30px 56px -22px rgba(40, 34, 20, 0.4),
+        0 4px 12px rgba(40, 34, 20, 0.1);
+    }
+    .bh-event:hover .bh-event-photo img {
+      transform: scale(1.04);
+    }
   }
   /* a strip of washi tape holding each polaroid up, lapping onto the photo */
   .bh-event::before {
@@ -349,9 +355,6 @@ const launchFacts = [
     object-fit: cover;
     display: block;
     transition: transform 700ms var(--ease-soft);
-  }
-  .bh-event:hover .bh-event-photo img {
-    transform: scale(1.04);
   }
   .bh-event-title {
     margin: 22px 8px 8px;
@@ -508,19 +511,20 @@ const launchFacts = [
   /* ---------- mobile canvas ---------- */
   @media (max-width: 900px) {
     :global(html[data-responsive]) .bh-hero-title { font-size: 104px; }
-    :global(html[data-responsive]) .bh-hero-sub { font-size: 25px; }
+    :global(html[data-responsive]) .bh-hero-sub { font-size: 30px; }
 
     :global(html[data-responsive]) .bh-section { padding: 90px 40px 20px; }
     :global(html[data-responsive]) .bh-head { margin: 50px 0 70px !important; }
     :global(html[data-responsive]) .bh-events { grid-template-columns: 1fr; gap: 80px; }
-    :global(html[data-responsive]) .bh-event { margin: 0 auto !important; max-width: 440px; }
-    :global(html[data-responsive]) .bh-event-title { font-size: 36px; }
-    :global(html[data-responsive]) .bh-event .bh-body { font-size: 19px !important; }
+    :global(html[data-responsive]) .bh-event { margin: 0 auto !important; max-width: 560px; }
+    :global(html[data-responsive]) .bh-event-title { font-size: 44px; }
+    :global(html[data-responsive]) .bh-event .bh-body { font-size: 28px !important; }
 
     :global(html[data-responsive]) .bh-launch { padding: 60px 40px 0; }
     :global(html[data-responsive]) .bh-launch-inner { grid-template-columns: 1fr; gap: 24px; }
     :global(html[data-responsive]) .bh-launch-title { font-size: 100px; }
-    :global(html[data-responsive]) .bh-launch-facts { gap: 24px; max-width: none; }
+    :global(html[data-responsive]) .bh-launch-facts { grid-template-columns: minmax(0, 1fr); gap: 24px; max-width: none; }
+    :global(html[data-responsive]) .bh-fact-value { font-size: 40px; }
     :global(html[data-responsive]) .bh-scene { height: 700px; margin-top: 20px; }
   }
 </style>

@@ -11,11 +11,11 @@ const faq: { q: string; a: string; link?: { label: string; href: string } }[] = 
 const units = ['days', 'hours', 'min', 'sec'];
 ---
 
-<PageLayout title="saturdays — cseed">
+<PageLayout title="cseed | saturdays" responsive>
   <header class="sa-header">
     <div class="sa-header-left">
       <Reveal><div class="t-eyebrow">a weekly build sesh</div></Reveal>
-      <Reveal delay={120}><h1 class="t-serif" style="font-size:240px">saturdays</h1></Reveal>
+      <Reveal delay={120}><h1 class="t-serif sa-title">saturdays</h1></Reveal>
     </div>
     <Reveal delay={240}>
       <p class="sa-body" style="margin-bottom:30px; white-space:pre-line">
@@ -43,15 +43,15 @@ const units = ['days', 'hours', 'min', 'sec'];
     </div>
     <div class="sa-facts">
       <div class="sa-fact">
-        <span class="t-eyebrow" style="font-size:16px">when</span>
+        <span class="t-eyebrow t-eyebrow-sm">when</span>
         <span class="sa-fact-value">saturday, october 17</span>
       </div>
       <div class="sa-fact">
-        <span class="t-eyebrow" style="font-size:16px">time</span>
+        <span class="t-eyebrow t-eyebrow-sm">time</span>
         <span class="sa-fact-value">1:00pm</span>
       </div>
       <div class="sa-fact">
-        <span class="t-eyebrow" style="font-size:16px">where</span>
+        <span class="t-eyebrow t-eyebrow-sm">where</span>
         <span class="sa-fact-value">@ tbd</span>
       </div>
     </div>
@@ -130,6 +130,9 @@ const units = ['days', 'hours', 'min', 'sec'];
     display: flex;
     flex-direction: column;
     gap: 40px;
+  }
+  .sa-title {
+    font-size: 240px;
   }
   .sa-next {
     position: relative;
@@ -212,5 +215,53 @@ const units = ['days', 'hours', 'min', 'sec'];
   .sa-faq-q {
     font: 400 40px/1.2 var(--font-display);
     letter-spacing: -0.02em;
+  }
+
+  /* ---------- Mobile canvas (780px, phones and small tablets) ---------- */
+  @media (max-width: 900px) {
+    .sa-header {
+      padding: 190px 40px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 36px;
+    }
+    .sa-next {
+      margin: 110px 40px 0;
+      padding: 70px 36px 80px;
+    }
+    /* Two by two: at full size "00" overflows a quarter of the column. */
+    .sa-units {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 44px 28px;
+      margin-top: 50px;
+    }
+    .sa-unit-value {
+      font-size: 170px;
+    }
+    .sa-facts {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 36px;
+      margin-top: 80px;
+    }
+    .sa-fact-value {
+      font-size: 46px;
+    }
+    /* Follows the facts instead of floating over the eyebrow. */
+    .sa-hand {
+      position: static;
+      margin-top: 56px;
+      text-align: right;
+    }
+    .sa-faq {
+      grid-template-columns: minmax(0, 1fr);
+      row-gap: 40px;
+      padding: 140px 40px 0;
+    }
+    .sa-faq-row {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 14px;
+      padding: 34px 0;
+    }
   }
 </style>

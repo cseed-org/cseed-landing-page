@@ -110,7 +110,7 @@ const tracks = [
 ] as const;
 ---
 
-<PageLayout title="buildspace — cseed" compactFooter responsive>
+<PageLayout title="cseed | buildspace" compactFooter responsive>
   <section class="bs-space" id="cohort" data-nav-dark-hero>
     <div class="bs-galaxy" data-galaxy aria-hidden="true"></div>
     <div class="bs-space-vignette" aria-hidden="true"></div>
@@ -130,9 +130,7 @@ const tracks = [
           {
             facts.map(([k, v]) => (
               <div class="bs-cohort-fact">
-                <span class="bs-mono" style="font-size:18px; opacity:0.75">
-                  {k}
-                </span>
+                <span class="bs-mono bs-fact-label">{k}</span>
                 <span class="bs-mono" style="font-size:30px">
                   {v}
                 </span>
@@ -283,9 +281,7 @@ const tracks = [
                 <div class="bs-detail-highlight" aria-hidden="true" />
                 <Rule width="100%" weight={1} animate delay={i * 120} />
                 <div class="bs-detail-title">{k}</div>
-                <p class="bs-body" style="font-size:26px">
-                  {v}
-                </p>
+                <p class="bs-body bs-detail-body">{v}</p>
               </div>
             </Reveal>
           ))
@@ -904,6 +900,13 @@ void main() {
     letter-spacing: 0.08em;
     text-transform: uppercase;
   }
+  .bs-fact-label {
+    font-size: 18px;
+    opacity: 0.75;
+  }
+  .bs-detail-body {
+    font-size: 26px;
+  }
 
   /* hero */
   .bs-space {
@@ -1035,11 +1038,14 @@ void main() {
       transform 500ms var(--ease-soft),
       box-shadow 500ms var(--ease-soft);
   }
-  .bs-photo-frame:hover {
-    transform: rotate(0deg) translateY(-10px) !important;
-    box-shadow:
-      0 30px 56px -20px rgba(40, 34, 20, 0.4),
-      0 4px 12px rgba(40, 34, 20, 0.1);
+  /* Hover-only, so a tapped photo doesn't stay lifted on touch screens. */
+  @media (hover: hover) {
+    .bs-photo-frame:hover {
+      transform: rotate(0deg) translateY(-10px) !important;
+      box-shadow:
+        0 30px 56px -20px rgba(40, 34, 20, 0.4),
+        0 4px 12px rgba(40, 34, 20, 0.1);
+    }
   }
   .bs-photo-img {
     display: block;
@@ -1384,6 +1390,9 @@ void main() {
       margin-top: 70px;
       align-self: stretch;
     }
+    .bs-fact-label {
+      font-size: 24px;
+    }
 
     .bs-shrink {
       zoom: 1;
@@ -1401,8 +1410,10 @@ void main() {
       align-items: flex-start;
       gap: 44px;
     }
+    /* Allowed to wrap: at 84px the one-line headline nearly fills the column. */
     .bs-intro-title {
       font-size: 84px !important;
+      white-space: normal;
     }
     .bs-intro-right {
       padding-bottom: 0;
@@ -1452,6 +1463,9 @@ void main() {
     .bs-detail-title {
       font-size: 44px;
     }
+    .bs-detail-body {
+      font-size: 30px;
+    }
 
     .bs-what {
       margin-top: 140px;
@@ -1482,6 +1496,12 @@ void main() {
     }
     .bs-what-title {
       font-size: 44px;
+    }
+    .bs-what-num {
+      font-size: 26px;
+    }
+    .bs-what-body {
+      font-size: 30px;
     }
     .bs-explode {
       margin: 200px 40px 0;

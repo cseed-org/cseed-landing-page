@@ -12,6 +12,9 @@
 
 html {
   background: var(--surface-page);
+  /* Stop iOS enlarging text on its own in landscape; the page scales itself. */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
@@ -105,10 +108,21 @@ svg {
   text-transform: uppercase;
   color: var(--cseed-ink);
 }
-/* Mobile canvas on responsive pages (see tokens/layout.css). */
+/* The smaller eyebrow used for fact labels. */
+.t-eyebrow-sm {
+  font-size: 16px;
+}
+/* Mobile canvas on responsive pages (see tokens/layout.css). The canvas renders at
+   about half size on phones, so eyebrows grow to stay legible. */
 @media (max-width: 900px) {
   html[data-responsive] .t-serif {
     font-size: 104px;
+  }
+  html[data-responsive] .t-eyebrow {
+    font-size: 24px;
+  }
+  html[data-responsive] .t-eyebrow-sm {
+    font-size: 24px;
   }
 }
 

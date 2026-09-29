@@ -15,7 +15,7 @@ const ABOUT_STATS = [
 ];
 ---
 
-<PageLayout title="about us — cseed" compactFooter responsive>
+<PageLayout title="cseed | about us" compactFooter responsive>
   <div class="ab-shrink">
     <div class="ab-top-space"></div>
 
@@ -292,16 +292,22 @@ const ABOUT_STATS = [
       align-items: flex-start;
       margin-bottom: 80px;
     }
+    /* One column of names, each row a small headshot beside the name. */
     .ab-wall {
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      column-gap: 20px;
-      row-gap: 44px;
+      grid-template-columns: minmax(0, 1fr);
+      row-gap: 28px;
     }
     .ab-person {
-      gap: 12px;
+      flex-direction: row;
+      align-items: center;
+      gap: 32px;
+    }
+    .team-photo {
+      flex: none;
+      width: 160px;
     }
     .ab-person-name {
-      font-size: 19px;
+      font-size: 34px;
     }
   }
 </style>

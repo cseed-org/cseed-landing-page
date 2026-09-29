@@ -35,4 +35,19 @@ const { title } = Astro.props;
     column-gap: 80px;
     row-gap: 40px;
   }
+
+  /* Mobile canvas: one column of fields. Fields carry an inline `grid-column: span 2`,
+     which would otherwise add an implicit second column. */
+  @media (max-width: 900px) {
+    :global(html[data-responsive]) .jn-block-title {
+      font-size: 64px;
+    }
+    :global(html[data-responsive]) .jn-block-fields {
+      grid-template-columns: minmax(0, 1fr);
+      row-gap: 44px;
+    }
+    :global(html[data-responsive]) .jn-block-fields > :global(*) {
+      grid-column: 1 / -1 !important;
+    }
+  }
 </style>

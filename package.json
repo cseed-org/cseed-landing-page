@@ -8,6 +8,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
+    "check:seo": "node scripts/verify-seo.mjs",
     "lint": "prettier --check .",
     "format": "prettier --write .",
     "astro": "astro"
