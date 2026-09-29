@@ -8,6 +8,8 @@ on:
       - 'src/**'
       - 'public/**'
       - 'scripts/**'
+      - 'LICENSE'
+      - 'CONTENT-NOTICE.md'
       - 'package.json'
       - 'package-lock.json'
       - 'astro.config.mjs'

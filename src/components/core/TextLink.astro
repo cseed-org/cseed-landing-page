@@ -1,11 +1,14 @@
 ---
 import Arrow from './Arrow.astro';
+import MailIcon from './MailIcon.astro';
 
 interface Props {
   href?: string;
   variant?: 'default' | 'mono';
   arrow?: boolean;
   arrowLength?: number;
+  /** Show an envelope in place of the arrow (for mailto: links). */
+  mail?: boolean;
   color?: string;
   style?: string;
   class?: string;
@@ -18,6 +21,7 @@ const {
   variant = 'default',
   arrow = variant === 'default',
   arrowLength = 30.052,
+  mail = false,
   color,
   style = '',
   class: className,
@@ -39,10 +43,16 @@ const ink = color || (mono ? 'var(--link-on-photo)' : 'var(--link-ink)');
     <slot />
   </span>
   {
-    arrow && (
+    mail ? (
       <span class="text-link-arrow-wrap">
-        <Arrow length={arrowLength} angle={-45} color={ink} />
+        <MailIcon size={Math.round(arrowLength * 0.9)} />
       </span>
+    ) : (
+      arrow && (
+        <span class="text-link-arrow-wrap">
+          <Arrow length={arrowLength} angle={-45} color={ink} />
+        </span>
+      )
     )
   }
 </a>

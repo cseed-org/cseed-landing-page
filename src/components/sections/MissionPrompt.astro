@@ -7,7 +7,11 @@ interface Props {
   linkLabel?: string;
   href?: string;
 }
-const { heading = 'interested in our mission?', linkLabel = 'sponsor us', href = '#sponsors' } = Astro.props;
+const {
+  heading = 'interested in our mission?',
+  linkLabel = 'sponsor us',
+  href = 'mailto:partnerships@cseed.co',
+} = Astro.props;
 ---
 
 <div class="mission-prompt">
@@ -15,7 +19,7 @@ const { heading = 'interested in our mission?', linkLabel = 'sponsor us', href =
     <SectionHeading width={981}>{heading}</SectionHeading>
   </div>
   <div data-reveal style="transition-delay:120ms">
-    <TextLink href={href} arrowLength={36.235}>{linkLabel}</TextLink>
+    <TextLink href={href} arrowLength={36.235} mail={href.startsWith('mailto:')}>{linkLabel}</TextLink>
   </div>
 </div>
 

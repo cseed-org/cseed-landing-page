@@ -43,7 +43,7 @@ const launchFacts = [
   <div class="bh-page">
   <PondHero>
     <div class="bh-hero-copy">
-      <Reveal><h1 class="bh-hero-title">buildher</h1></Reveal>
+      <Reveal><h1 class="bh-hero-title">build<span class="bh-hero-her">her</span></h1></Reveal>
       <Reveal delay={160}>
         <p class="bh-hero-sub" style="white-space:pre-line">
           {'A safe and inclusive environment for women and non-binary students to build, learn, and explore entrepreneurship.'}
@@ -137,7 +137,7 @@ const launchFacts = [
                 class="bh-lp-mask"
                 style="-webkit-mask:url('/images/buildher/lilypad-outline1.png') center/contain no-repeat; mask:url('/images/buildher/lilypad-outline1.png') center/contain no-repeat"
               >
-                <img src="/images/buildher/launchpad3.webp" alt="builder presenting at launchpad cohort 0" />
+                <img src="/images/buildher/launchpad4.webp" alt="buildher members working together on their laptops" />
               </div>
             </div>
           </Reveal>
@@ -201,6 +201,12 @@ const launchFacts = [
     font: var(--weight-display) 240px/0.95 var(--font-display);
     letter-spacing: -0.045em;
     color: var(--cseed-white);
+  }
+  /* Uppercased in CSS so the heading still reads "buildher" to screen readers and search. */
+  .bh-hero-her {
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    color: #e0457b;
   }
   .bh-hero-tagline {
     font: 400 52px/1 var(--font-hand);

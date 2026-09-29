@@ -1,0 +1,23 @@
+---
+/* Envelope glyph for mailto: links; drawn in the text color. */
+interface Props {
+  size?: number;
+  class?: string;
+}
+const { size = 24, class: className } = Astro.props;
+---
+
+<svg
+  class={className}
+  width={size}
+  height={size}
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.6"
+  stroke-linejoin="round"
+  aria-hidden="true"
+>
+  <rect x="2.5" y="5" width="19" height="14" rx="1.5"></rect>
+  <path d="M3 6l9 7 9-7"></path>
+</svg>

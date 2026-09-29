@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { existsSync, readdirSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 
 const origin = process.argv[2] ?? 'http://localhost:4321';
 const routes = readdirSync(new URL('../src/pages/', import.meta.url))
@@ -101,11 +101,30 @@ for (const route of routes) {
     assert.match(crawlerHtml, /<h1\b/);
   }
 }
+// Text notices are valid link destinations, but are not HTML pages or sitemap entries.
+const textDocuments = new Map([
+  ['/license.txt', '../LICENSE'],
+  ['/content-notice.txt', '../CONTENT-NOTICE.md'],
+]);
+for (const [path, source] of textDocuments) {
+  const response = await fetchPage(`${origin}${path}`);
+  assert.equal(response.status, 200, `${path}: text document available`);
+  assert.match(response.headers.get('content-type') ?? '', /^text\/plain\b/i);
+  assert.equal(
+    await response.text(),
+    readFileSync(new URL(source, import.meta.url), 'utf8'),
+    `${path}: serves the current repository notice`,
+  );
+}
 // Check actual anchor destinations, including section fragments, without crawling external sites.
 for (const [route, html] of pages) {
   for (const match of html.matchAll(/<a\b[^>]*\bhref="([^"]+)"/g)) {
     const target = new URL(match[1].replaceAll('&amp;', '&'), `https://cseed.co${route}`);
     if (target.origin !== 'https://cseed.co') continue;
+    if (textDocuments.has(target.pathname)) {
+      assert.equal(target.hash, '', `${route}: text document link has no HTML anchor`);
+      continue;
+    }
     const targetHtml = pages.get(target.pathname);
     assert.ok(targetHtml, `${route}: internal link targets a known page: ${target.href}`);
     if (target.hash) {
@@ -147,5 +166,5 @@ for (const bot of ['OAI-SearchBot', 'Claude-SearchBot', 'PerplexityBot']) {
 }
 assert.match(robots, /User-agent: GPTBot\s+User-agent: ClaudeBot\s+Disallow: \//);
 console.log(
-  `SEO verification passed for ${routes.length} pages, Googlebot/Bingbot responses, internal links, ${sitemapImages.length} sitemap images, favicon, 404, AI guide, and robots.txt.`,
+  `SEO verification passed for ${routes.length} pages, Googlebot/Bingbot responses, internal links, ${textDocuments.size} text notices, ${sitemapImages.length} sitemap images, favicon, 404, AI guide, and robots.txt.`,
 );

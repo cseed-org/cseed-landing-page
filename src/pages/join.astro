@@ -5,6 +5,8 @@ import Field from '../components/join/Field.astro';
 import SelectField from '../components/join/SelectField.astro';
 import FormBlock from '../components/join/FormBlock.astro';
 import Rule from '../components/core/Rule.astro';
+import SocialIcon from '../components/core/SocialIcon.astro';
+import { SOCIALS, type SocialIconName } from '../data/socials';
 import { loadMemberNames } from '../data/member-names.mjs';
 const memberNames = await loadMemberNames({
   url: import.meta.env.MEMBER_NAMES_EXPORT_URL,
@@ -69,6 +71,16 @@ const cocHtml = marked.parse(
 
 const introFacts = ['open to all majors', 'we meet every week', 'takes about 2 minutes'];
 
+// The welcome step's "stay in the loop" links, in the order we want new members to follow.
+const nudges: Record<SocialIconName, string> = {
+  linkedin: 'follow us on LinkedIn',
+  instagram: 'follow @cseeduw on Instagram',
+  discord: 'join our Discord community',
+};
+const welcomeSocials = (['linkedin', 'instagram', 'discord'] as const).flatMap((icon) =>
+  SOCIALS.filter((s) => s.icon === icon),
+);
+
 // Event photos for the hero's scrolling band, shown in black and white behind the title.
 // The join-band/ shots are pre-cropped to the tile shape.
 const bandPhotos = [
@@ -112,7 +124,7 @@ let last = '';
 
 <PageLayout title="cseed | join" compactFooter responsive>
   <div class="jn-shrink" data-join>
-    <header class="jn-header" data-jn-rekey>
+    <header class="jn-header">
       <div class="jn-band" aria-hidden="true">
         <div class="jn-band-track">
           {
@@ -126,12 +138,17 @@ let last = '';
         <div class="jn-header-left">
           <Reveal><div class="t-eyebrow">cseed membership</div></Reveal>
           <Reveal delay={120}>
-            <h1 class="t-serif jn-heading" data-jn-heading>join cseed.</h1>
+            <h1 class="t-serif jn-heading">join cseed.</h1>
           </Reveal>
         </div>
       </div>
-      <div class="jn-lower">
-        <div class="jn-cta" data-jn-cta>
+    </header>
+
+    <!-- The CTA and the form share one grid cell: the form rises over the CTA and blurb
+         while the hero above stays where it is. -->
+    <div class="jn-stage" data-jn-stage>
+      <div class="jn-lower" data-jn-lower>
+        <div class="jn-cta">
           <Reveal delay={240}>
             <button type="button" class="jn-step-btn" data-jn-start>
               <span>become a member now!</span><span class="jn-step-arrow">→</span>
@@ -144,7 +161,7 @@ let last = '';
           </Reveal>
         </div>
         <Reveal delay={400}>
-          <p class="jn-sub" data-jn-sub>
+          <p class="jn-sub">
             <span class="jn-sub-lede"
               >Become part of a community of{' '}
               <span class="jn-mark">builders, dreamers, and curious people.</span></span
@@ -156,152 +173,181 @@ let last = '';
           </p>
         </Reveal>
       </div>
-    </header>
 
-    <form class="jn-form" data-jn-form hidden novalidate>
-      <div class="jn-trap" aria-hidden="true" inert>
-        <label>Leave this empty<input name="website" tabindex="-1" autocomplete="off" /></label>
-      </div>
-      <div class="jn-form-head">
-        <div class="jn-progress">
-          <div class="jn-bar" data-jn-bar></div>
-          <div class="jn-bar" data-jn-bar></div>
-          <div class="jn-bar" data-jn-bar></div>
+      <form class="jn-form" data-jn-form hidden novalidate>
+        <div class="jn-trap" aria-hidden="true" inert>
+          <label>Leave this empty<input name="website" tabindex="-1" autocomplete="off" /></label>
         </div>
-        <div class="t-eyebrow" data-jn-step-label>step 1 of 3</div>
-      </div>
-      <div class="jn-track" data-jn-track>
-        <div class="jn-panel" data-jn-panel>
-          <FormBlock title="about you">
-            <Field label="First Name" required>
-              <input class="jn-input" name="first_name" autocomplete="given-name" required />
-            </Field>
-            <Field label="Last Name" required>
-              <input class="jn-input" name="last_name" autocomplete="family-name" required />
-            </Field>
-            <Field label="Preferred Name">
-              <input class="jn-input" name="pref" placeholder="What should we call you?" />
-            </Field>
-            <Field label="Pronouns">
-              <input class="jn-input" name="pronouns" />
-            </Field>
-            <SelectField
-              name="campus"
-              allowOther={false}
-              label="Campus"
-              options={['UW Seattle', 'UW Bothell', 'UW Tacoma']}
-            />
-            <SelectField
-              name="grad"
-              allowOther={false}
-              label="Graduation Date"
-              options={options.graduation}
-              required
-            />
-            <SelectField
-              name="major"
-              label="Major or Intended Major"
-              options={options.major}
-              required
-            />
-            <SelectField name="demo" label="Demographics" options={options.demographics} />
-            <div data-jn-email="uw" style="grid-column: span 2">
-              <Field label="School Email" required>
-                <input class="jn-input" type="email" name="uw" placeholder="netid@uw.edu" />
+        <div class="jn-form-head">
+          <div class="jn-progress">
+            <div class="jn-bar" data-jn-bar></div>
+            <div class="jn-bar" data-jn-bar></div>
+            <div class="jn-bar" data-jn-bar></div>
+          </div>
+          <div class="t-eyebrow" data-jn-step-label>step 1 of 3</div>
+        </div>
+        <div class="jn-track" data-jn-track>
+          <div class="jn-panel" data-jn-panel>
+            <FormBlock title="about you">
+              <Field label="First Name" required>
+                <input class="jn-input" name="first_name" autocomplete="given-name" required />
               </Field>
-            </div>
-          </FormBlock>
-        </div>
-
-        <div class="jn-panel" data-jn-panel>
-          <FormBlock title="why cseed">
-            <Field
-              label="Tell us in a sentence why you want to be a part of CSEED!"
-              span={2}
-              required
-            >
-              <input class="jn-input" name="why" placeholder="One sentence is plenty." required />
-            </Field>
-            <div class="jn-heard">
-              <span class="jn-heard-label">How did you hear about us?</span>
-              <span class="jn-heard-help">Select all that apply</span>
-              <div class="jn-chips">
-                {
-                  heard.map((c) => (
-                    <button type="button" class="jn-chip" data-chip={c}>
-                      {c}
-                    </button>
-                  ))
-                }
-              </div>
-              <input
-                class="jn-input"
-                data-jn-heard-other
-                placeholder="where?"
-                style="margin-top:30px; width:700px"
-                hidden
+              <Field label="Last Name" required>
+                <input class="jn-input" name="last_name" autocomplete="family-name" required />
+              </Field>
+              <Field label="Preferred Name">
+                <input class="jn-input" name="pref" placeholder="What should we call you?" />
+              </Field>
+              <Field label="Pronouns">
+                <input class="jn-input" name="pronouns" />
+              </Field>
+              <SelectField
+                name="campus"
+                allowOther={false}
+                label="Campus"
+                options={['UW Seattle', 'UW Bothell', 'UW Tacoma']}
               />
-            </div>
-            <div class="jn-more">
+              <SelectField
+                name="grad"
+                allowOther={false}
+                label="Graduation Date"
+                options={options.graduation}
+                required
+              />
+              <SelectField
+                name="major"
+                label="Major or Intended Major"
+                options={options.major}
+                required
+              />
+              <SelectField name="demo" label="Demographics" options={options.demographics} />
+              <div data-jn-email="uw" style="grid-column: span 2">
+                <Field label="School Email" required>
+                  <input class="jn-input" type="email" name="uw" placeholder="netid@uw.edu" />
+                </Field>
+              </div>
+            </FormBlock>
+          </div>
+
+          <div class="jn-panel" data-jn-panel>
+            <FormBlock title="why cseed">
               <Field
-                label="Anything you want us to know?"
-                help="Fun fact, accommodations, thoughts, something funny, projects you are working on..."
+                label="Tell us in a sentence why you want to be a part of CSEED!"
+                span={2}
+                required
               >
-                <textarea
-                  class="jn-input"
-                  name="more"
-                  rows="2"
-                  placeholder="Type away."
-                  style="resize:vertical; display:block"></textarea>
+                <input class="jn-input" name="why" placeholder="One sentence is plenty." required />
               </Field>
+              <div class="jn-heard">
+                <span class="jn-heard-label">How did you hear about us?</span>
+                <span class="jn-heard-help">Select all that apply</span>
+                <div class="jn-chips">
+                  {
+                    heard.map((c) => (
+                      <button type="button" class="jn-chip" data-chip={c}>
+                        {c}
+                      </button>
+                    ))
+                  }
+                </div>
+                <input
+                  class="jn-input"
+                  data-jn-heard-other
+                  placeholder="where?"
+                  style="margin-top:30px; width:700px"
+                  hidden
+                />
+              </div>
+              <div class="jn-more">
+                <Field
+                  label="Anything you want us to know?"
+                  help="Fun fact, accommodations, thoughts, something funny, projects you are working on..."
+                >
+                  <textarea
+                    class="jn-input"
+                    name="more"
+                    rows="2"
+                    placeholder="Type away."
+                    style="resize:vertical; display:block"></textarea>
+                </Field>
+              </div>
+            </FormBlock>
+          </div>
+
+          <div class="jn-panel" data-jn-panel>
+            <FormBlock title="the agreement">
+              <p class="jn-coc-more" style="grid-column: span 2">
+                Your preferred name (or first name) and last name will appear on our public member
+                list. Your other form answers stay private.
+              </p>
+              <div class="jn-coc" data-jn-coc>
+                <article class="jn-coc-doc" set:html={cocHtml} />
+              </div>
+              <label
+                class="jn-consent is-locked"
+                data-jn-required
+                data-jn-coc-consent
+                style="grid-column: span 2"
+              >
+                <input type="checkbox" class="jn-checkbox" name="coc" disabled />
+                <span>
+                  I have read the cseed member code of conduct and agree to hold myself to it. By
+                  agreeing, I also agree to the photo release: photos and video of me taken at cseed
+                  events may be used publicly.
+                  <span class="jn-req">*</span>
+                </span>
+              </label>
+            </FormBlock>
+          </div>
+
+          <!-- The last page, after a successful send. Not a [data-jn-panel]: it has no fields. -->
+          <div class="jn-panel jn-done" data-jn-done>
+            <h2 class="t-serif jn-done-title" tabindex="-1" data-jn-welcome>welcome in.</h2>
+            <p class="jn-done-lede">You're officially part of cseed. We'll be in touch soon.</p>
+            <div class="t-eyebrow jn-done-eyebrow">stay in the loop</div>
+            <div class="jn-socials">
+              {
+                welcomeSocials.map((s) => (
+                  <a class="jn-social" href={s.href} target="_blank" rel="noopener">
+                    <span class="jn-social-top">
+                      <SocialIcon icon={s.icon} size={44} />
+                      <span class="jn-social-arrow" aria-hidden="true">
+                        ↗
+                      </span>
+                    </span>
+                    <span class="jn-social-name">{s.label}</span>
+                    <span class="jn-social-nudge">{nudges[s.icon]}</span>
+                  </a>
+                ))
+              }
             </div>
-          </FormBlock>
+            <div class="jn-find">
+              <p>Your name is on our members wall now. Go find it!</p>
+              <button type="button" class="jn-step-btn" data-jn-find>
+                <span>find your name</span><span class="jn-step-arrow">→</span>
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div class="jn-panel" data-jn-panel>
-          <FormBlock title="the agreement">
-            <p class="jn-coc-more" style="grid-column: span 2">
-              Your preferred name (or first name) and last name will appear on our public member
-              list. Your other form answers stay private.
-            </p>
-            <div class="jn-coc" data-jn-coc>
-              <article class="jn-coc-doc" set:html={cocHtml} />
-            </div>
-            <label
-              class="jn-consent is-locked"
-              data-jn-required
-              data-jn-coc-consent
-              style="grid-column: span 2"
-            >
-              <input type="checkbox" class="jn-checkbox" name="coc" disabled />
-              <span>
-                I have read the cseed member code of conduct and agree to hold myself to it. By
-                agreeing, I also agree to the photo release: photos and video of me taken at cseed
-                events may be used publicly.
-                <span class="jn-req">*</span>
-              </span>
-            </label>
-          </FormBlock>
+        <div
+          data-jn-verification
+          hidden
+          style="display:flex; justify-content:center; margin-top:30px"
+        >
+          <div data-jn-turnstile></div>
         </div>
-      </div>
+        <p data-jn-status role="status" aria-live="polite" class="jn-submit-status" hidden></p>
+        <div class="jn-controls" data-jn-controls>
+          <button type="button" class="jn-back" data-jn-back hidden>← back</button>
+          <button type="submit" class="jn-step-btn">
+            <span data-jn-next-label>next</span><span class="jn-step-arrow">→</span>
+          </button>
+        </div>
+      </form>
+    </div>
 
-      <div
-        data-jn-verification
-        hidden
-        style="display:flex; justify-content:center; margin-top:30px"
-      >
-        <div data-jn-turnstile></div>
-      </div>
-      <p data-jn-status role="status" aria-live="polite" class="jn-submit-status" hidden></p>
-      <div class="jn-controls">
-        <button type="button" class="jn-back" data-jn-back hidden>← back</button>
-        <button type="submit" class="jn-step-btn">
-          <span data-jn-next-label>next</span><span class="jn-step-arrow">→</span>
-        </button>
-      </div>
-    </form>
-
-    <div class="jn-bleed" data-jn-wall data-jn-rekey>
+    <div class="jn-bleed" data-jn-wall>
       <Rule width="100%" weight={1} animate />
       <section class="jn-wall">
         <div class="jn-wall-head">
@@ -344,10 +390,11 @@ let last = '';
   const back = root.querySelector<HTMLElement>('[data-jn-back]')!;
   const nextLabel = root.querySelector<HTMLElement>('[data-jn-next-label]')!;
   const startBtn = root.querySelector<HTMLElement>('[data-jn-start]')!;
-  const heading = root.querySelector<HTMLElement>('[data-jn-heading]')!;
-  const subline = root.querySelector<HTMLElement>('[data-jn-sub]')!;
-  // The fact row sits under the button, so the whole cluster hides together.
-  const ctaWrap = root.querySelector<HTMLElement>('[data-jn-cta]')!;
+  // The button, facts and blurb the form rises over.
+  const lower = root.querySelector<HTMLElement>('[data-jn-lower]')!;
+  const donePanel = root.querySelector<HTMLElement>('[data-jn-done]')!;
+  const welcome = root.querySelector<HTMLElement>('[data-jn-welcome]')!;
+  const controls = root.querySelector<HTMLElement>('[data-jn-controls]')!;
   const stepLabel = root.querySelector<HTMLElement>('[data-jn-step-label]')!;
   const wall = root.querySelector<HTMLElement>('[data-jn-wall]')!;
   const members = root.querySelector<HTMLElement>('[data-jn-members]')!;
@@ -369,17 +416,18 @@ let last = '';
   let stage: 'intro' | 'form' | 'done' = 'intro';
   let step = 0;
 
-  // Intro and form keep the hero's own (marked-up) blurb; only "done" swaps it out.
-  const introSub = subline.innerHTML;
-  const copy = {
-    intro: ['join cseed.', null],
-    form: ['join cseed.', null],
-    done: ['welcome in.', "You're on the wall now.\nWe'll be in touch soon."],
-  };
+  // The hero stays put, so only scroll when the top of the form has gone off screen or
+  // sits too low to see the step, and then just far enough to bring it up. Measured on
+  // the stage, which the form's top matches, since the form itself moves as it rises.
+  const formStage = root.querySelector<HTMLElement>('[data-jn-stage]')!;
+  function bringFormIntoView() {
+    const { top } = formStage.getBoundingClientRect();
+    if (top < 0 || top > window.innerHeight * 0.6) {
+      formStage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
 
-  const top = () => window.scrollTo({ top: 0, behavior: 'smooth' });
-
-  // The source re-keys the header and wall on every stage change, so their reveals replay.
+  // The wall is hidden while the form is up, so its reveals replay when it comes back.
   function replayReveals(scope: Element) {
     const els = scope.querySelectorAll('[data-reveal], [data-rule-animate]');
     els.forEach((el) => el.classList.remove('is-shown'));
@@ -417,47 +465,51 @@ let last = '';
     count.textContent = names.length.toLocaleString('en-US');
   }
 
-  // Only the active step is in flow; the track is sized to it so the form grows and
-  // shrinks with the step instead of always reserving room for the longest one.
+  // The page that's showing: the current step, or the welcome page once sent.
+  const current = () => (stage === 'done' ? donePanel : panels[step]);
+
+  // Only the active page is in flow; the track is sized to it so the form grows and
+  // shrinks with the page instead of always reserving room for the longest one.
   function syncHeight() {
     if (form.hidden) return;
-    track.style.height = `${panels[step].offsetHeight}px`;
+    track.style.height = `${current().offsetHeight}px`;
   }
 
   function render(prevStage: string) {
-    const [head, sub] = copy[stage];
-    heading.textContent = head;
-    if (sub === null) subline.innerHTML = introSub;
-    else subline.textContent = sub;
-    ctaWrap.hidden = stage !== 'intro';
-    // The form takes the whole screen, so the hero steps aside while it is up.
+    const done = stage === 'done';
+    // Drives the form's rise over the CTA and blurb (see `.jn-stage`).
     root.dataset.stage = stage;
-    form.hidden = stage !== 'form';
+    lower.inert = stage !== 'intro';
+    form.hidden = stage === 'intro';
     wall.hidden = stage === 'form';
 
-    panels.forEach((p, i) => {
-      p.classList.toggle('is-active', i === step);
-      p.inert = i !== step;
-      p.setAttribute('aria-hidden', String(i !== step));
+    // Pages behind the current one wait off to the left and the rest to the right, so
+    // moving on slides like turning a page, and going back slides the other way.
+    [...panels, donePanel].forEach((p, i) => {
+      const active = p === current();
+      p.classList.toggle('is-active', active);
+      p.classList.toggle('is-before', done ? p !== donePanel : i < step);
+      p.inert = !active;
+      p.setAttribute('aria-hidden', String(!active));
     });
     syncHeight();
+    controls.hidden = done;
     back.hidden = step === 0;
     bars.forEach((b, i) => {
-      b.style.width = i === step ? '60px' : '20px';
-      b.style.background = i <= step ? 'var(--cseed-ink)' : 'var(--cseed-mist)';
+      b.style.width = i === step && !done ? '60px' : '20px';
+      b.style.background = i <= step || done ? 'var(--cseed-ink)' : 'var(--cseed-mist)';
     });
     nextLabel.textContent = step === 2 ? 'send application' : 'next';
-    stepLabel.textContent = `step ${step + 1} of 3`;
-    verification.hidden = step !== 2;
+    stepLabel.textContent = done ? 'all done!' : `step ${step + 1} of 3`;
+    verification.hidden = done || step !== 2;
+    if (done) submitStatus.hidden = true;
     fitVerification();
     if (stage === 'form' && step === 2) {
       void loadVerification();
       checkCocRead();
     }
 
-    if (stage !== prevStage && (stage === 'done' || prevStage === 'done')) {
-      root.querySelectorAll('[data-jn-rekey]').forEach(replayReveals);
-    }
+    if (done && prevStage !== 'done') replayReveals(wall);
   }
 
   function setStage(next: typeof stage) {
@@ -466,10 +518,17 @@ let last = '';
     render(prev);
   }
 
+  // Moves between steps and keeps the new one in view.
+  function goTo(next: number) {
+    step = next;
+    render(stage);
+    bringFormIntoView();
+  }
+
   startBtn.addEventListener('click', () => {
     step = 0;
     setStage('form');
-    window.scrollTo({ top: 0 });
+    bringFormIntoView();
   });
 
   // A required field is "ok" if it's not currently hidden and
@@ -626,14 +685,14 @@ let last = '';
   // In-memory only. Preserve the exact request across uncertain network failures.
   let pendingSubmission: string | null = null;
   let submittedName = '';
+  let welcomeName = '';
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (submitting) return;
     if (!validateStep(step)) return;
     if (step < 2) {
-      step += 1;
-      render(stage);
+      goTo(step + 1);
       return;
     }
     if (!pendingSubmission) {
@@ -668,7 +727,11 @@ let last = '';
     if (!pendingSubmission) {
       const fd = new FormData(form);
       const field = (name: string) => String(fd.get(name) ?? '');
-      submittedName = `${field('pref').trim() || field('first_name')} ${field('last_name')}`
+      welcomeName = (field('pref').trim() || field('first_name'))
+        .normalize('NFC')
+        .replace(/\s+/gu, ' ')
+        .trim();
+      submittedName = `${welcomeName} ${field('last_name')}`
         .normalize('NFC')
         .replace(/\s+/gu, ' ')
         .trim();
@@ -727,9 +790,12 @@ let last = '';
         throw new Error('Your submission could not be confirmed. Please try again.');
       pendingSubmission = null;
       renderWall(submittedName || 'you');
+      welcome.textContent = welcomeName ? `welcome in, ${welcomeName}.` : 'welcome in.';
       setStage('done');
       form.reset();
-      top();
+      bringFormIntoView();
+      // Screen readers land on the welcome, not on the now-hidden send button.
+      welcome.focus({ preventScroll: true });
     } catch (error) {
       submitStatus.textContent =
         error instanceof Error && error.name === 'Error'
@@ -765,14 +831,23 @@ let last = '';
   // input appearing, a textarea being dragged taller -- has to re-sit the track.
   if (window.ResizeObserver) {
     const ro = new ResizeObserver(() => syncHeight());
-    panels.forEach((p) => ro.observe(p));
+    [...panels, donePanel].forEach((p) => ro.observe(p));
   }
   window.addEventListener('resize', syncHeight);
 
   back.addEventListener('click', () => {
     if (submitting) return;
-    step = Math.max(0, step - 1);
-    render(stage);
+    goTo(Math.max(0, step - 1));
+  });
+
+  // Takes a new member down to their highlighted name on the wall.
+  root.querySelector('[data-jn-find]')!.addEventListener('click', () => {
+    const me = members.querySelector<HTMLElement>('.jn-me');
+    if (!me) return;
+    me.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    me.classList.remove('is-found');
+    void me.offsetWidth;
+    me.classList.add('is-found');
   });
 
   // Custom selects.
@@ -850,10 +925,21 @@ let last = '';
     opacity: 0.7;
   }
   .jn-me {
+    display: inline-block;
     background: var(--cseed-sun);
     font-weight: 500;
     padding: 0 6px;
     margin: 0 -6px;
+  }
+  /* "find your name": a little bounce once the scroll has brought the name into view. */
+  .jn-me.is-found {
+    animation: jn-found 1200ms var(--ease-soft) 450ms;
+  }
+  @keyframes jn-found {
+    30% {
+      transform: scale(1.18);
+      box-shadow: 0 0 0 10px rgba(245, 209, 64, 0.45);
+    }
   }
   /* Mobile canvas: never render an input under 16px on screen, or iOS zooms in on focus. */
   @media (max-width: 900px) {
@@ -936,13 +1022,52 @@ let last = '';
   .jn-header-top {
     position: relative;
   }
+  /* Under the hero, the CTA and the form stack in one grid cell. Clicking the CTA
+     raises the (opaque) form over the button and blurb, which sink away beneath it. */
+  .jn-stage {
+    display: grid;
+    margin-top: 150px;
+    /* Clear of the fixed nav when a step change scrolls the form into view. */
+    scroll-margin-top: 160px;
+  }
+  .jn-stage > * {
+    grid-area: 1 / 1;
+    min-width: 0;
+  }
+  .jn-shrink:is([data-stage='form'], [data-stage='done']) .jn-lower {
+    animation: jn-sink 900ms var(--ease-soft) forwards;
+  }
+  .jn-shrink[data-stage='form'] .jn-form {
+    animation: jn-rise 950ms var(--ease-soft) both;
+  }
+  /* The blurb stays put until the form has slid over most of it. */
+  @keyframes jn-sink {
+    60% {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+      transform: translateY(40px);
+      visibility: hidden;
+    }
+  }
+  /* Solid almost at once, so it reads as a sheet covering the CTA, not a cross-fade. */
+  @keyframes jn-rise {
+    from {
+      opacity: 0;
+      transform: translateY(260px);
+    }
+    15% {
+      opacity: 1;
+    }
+  }
   /* Under the photo band: button and facts on the left, the blurb on the right. */
   .jn-lower {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
     column-gap: 140px;
     align-items: start;
-    margin-top: 150px;
+    padding: 0 100px;
   }
   .jn-header-left {
     display: flex;
@@ -1019,6 +1144,11 @@ let last = '';
     display: inline-block;
     transition: transform 400ms var(--ease-soft);
   }
+  /* "find your name" points down the page: the same arrow as the other buttons, turned,
+     since the display font's own down arrow is a small fletched glyph. */
+  .jn-find .jn-step-arrow {
+    transform: rotate(90deg);
+  }
   /* Hover-only, so a tapped button doesn't stay dark on touch screens. */
   @media (hover: hover) {
     .jn-step-btn:hover {
@@ -1028,15 +1158,22 @@ let last = '';
     .jn-step-btn:hover .jn-step-arrow {
       transform: translateX(8px);
     }
+    /* Turned, so the nudge carries it down the page. */
+    .jn-find .jn-step-btn:hover .jn-step-arrow {
+      transform: rotate(90deg) translateX(6px);
+    }
   }
 
   .jn-form {
+    position: relative;
+    z-index: 2;
+    background: var(--surface-page);
     /* The tail spacer lives inside the wall now, so the form stage -- which
        hides the wall -- carries its own room above the footer. */
-    padding: 150px 0 160px;
+    padding: 0 0 160px;
   }
-  .jn-shrink[data-stage='form'] .jn-header {
-    display: none;
+  .jn-shrink[data-stage='done'] .jn-form {
+    padding-bottom: 0;
   }
   .jn-form-head {
     display: flex;
@@ -1044,13 +1181,15 @@ let last = '';
     align-items: center;
     gap: 24px;
   }
-  /* The steps sit on top of each other and cross-fade, and the track is sized to
-     whichever one is showing (see `syncHeight`), so moving on morphs the form
-     rather than sliding a fixed block sideways. Nothing is clipped, so the
-     custom selects can still open past the bottom edge. */
+  /* The pages sit on top of each other and the track is sized to whichever one is
+     showing (see `syncHeight`), so the form morphs to each page's height. The page
+     leaving slides out to the left as the next slides in from the right, like a
+     page turn (reversed for "back"). Only the sides are clipped, so the slide never
+     adds a horizontal scrollbar and the custom selects can still open past the bottom. */
   .jn-track {
     position: relative;
     height: 0;
+    overflow-x: clip;
     transition: height 600ms var(--ease-soft);
   }
   .jn-panel {
@@ -1062,14 +1201,111 @@ let last = '';
     padding: 0 100px 20px;
     opacity: 0;
     visibility: hidden;
+    transform: translateX(120px);
     transition:
-      opacity 420ms var(--ease-soft),
-      visibility 0s linear 420ms;
+      opacity 300ms var(--ease-soft),
+      transform 750ms var(--ease-soft),
+      visibility 0s linear 750ms;
+  }
+  .jn-panel.is-before {
+    transform: translateX(-120px);
   }
   .jn-panel.is-active {
     opacity: 1;
     visibility: visible;
-    transition: opacity 420ms var(--ease-soft);
+    transform: none;
+    transition:
+      opacity 550ms var(--ease-soft) 220ms,
+      transform 750ms var(--ease-soft);
+  }
+  .jn-controls[hidden] {
+    display: none;
+  }
+
+  /* The welcome page: a thank-you, the socials to follow, and the way to the wall. */
+  .jn-done {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding-top: 28px;
+  }
+  .jn-done-title {
+    font-size: 72px;
+    overflow-wrap: anywhere;
+    outline: none;
+    /* Shows the instant its page does, so it can take focus right away. Otherwise the
+       reduced-motion tokens' blanket 1ms transition would still have it hidden. */
+    transition: none;
+  }
+  .jn-done-lede,
+  .jn-find p {
+    margin: 0;
+    font: 300 30px/1.5 var(--font-body);
+    color: var(--cseed-ink);
+  }
+  .jn-done-lede {
+    margin-top: 28px;
+  }
+  .jn-done-eyebrow {
+    margin-top: 100px;
+  }
+  .jn-socials {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 32px;
+    width: 100%;
+    max-width: 1500px;
+    margin-top: 40px;
+  }
+  .jn-social {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 36px 40px 40px;
+    border: 1.5px solid var(--cseed-ink);
+    color: var(--cseed-ink);
+    text-align: left;
+    text-decoration: none;
+    transition:
+      background var(--dur-hover) var(--ease-soft),
+      color var(--dur-hover) var(--ease-soft);
+  }
+  .jn-social-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 18px;
+  }
+  .jn-social-arrow {
+    font: 400 34px/1 var(--font-body);
+    transition: transform var(--dur-hover) var(--ease-soft);
+  }
+  .jn-social-name {
+    font: 400 48px/1 var(--font-display);
+    letter-spacing: -0.02em;
+  }
+  .jn-social-nudge {
+    font: 300 22px/1.4 var(--font-body);
+  }
+  /* Hover-only, so a tapped tile doesn't stay dark on touch screens. */
+  @media (hover: hover) {
+    .jn-social:hover {
+      background: var(--cseed-ink);
+      color: var(--cseed-sun);
+    }
+    .jn-social:hover .jn-social-arrow {
+      transform: translate(4px, -4px);
+    }
+  }
+  .jn-find {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    margin-top: 100px;
   }
 
   .jn-heard {
@@ -1312,8 +1548,12 @@ let last = '';
     padding: 18px 0 10px;
     break-after: avoid;
   }
+  /* A name that wraps keeps its lines close together; the padding keeps each name's
+     slot as tall as the list's 1.75 line, so the gaps between names don't change. */
   .jn-members :global(.jn-member) {
     break-inside: avoid;
+    line-height: 1.2;
+    padding-block: 0.275em;
   }
 
   /* ---------- Mobile canvas (780px, phones and small tablets) ---------- */
@@ -1334,12 +1574,15 @@ let last = '';
     .jn-band-photo {
       width: 400px;
     }
+    .jn-stage {
+      margin-top: 110px;
+    }
     .jn-lower {
       display: flex;
       flex-direction: column;
       align-items: stretch;
       gap: 64px;
-      margin-top: 110px;
+      padding: 0 40px;
     }
     .jn-cta .jn-step-btn {
       width: 100%;
@@ -1354,7 +1597,25 @@ let last = '';
 
     /* The form: one column of fields, bigger type and tap targets. */
     .jn-form {
-      padding: 130px 0 120px;
+      padding: 0 0 120px;
+    }
+    /* Beats the site's mobile .t-serif size, like the step titles (FormBlock). */
+    :global(html[data-responsive]) .jn-done-title {
+      font-size: 64px;
+    }
+    .jn-socials {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 24px;
+    }
+    .jn-social-name {
+      font-size: 44px;
+    }
+    .jn-social-nudge {
+      font-size: 28px;
+    }
+    .jn-find .jn-step-btn {
+      width: 100%;
+      justify-content: center;
     }
     .jn-panel {
       padding: 0 40px 20px;
@@ -1433,6 +1694,10 @@ let last = '';
       column-count: 1;
       font-size: 32px;
       line-height: 1.6;
+    }
+    .jn-members :global(.jn-member) {
+      line-height: 1.15;
+      padding-block: 0.225em;
     }
     .jn-members :global(.jn-letter) {
       font-size: 64px;
