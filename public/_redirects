@@ -1,0 +1,11 @@
+# Old Squarespace URLs still in search results. Each points to its closest current page.
+/about /about-us/ 301
+/our-team /about-us/ 301
+/cseed-teams /about-us/ 301
+/contact /join/ 301
+/members /join/ 301
+/buildher-team /buildher/ 301
+/womxn-team /buildher/ 301
+/projects /buildspace/ 301
+/buildspace-cohort-0 /buildspace/ 301
+/speaking-events / 301

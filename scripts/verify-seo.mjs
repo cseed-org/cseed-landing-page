@@ -165,6 +165,27 @@ for (const bot of ['OAI-SearchBot', 'Claude-SearchBot', 'PerplexityBot']) {
   assert.ok(robots.includes(`User-agent: ${bot}`));
 }
 assert.match(robots, /User-agent: GPTBot\s+User-agent: ClaudeBot\s+Disallow: \//);
+// Production only: Cloudflare must permanently redirect HTTP and www to the canonical origin,
+// and public/_redirects must send old site URLs to current pages (astro dev ignores it).
+if (origin === 'https://cseed.co') {
+  for (const source of ['http://cseed.co', 'http://www.cseed.co', 'https://www.cseed.co']) {
+    for (const path of ['/', '/buildher/?utm_source=seo-check']) {
+      const response = await fetchPage(`${source}${path}`, { redirect: 'manual' });
+      assert.equal(response.status, 301, `${source}${path}: permanent redirect`);
+      assert.equal(response.headers.get('location'), `https://cseed.co${path}`, `${source}${path}`);
+    }
+  }
+  const legacyRedirects = readFileSync(new URL('../public/_redirects', import.meta.url), 'utf8')
+    .split('\n')
+    .filter((line) => line.trim() && !line.startsWith('#'))
+    .map((line) => line.trim().split(/\s+/));
+  for (const [from, to, status] of legacyRedirects) {
+    assert.ok(routes.includes(to), `${from}: redirects to a public page`);
+    const response = await fetchPage(`${origin}${from}`, { redirect: 'manual' });
+    assert.equal(response.status, Number(status), `${from}: legacy redirect status`);
+    assert.equal(new URL(response.headers.get('location'), origin).href, `${origin}${to}`, from);
+  }
+}
 console.log(
   `SEO verification passed for ${routes.length} pages, Googlebot/Bingbot responses, internal links, ${textDocuments.size} text notices, ${sitemapImages.length} sitemap images, favicon, 404, AI guide, and robots.txt.`,
 );

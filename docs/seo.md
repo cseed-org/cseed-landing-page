@@ -15,11 +15,12 @@ Canonical origin: `https://cseed.co`. All seven public pages use trailing slashe
 ## Launch checklist
 
 1. Serve `cseed.co` over HTTPS and permanently redirect HTTP and alternate hosts to it, preserving paths and query strings.
-2. In Cloudflare, match the site's two hostnames when the scheme is HTTP or the host is `www.cseed.co`. Create a **301 Single Redirect** to `concat("https://cseed.co", http.request.uri.path)` with query preservation. Exclude canonical HTTPS requests to avoid loops. Workers static asset `_redirects` cannot handle domain-level sources.
+2. In the `cseed.co` zone, open **Rules → Overview → Create rule → Redirect Rule**. Use the custom filter expression `(http.host eq "www.cseed.co") or (http.host eq "cseed.co" and not ssl)` and a **Dynamic** 301 URL redirect to `concat("https://cseed.co", http.request.uri.path)` with **Preserve query string** on. The expression excludes canonical HTTPS requests to avoid loops. Keep the `www` DNS record proxied so the rule runs. Workers static asset `_redirects` cannot handle domain-level sources.
+   - The previous Squarespace site used `www.cseed.co` as its canonical host with different paths, and search results still list them. `public/_redirects` 301s those paths to their closest current pages; keep it until Search Console no longer reports them. Leave old URLs out of the sitemap.
 3. Verify public pages and discovery files return 200, unknown paths return 404, and extensionless page URLs redirect to trailing-slash URLs. Test homepage and nested paths across HTTP/HTTPS and apex/`www`.
-4. Verify ownership in Google Search Console and Bing Webmaster Tools. Submit `https://cseed.co/sitemap.xml`; inspect and request indexing for the homepage and program pages.
+4. Verify ownership in Google Search Console with a **Domain** property (DNS verification covers apex and `www`) and in Bing Webmaster Tools. Submit `https://cseed.co/sitemap.xml`; inspect and request indexing for the homepage and program pages.
 5. Check Cloudflare bot/WAF rules: robots.txt cannot bypass challenges. Use provider-published IP verification when adjusting crawler access.
-6. Validate schema with Schema.org Validator and Google's Rich Results Test; check sharing previews. Protect preview deployments with access controls or `X-Robots-Tag: noindex`, without affecting production.
+6. Validate schema with Schema.org Validator and Google's Rich Results Test; check sharing previews. `public/_headers` sends `X-Robots-Tag: noindex` on `*.workers.dev` production and preview URLs without affecting `cseed.co`.
 7. Add public contact details and Event schema only when confirmed and current.
 
 ## Validation
@@ -27,13 +28,13 @@ Canonical origin: `https://cseed.co`. All seven public pages use trailing slashe
 Run `npm run check` and `npm run build`; production builds require existing member-export credentials.
 
 - Local: start `npm run dev`, then run `npm run check:seo`.
-- Production: run `npm run check:seo -- https://cseed.co`.
+- Production: run `npm run check:seo -- https://cseed.co`, which also requires the HTTP, `www`, and `public/_redirects` redirects to return 301.
 
 CI checks routes, metadata, JSON-LD, crawler responses, internal links/fragments, sitemap images, favicon dimensions, the legacy bundled-page error, and missing-page 404s without production credentials. Search Console live inspection is still needed to verify actual Google crawler access.
 
 ## September 2026 audit
 
-All seven canonical pages returned 200 with static headings and canonical metadata; discovery files were accessible and unknown paths returned 404. HTTP and `www` still returned duplicate 200 pages, requiring the redirects above. The old search snippet may reflect stale indexing; confirm crawl dates and indexed HTML in Search Console. Recrawl requests do not guarantee timing, snippets, favicons, or sitelinks.
+All seven canonical pages returned 200 with static headings and canonical metadata; discovery files were accessible and unknown paths returned 404. HTTP and `www` still returned duplicate 200 pages, requiring the redirects above. Search results still listed the old site's `www` URLs, which returned 404 before `public/_redirects`. Old snippets reflect that stale indexing; confirm crawl dates and indexed HTML in Search Console. Recrawl requests do not guarantee timing, snippets, favicons, or sitelinks.
 
 ## References
 
