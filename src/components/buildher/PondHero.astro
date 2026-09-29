@@ -133,6 +133,8 @@
 
     const rand = (a: number, b: number) => a + Math.random() * (b - a);
 
+    const padScale = W < 1200 ? 0.6 : 1;
+
     // place lilypads + lilies with spacing (rejection sampling), clear of the copy zone
     const pads: Pad[] = [];
     const N = 9;
@@ -140,7 +142,7 @@
     let guard = 0;
     while (pads.length < N && guard++ < 3000) {
       const lily = pads.length % 3 === 0;
-      const r = lily ? rand(28, 40) : rand(66, 110);
+      const r = (lily ? rand(28, 40) : rand(66, 110)) * padScale;
       const nx = rand(0.06, 0.94), ny = rand(0.12, 0.9);
       const ex = (nx - czx) / czr, ey = (ny - czy) / (czr * 0.9);
       if (ex * ex + ey * ey < 1) continue; // don't spawn over the text
@@ -189,8 +191,11 @@
         spawnRipple(x, y, 0.6);
       }
     };
+    // On touch, a trailing ripple under every move reads as jittery while scrolling —
+    // so only mice get the cursor trail. Taps still ripple, anywhere on the hero.
+    const fine = window.matchMedia('(pointer: fine)').matches;
     if (!reduce) {
-      host.addEventListener('pointermove', pointer);
+      if (fine) host.addEventListener('pointermove', pointer);
       host.addEventListener('pointerdown', (e) => spawnRipple(
         (e.clientX - canvas.getBoundingClientRect().left) * (canvas.clientWidth / canvas.getBoundingClientRect().width),
         (e.clientY - canvas.getBoundingClientRect().top) * (canvas.clientHeight / canvas.getBoundingClientRect().height),
