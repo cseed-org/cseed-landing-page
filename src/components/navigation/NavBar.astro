@@ -131,10 +131,18 @@ const items = [
   }
 
   /* Mobile canvas (responsive pages only). The band grows to 88px (about 44px on a
-     phone), and each link's tap area stretches to the band's full height. */
-  @media (max-width: 900px) {
+     phone), and each link's tap area stretches to the band's full height. The wordmark
+     and links sit in one flex row rather than pinned to either edge, so text the phone
+     enlarges (Android font size, browser text scaling) pushes against the wordmark
+     instead of running over it. */
+  @media (max-width: 900px), (pointer: coarse) and (max-height: 500px) {
     :global(html[data-responsive]) .nav-bar {
       --nav-h: 88px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 0 32px;
     }
     :global(html[data-responsive]) .nav-bar-link {
       position: relative;
@@ -149,10 +157,12 @@ const items = [
       transform: translateY(-50%);
     }
     :global(html[data-responsive]) .nav-bar-mark {
-      left: 32px;
+      position: static;
+      flex: none;
     }
     :global(html[data-responsive]) .nav-bar-items {
-      right: 32px;
+      position: static;
+      min-width: 0;
       gap: 26px;
     }
     :global(html[data-responsive]) .nav-bar-logo {

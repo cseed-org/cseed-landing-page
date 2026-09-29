@@ -68,7 +68,7 @@ const { label, help, span = 1, required = false } = Astro.props;
   }
 
   /* Mobile canvas: the page renders at about half size on phones. */
-  @media (max-width: 900px) {
+  @media (max-width: 900px), (pointer: coarse) and (max-height: 500px) {
     :global(html[data-responsive]) .jn-label {
       font-size: 28px;
     }

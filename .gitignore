@@ -2,6 +2,9 @@
 dist/
 .astro/
 
+# npm run check:mobile report and screenshots
+.mobile-check/
+
 # dependencies
 node_modules/
 

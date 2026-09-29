@@ -38,7 +38,7 @@ const { title } = Astro.props;
 
   /* Mobile canvas: one column of fields. Fields carry an inline `grid-column: span 2`,
      which would otherwise add an implicit second column. */
-  @media (max-width: 900px) {
+  @media (max-width: 900px), (pointer: coarse) and (max-height: 500px) {
     :global(html[data-responsive]) .jn-block-title {
       font-size: 64px;
     }

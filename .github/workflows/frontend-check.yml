@@ -14,6 +14,9 @@ on:
       - 'package-lock.json'
       - 'astro.config.mjs'
       - 'tsconfig.json'
+      - 'wrangler.jsonc'
+      - 'backend/test/site-worker.test.js'
+      - 'backend/wrangler.jsonc'
       - '.github/workflows/frontend-check.yml'
   pull_request:
   workflow_dispatch:
@@ -32,8 +35,13 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run check
+      - run: node --test backend/test/site-worker.test.js
+      - run: npx playwright install --with-deps chromium
       - name: Check rendered SEO without production member credentials
         shell: bash
+        env:
+          PUBLIC_TURNSTILE_SITE_KEY: synthetic
+          PUBLIC_MEMBERSHIP_API_URL: /api/membership
         run: |
           npm run dev -- --host 127.0.0.1 > /tmp/cseed-seo.log 2>&1 &
           site_pid=$!
@@ -45,3 +53,4 @@ jobs:
             sleep 1
           done
           npm run check:seo -- http://127.0.0.1:4321
+          node scripts/check-registration.mjs http://127.0.0.1:4321

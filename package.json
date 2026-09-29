@@ -9,6 +9,7 @@
     "preview": "astro preview",
     "check": "astro check",
     "check:seo": "node scripts/verify-seo.mjs",
+    "check:mobile": "node scripts/check-mobile.mjs",
     "lint": "prettier --check .",
     "format": "prettier --write .",
     "astro": "astro"
@@ -19,6 +20,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "playwright": "^1.63.0",
     "prettier": "^3.9.6",
     "prettier-plugin-astro": "^0.14.1",
     "typescript": "^6.0.3"

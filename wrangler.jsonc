@@ -1,7 +1,10 @@
-// Static site Worker. Cloudflare Workers Builds runs `npm run build`, then `npx wrangler deploy`.
+// Site assets, canonical redirects, and membership proxy. Workers Builds runs
+// `npm run build`, then `npx wrangler deploy`.
 // The dashboard Worker name must match "name". The membership API has its own config in backend/.
 {
   "name": "cseed-site",
+  "main": "src/site-worker.js",
   "compatibility_date": "2026-09-26",
-  "assets": { "directory": "./dist" },
+  "assets": { "directory": "./dist", "binding": "ASSETS", "run_worker_first": true },
+  "services": [{ "binding": "MEMBERSHIP_API", "service": "cseed-membership-api" }],
 }

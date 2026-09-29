@@ -34,8 +34,11 @@
 }
 
 /* Responsive pages (BaseLayout's `responsive` prop) swap to a narrower, stacked
-   780px canvas on phones and small tablets; BaseLayout scales it to fit the screen. */
-@media (max-width: 900px) {
+   780px canvas on phones and small tablets; BaseLayout scales it to fit the screen.
+   This query is the one definition of "the mobile canvas": screens up to 900px wide,
+   plus phones held sideways (the only touch screens under 500px tall). Every mobile
+   block in the components repeats it verbatim, as does BaseLayout's head script. */
+@media (max-width: 900px), (pointer: coarse) and (max-height: 500px) {
   html[data-responsive] {
     --canvas-width: 780px;
   }

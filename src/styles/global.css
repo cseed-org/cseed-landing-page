@@ -1,4 +1,3 @@
-@import './tokens/fonts.css';
 @import './tokens/colors.css';
 @import './tokens/typography.css';
 @import './tokens/layout.css';
@@ -17,11 +16,20 @@ html {
   text-size-adjust: 100%;
 }
 
+/* The scaled canvas always fits the screen width exactly; nothing may widen the page
+   past it, or phones let it pan sideways and zoom out to show the overflow. */
+html,
+body {
+  overflow-x: clip;
+}
+
 body {
   margin: 0;
   background: var(--surface-page);
   color: var(--text-body);
   font-family: var(--font-body);
+  /* A long word breaks rather than overflow its column when phone text is enlarged. */
+  overflow-wrap: break-word;
 }
 
 img,
@@ -114,7 +122,7 @@ svg {
 }
 /* Mobile canvas on responsive pages (see tokens/layout.css). The canvas renders at
    about half size on phones, so eyebrows grow to stay legible. */
-@media (max-width: 900px) {
+@media (max-width: 900px), (pointer: coarse) and (max-height: 500px) {
   html[data-responsive] .t-serif {
     font-size: 104px;
   }

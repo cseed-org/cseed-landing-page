@@ -15,7 +15,7 @@ The source behind [cseed.co](https://cseed.co), with reusable page layouts, shar
 | ---------- | -------------------------------------------------------------------------------------------------------- |
 | Frontend   | Astro 7, TypeScript, scoped CSS, and vanilla JavaScript interactions                                     |
 | Design     | Shared typography, color, layout, and motion tokens; reusable navigation, footer, and section components |
-| Pages      | Home, about, three program pages, membership application, and code of conduct                            |
+| Pages      | Home, about, three program pages, membership application, code of conduct, and license pages             |
 | Membership | Multi-step form, Turnstile verification, Cloudflare Worker API, D1 storage, and a names-only member wall |
 | Discovery  | Page metadata, structured data, sitemap, crawler files, and SEO checks                                   |
 | Hosting    | Static `dist/` output, Cloudflare configuration, and GitHub Actions checks                               |
@@ -31,6 +31,10 @@ The source behind [cseed.co](https://cseed.co), with reusable page layouts, shar
 | `/saturdays/`       | Weekly build sessions, live countdown, and FAQ               |
 | `/join/`            | Membership application and member wall                       |
 | `/code-of-conduct/` | Community expectations, also shown in the application        |
+| `/mit-license/`     | The MIT license for the template code                        |
+| `/content-notice/`  | Content and brand rights (all rights reserved)               |
+
+The last three pages render their repository files at build time: `src/data/code-of-conduct.md`, [`LICENSE`](LICENSE), and [`CONTENT-NOTICE.md`](CONTENT-NOTICE.md). Edit the file and the page follows on the next build. Plain-text copies of the two license files are also served at `/license.txt` and `/content-notice.txt`.
 
 ## Get started
 
@@ -53,17 +57,30 @@ To connect the application, copy [`.env.example`](.env.example) to `.env` and co
 
 Run frontend commands from the repository root:
 
-| Command             | Purpose                                            |
-| ------------------- | -------------------------------------------------- |
-| `npm run dev`       | Start the local development server                 |
-| `npm run check`     | Check Astro and TypeScript source                  |
-| `npm run build`     | Generate the static site in `dist/`                |
-| `npm run preview`   | Preview the completed production build             |
-| `npm run check:seo` | Verify the running site at `http://localhost:4321` |
-| `npm run lint`      | Check formatting with Prettier                     |
-| `npm run format`    | Format the project with Prettier                   |
+| Command                | Purpose                                               |
+| ---------------------- | ----------------------------------------------------- |
+| `npm run dev`          | Start the local development server                    |
+| `npm run check`        | Check Astro and TypeScript source                     |
+| `npm run build`        | Generate the static site in `dist/`                   |
+| `npm run preview`      | Preview the completed production build                |
+| `npm run check:seo`    | Verify the running site at `http://localhost:4321`    |
+| `npm run check:mobile` | Check the running site's layout on phones and tablets |
+| `npm run lint`         | Check formatting with Prettier                        |
+| `npm run format`       | Format the project with Prettier                      |
 
-For SEO checks, keep the development server running in another terminal. See [docs/seo.md](docs/seo.md) for the checks and deployment checklist.
+For SEO and mobile checks, keep the development server running in another terminal. See [docs/seo.md](docs/seo.md) for the checks and deployment checklist.
+
+#### Mobile check
+
+`npm run check:mobile` opens every page in the three browser engines: WebKit (every iOS browser), Chromium (Android Chrome, Samsung Internet, and in-app browsers), and Firefox. It uses 11 phone sizes in portrait, 6 in landscape, 4 tablets, and 2 desktops. Every phone, either way up, must get the 780px mobile canvas, scaled to the screen before the first paint, with no text clipped, overlapping, or scrolling sideways. It also renders with text 30% larger (Android's font size setting), with forced dark mode (Samsung Internet), and on a slow repeat visit.
+
+Install the browsers once with `npx playwright install chromium webkit firefox`. The full run takes about 20 minutes; add `-- --quick` for a representative subset in about 3 minutes. Other options:
+
+- `-- <origin>` checks another address, such as `https://cseed.co`.
+- `-- --only about-us` limits the run to page views whose id contains the text.
+- `-- --shots` keeps a screenshot of every view.
+
+Failures are re-run one at a time before they count, because a busy machine can hold back the reveal-on-scroll animations. The report and screenshots of failures are written to `.mobile-check/`.
 
 The backend is a separate npm package. To run its tests:
 
@@ -111,7 +128,7 @@ npm test
 
 Pages use static Astro markup, scoped CSS, and small browser scripts for interactions such as reveals, countdowns, tooltips, and the application form. There is no client-side UI framework.
 
-The design uses a **2083px desktop canvas** scaled through `BaseLayout.astro`. Pages using the `responsive` prop switch to a **780px canvas below 900px** and scale to fill the viewport. Layout tokens live in `src/styles/tokens/layout.css`; check both narrow and wide screens when changing section dimensions.
+The design uses a **2083px desktop canvas** scaled through `BaseLayout.astro`. Pages using the `responsive` prop switch to a **780px canvas on phones** (screens below 900px wide, and phones held sideways) and scale to fill the viewport. The scale is set by a small inline script in the page head, so it is in place before the first paint. The mobile media query is defined in `src/styles/tokens/layout.css`, and every component's mobile block repeats it verbatim. Layout tokens live in the same file. Check both narrow and wide screens when changing section dimensions, and check phones in landscape.
 
 ## Deployment
 

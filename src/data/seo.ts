@@ -74,6 +74,18 @@ export const SEO_PAGES: Record<string, PageSEO> = {
       'Read the cseed member code of conduct and learn the expectations for participating in our community of builders, programs, and events.',
     label: 'Member code of conduct',
   },
+  '/mit-license/': {
+    title: 'cseed | mit license',
+    description:
+      'Read the MIT license for the cseed website template code, including the frontend, backend, styles, and scripts you can reuse for your own community site.',
+    label: 'Code license',
+  },
+  '/content-notice/': {
+    title: 'cseed | content notice',
+    description:
+      'The cseed website copy, photographs, logos, and branding are all rights reserved. See which materials are excluded from the MIT license and how to reuse the template.',
+    label: 'Content and brand rights',
+  },
 };
 
 export function canonicalPath(pathname: string): string {

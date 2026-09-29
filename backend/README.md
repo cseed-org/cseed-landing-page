@@ -29,6 +29,14 @@ backend/
 
 ## Config reference
 
+Production forms submit to `/api/membership` on the site origin. The root
+`wrangler.jsonc` binds `MEMBERSHIP_API` to `cseed-membership-api`; deploy the backend
+before the site. The site Worker redirects `www.cseed.co` to `cseed.co` before
+loading the form, keeping Turnstile on the canonical hostname. Both origins remain
+in the API allowlist for already-open forms. `PUBLIC_MEMBERSHIP_API_URL` now only
+overrides the endpoint in local Astro development; it is not needed in production.
+Keep the Turnstile site key configured for `cseed.co` (and any development host).
+
 **API Worker vars** (`backend/wrangler.jsonc` → `vars`)
 
 | Name                  | Value                                                         |
@@ -50,7 +58,7 @@ Also in `backend/wrangler.jsonc`: `database_id` (D1 UUID), rate limiters, daily 
 **Site build variables**: see [setup step D](#d-cloudflare-dashboard-site-build-variables).
 **GitHub Actions secrets**: see [setup step C](#c-github-website-repo-settings--secrets-and-variables--actions).
 
-Only the two `PUBLIC_` values reach browser code. Never prefix the others with `PUBLIC_`.
+Public settings may reach browser code. Never prefix secrets with `PUBLIC_`.
 
 ## One-time setup
 
@@ -132,7 +140,6 @@ Site Worker → Settings → Build → **Variables and secrets** (build-time, no
 | --------------------------- | ------ | --------------------------------------------- |
 | `NODE_VERSION`              | text   | `22`                                          |
 | `PUBLIC_TURNSTILE_SITE_KEY` | text   | A5 site key                                   |
-| `PUBLIC_MEMBERSHIP_API_URL` | text   | API Worker URL (B) + `/api/membership`        |
 | `MEMBER_NAMES_EXPORT_URL`   | secret | API Worker URL (B) + `/internal/member-names` |
 | `MEMBER_NAMES_EXPORT_TOKEN` | secret | same random value as B                        |
 

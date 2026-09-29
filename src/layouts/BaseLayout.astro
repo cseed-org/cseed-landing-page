@@ -21,6 +21,43 @@ const {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- The site has no dark theme; stop browsers (Samsung Internet, Chrome) recoloring it. -->
+    <meta name="color-scheme" content="only light" />
+    <script is:inline>
+      /* The whole page is authored on a fixed-width canvas and scaled as one unit.
+         This runs inline in the head so the scale is set before the first paint;
+         set any later, phones briefly (or on slow connections, for seconds) paint the
+         unscaled canvas, zoomed in and cut off. Responsive pages scale to exactly fill
+         the screen, up as well as down; the rest only ever scale down. */
+      (function () {
+        var root = document.documentElement;
+        var responsive = root.hasAttribute('data-responsive');
+        // The mobile canvas query, kept identical to the one in styles/tokens/layout.css.
+        var mobile = window.matchMedia(
+          '(max-width: 900px), (pointer: coarse) and (max-height: 500px)',
+        );
+        function fit() {
+          // clientWidth, not innerWidth: it leaves out the scrollbar and holds still while
+          // the page is pinch-zoomed.
+          var w = root.clientWidth || window.innerWidth || 2083;
+          var canvas = responsive && mobile.matches ? 780 : 2083;
+          var z = responsive ? w / canvas : Math.min(1, w / canvas);
+          root.style.setProperty('--page-zoom', String(z || 1));
+        }
+        fit();
+        window.addEventListener('resize', fit);
+        window.addEventListener('load', fit);
+        if (window.ResizeObserver) new ResizeObserver(fit).observe(root);
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Poppins is used at weight 275 in the source design; it has no 275 master, so
+         ExtraLight (200) is the shipped weight. -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,200;0,300;0,400;1,200&family=Ubuntu:wght@400;500;700&family=Anonymous+Pro:ital,wght@0,400;0,700;1,400&family=Shadows+Into+Light+Two&display=swap"
+    />
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -46,41 +83,26 @@ const {
         return z > 0 ? z : 1;
       }
 
-      const RESPONSIVE = document.documentElement.hasAttribute('data-responsive');
-
-      /* The canvas width in play: 2083px, or the 780px mobile canvas that
-         responsive pages switch to on narrow screens (see tokens/layout.css). */
-      function canvasWidth(): number {
-        const v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--canvas-width'));
-        return v > 0 ? v : CANVAS_WIDTH;
-      }
-
-      /* The whole page is authored on a fixed-width canvas and scaled as one unit.
-         Responsive pages scale to exactly fill the screen, up as well as down; the
-         rest only ever scale down, as before. */
-      function fit() {
-        const w = window.innerWidth || document.documentElement.clientWidth || CANVAS_WIDTH;
-        const z = RESPONSIVE ? w / canvasWidth() : Math.min(1, w / CANVAS_WIDTH);
-        document.documentElement.style.setProperty('--page-zoom', String(z || 1));
-      }
-
       /* On touch screens the browser toolbar shows and hides while scrolling, which
          changes innerHeight; refitting then makes the page jump. So there the hero
-         only refits when the width changes (a rotation). */
+         only refits when the width or scale changes (a rotation). clientWidth, unlike
+         innerWidth, doesn't change while the page is pinch-zoomed. */
       const COARSE = window.matchMedia('(pointer: coarse)').matches;
-      let heroFitWidth = 0;
+      let heroFit = '';
 
       function fitHero() {
         const hero = document.querySelector<HTMLElement>('[data-hero]');
         if (!hero) return;
-        const w = window.innerWidth;
-        if (COARSE && w === heroFitWidth) return;
+        const w = document.documentElement.clientWidth;
+        const z = zoom();
+        if (COARSE && `${w}@${z}` === heroFit) return;
         const h = window.innerHeight || document.documentElement.clientHeight || 1293;
-        if (window.innerHeight) heroFitWidth = w;
-        const next = Math.round(h / zoom());
+        if (window.innerHeight) heroFit = `${w}@${z}`;
+        const next = Math.round(h / z);
         /* The mobile canvas keeps room for the wordmark above the wrapped headline,
-           so landscape phones don't push the headline up under it. */
-        const min = canvasWidth() < CANVAS_WIDTH ? 760 : 320;
+           so landscape phones don't push the headline up under it. The canvas in play
+           follows from the head script's scale, so the two can never disagree. */
+        const min = w / z < CANVAS_WIDTH - 1 ? 760 : 320;
         hero.style.height = (Number.isFinite(next) && next > 320 ? Math.max(next, min) : 1293) + 'px';
       }
 
@@ -153,16 +175,12 @@ const {
         });
       }
 
-      function settle() {
-        fit();
-        fitHero();
-      }
-
-      settle();
-      requestAnimationFrame(settle);
-      window.addEventListener('load', settle);
-      window.addEventListener('resize', settle);
-      if (window.ResizeObserver) new ResizeObserver(settle).observe(document.documentElement);
+      /* The head script refits the scale on the same events first; the hero follows. */
+      fitHero();
+      requestAnimationFrame(fitHero);
+      window.addEventListener('load', fitHero);
+      window.addEventListener('resize', fitHero);
+      if (window.ResizeObserver) new ResizeObserver(fitHero).observe(document.documentElement);
 
       initNavVisibility();
       initReveal();

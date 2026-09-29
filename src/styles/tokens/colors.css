@@ -1,4 +1,7 @@
 :root {
+  /* Light only: there is no dark theme, so browsers must not darken the page on their own. */
+  color-scheme: only light;
+
   /* base palette -- verbatim from the source design */
   --cseed-paper: #e4e3e1; /* page ground */
   --cseed-mist: #f4f4f4; /* sponsor strip */

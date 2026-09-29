@@ -1,0 +1,13 @@
+---
+import DocumentLayout from '../layouts/DocumentLayout.astro';
+import { renderDocument } from '../data/documents';
+import raw from '../../CONTENT-NOTICE.md?raw';
+---
+
+<DocumentLayout
+  title="cseed | content notice"
+  description="The cseed website's text, photos, and branding: all rights reserved."
+  eyebrow="cseed · text, photos & branding"
+  heading="content and brand rights"
+  html={renderDocument(raw)}
+/>

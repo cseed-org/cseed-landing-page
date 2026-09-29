@@ -1,5 +1,6 @@
 dist
 .astro
+.mobile-check
 .wrangler
 node_modules
 package-lock.json

@@ -18,14 +18,14 @@ const columns = [
       ['about us', '/about-us/'],
       ['join', '/join/'],
       ['sponsors', '/#sponsors'],
-      ['code of conduct', '/code-of-conduct/'],
     ],
   },
   {
     title: 'more links',
     links: [
-      ['back to top ↑', '#top'],
+      ['code of conduct', '/code-of-conduct/'],
       ['github', 'https://github.com/cseed-org'],
+      ['back to top ↑', '#top'],
     ],
   },
 ];
@@ -102,10 +102,8 @@ const columns = [
         <span>made with love by our design team &lt;3</span>
       </p>
       <p class="site-footer-legal">
-        <span
-          >text, photos &amp; branding: <a href="/content-notice.txt">all rights reserved</a></span
-        >
-        <span>code: <a href="/license.txt">MIT license</a></span>
+        <span>text, photos &amp; branding: <a href="/content-notice/">all rights reserved</a></span>
+        <span>code: <a href="/mit-license/">MIT license</a></span>
       </p>
     </div>
   </div>
@@ -249,7 +247,7 @@ const columns = [
   }
 
   /* Mobile canvas (responsive pages only): everything stacks, cutout above the rule. */
-  @media (max-width: 900px) {
+  @media (max-width: 900px), (pointer: coarse) and (max-height: 500px) {
     :global(html[data-responsive]) .site-footer {
       padding: 80px 40px 36px;
     }

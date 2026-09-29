@@ -1,0 +1,185 @@
+---
+import PageLayout from './PageLayout.astro';
+import Reveal from '../components/core/Reveal.astro';
+import Rule from '../components/core/Rule.astro';
+
+/* A long-form document page (code of conduct, license, content notice): eyebrow and
+   title, a rule, then the rendered document (see data/documents.ts) across the page. */
+interface Props {
+  title: string;
+  description?: string;
+  eyebrow: string;
+  heading: string;
+  /** Rendered document HTML, from renderDocument(). */
+  html: string;
+}
+const { title, description, eyebrow, heading, html } = Astro.props;
+---
+
+<PageLayout title={title} description={description} compactFooter responsive>
+  <div class="doc">
+    <header class="doc-header">
+      <Reveal><div class="t-eyebrow">{eyebrow}</div></Reveal>
+      <Reveal delay={120}><h1 class="t-serif doc-title">{heading}</h1></Reveal>
+    </header>
+    <div class="doc-rule"><Rule width="100%" weight={0.5} animate /></div>
+    <Reveal mode="fade">
+      <article class="doc-body" set:html={html} />
+    </Reveal>
+    <div class="doc-end"></div>
+  </div>
+</PageLayout>
+
+<style>
+  /* The page renders at 85%, matching the other pages, and widens by 1/0.85 so the
+     text runs the full width of the screen. */
+  .doc {
+    zoom: 0.85;
+    width: calc(var(--canvas-width) / 0.85);
+  }
+  .doc-header {
+    padding: 260px 100px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+  .doc-title {
+    font-size: 96px;
+  }
+  .doc-rule {
+    padding: 0 100px;
+    margin-top: 70px;
+  }
+  .doc-end {
+    height: 260px;
+  }
+  .doc-body {
+    margin-top: 80px;
+    padding: 0 100px;
+    font: 300 24px/1.6 var(--font-body);
+    color: var(--cseed-ink);
+  }
+  .doc-body :global(h2) {
+    margin: 64px 0 20px;
+    font: 400 42px/1.15 var(--font-display);
+    letter-spacing: -0.02em;
+    color: var(--cseed-ink);
+  }
+  .doc-body :global(h2:first-child) {
+    margin-top: 0;
+  }
+  .doc-body :global(p) {
+    margin: 0 0 24px;
+  }
+  .doc-body :global(em) {
+    color: var(--cseed-ink-soft);
+  }
+  .doc-body :global(hr) {
+    border: 0;
+    border-top: 1px solid var(--cseed-ink);
+    opacity: 0.25;
+    margin: 60px 0;
+  }
+  .doc-body :global(a) {
+    color: var(--cseed-ink);
+  }
+  .doc-body :global(strong) {
+    font-weight: 500;
+  }
+  .doc-body :global(h4) {
+    margin: 40px 0 12px;
+    font: 500 24px/1.3 var(--font-body);
+  }
+  /* The "if you ever feel unsafe" callout. */
+  .doc-body :global(blockquote) {
+    margin: 40px 0;
+    padding: 28px 36px;
+    background: var(--cseed-sun);
+  }
+  .doc-body :global(blockquote p) {
+    margin: 0;
+  }
+  .doc-body :global(ul) {
+    margin: 0 0 24px;
+    padding-left: 1.2em;
+  }
+  .doc-body :global(li) {
+    margin: 0 0 10px;
+  }
+  .doc-body :global(li > ul) {
+    margin: 10px 0 0;
+  }
+  .doc-body :global(li > ul > li) {
+    list-style: circle;
+  }
+  /* File paths in the content notice; long ones wrap anywhere rather than overflow. */
+  .doc-body :global(code) {
+    font: 400 0.92em/1.4 var(--font-mono);
+    overflow-wrap: anywhere;
+  }
+  .doc-body :global(table) {
+    width: 100%;
+    margin: 8px 0 32px;
+    border-collapse: collapse;
+  }
+  .doc-body :global(th),
+  .doc-body :global(td) {
+    padding: 18px 40px 18px 0;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  }
+  .doc-body :global(th) {
+    font-weight: 500;
+    border-bottom-color: var(--cseed-ink);
+  }
+
+  /* ---------- Mobile canvas (780px, phones and small tablets) ---------- */
+  @media (max-width: 900px), (pointer: coarse) and (max-height: 500px) {
+    .doc {
+      zoom: 1;
+      width: auto;
+    }
+    .doc-header {
+      padding: 200px 40px 0;
+      gap: 30px;
+    }
+    /* Beats the site's mobile .t-serif size. */
+    :global(html[data-responsive]) .doc-title {
+      font-size: 88px;
+    }
+    .doc-rule {
+      padding: 0 40px;
+      margin-top: 50px;
+    }
+    .doc-body {
+      margin-top: 60px;
+      padding: 0 40px;
+      font-size: 29px;
+    }
+    .doc-body :global(h2) {
+      font-size: 54px;
+    }
+    .doc-body :global(h4) {
+      font-size: 29px;
+    }
+    /* Two columns don't fit: each row stacks, the material above where it lives. */
+    .doc-body :global(thead) {
+      display: none;
+    }
+    .doc-body :global(tr) {
+      display: block;
+      padding: 24px 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    }
+    .doc-body :global(td) {
+      display: block;
+      padding: 0;
+      border: 0;
+    }
+    .doc-body :global(td:first-child) {
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+  }
+</style>

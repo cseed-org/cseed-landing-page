@@ -91,7 +91,7 @@ const sponsors = [
   }
 
   /* Mobile canvas: sections are authored at their final size, so drop the shrinks. */
-  @media (max-width: 900px) {
+  @media (max-width: 900px), (pointer: coarse) and (max-height: 500px) {
     .shrink,
     .shrink-bleed,
     .shrink-bleed.sponsor-band {

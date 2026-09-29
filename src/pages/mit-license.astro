@@ -1,0 +1,13 @@
+---
+import DocumentLayout from '../layouts/DocumentLayout.astro';
+import { renderDocument } from '../data/documents';
+import raw from '../../LICENSE?raw';
+---
+
+<DocumentLayout
+  title="cseed | mit license"
+  description="The MIT license for the cseed website's template code."
+  eyebrow="cseed · code"
+  heading="MIT license"
+  html={renderDocument(raw)}
+/>

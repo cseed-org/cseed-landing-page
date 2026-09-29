@@ -13,7 +13,7 @@ const memberNames = await loadMemberNames({
   token: import.meta.env.MEMBER_NAMES_EXPORT_TOKEN,
   development: import.meta.env.DEV,
 });
-import { marked } from 'marked';
+import { renderDocument } from '../data/documents';
 import codeOfConduct from '../data/code-of-conduct.md?raw';
 
 // Graduation term/year list -- generated so it's never out of date, instead of hand-maintained.
@@ -64,10 +64,8 @@ const heard = [
 ];
 
 // The last step is the member agreement, so it shows the full code of conduct -- the same
-// markdown the /code-of-conduct/ page renders, minus its "# ..." title.
-const cocHtml = marked.parse(
-  codeOfConduct.replace(/\r\n/g, '\n').replace(/^#[^\n]*\n/, ''),
-) as string;
+// document the /code-of-conduct/ page renders.
+const cocHtml = renderDocument(codeOfConduct);
 
 const introFacts = ['open to all majors', 'we meet every week', 'takes about 2 minutes'];
 
@@ -330,12 +328,10 @@ let last = '';
           </div>
         </div>
 
-        <div
-          data-jn-verification
-          hidden
-          style="display:flex; justify-content:center; margin-top:30px"
-        >
+        <div class="jn-verification" data-jn-verification hidden>
+          <p class="jn-verification-label">Quick security check</p>
           <div data-jn-turnstile></div>
+          <p data-jn-verification-status role="status" aria-live="polite" hidden></p>
         </div>
         <p data-jn-status role="status" aria-live="polite" class="jn-submit-status" hidden></p>
         <div class="jn-controls" data-jn-controls>
@@ -592,19 +588,21 @@ let last = '';
   const submitButton = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
   const submitStatus = form.querySelector<HTMLElement>('[data-jn-status]')!;
   const verification = form.querySelector<HTMLElement>('[data-jn-verification]')!;
+  const verificationMessage = verification.querySelector<HTMLElement>(
+    '[data-jn-verification-status]',
+  )!;
   type Turnstile = {
     render: (el: HTMLElement, options: Record<string, unknown>) => string;
     reset: (id: string) => void;
   };
   const turnstileWindow = window as typeof window & { turnstile?: Turnstile };
-  // The page is scaled as one unit (BaseLayout's --page-zoom), which shrinks the Turnstile
-  // widget to about half size on phones; counter-zoom it there so it renders at native size.
-  const mobileCanvas = window.matchMedia('(max-width: 900px)');
+  // Cancel both canvas scaling and the desktop join section's additional 85% zoom.
+  // Cloudflare's iframe should retain its native readable size on every viewport.
   function fitVerification() {
-    const z = parseFloat(
-      getComputedStyle(document.documentElement).getPropertyValue('--page-zoom'),
-    );
-    verification.style.zoom = mobileCanvas.matches && z > 0 ? String(1 / z) : '';
+    const root = document.documentElement;
+    const z = parseFloat(getComputedStyle(root).getPropertyValue('--page-zoom'));
+    const sectionZoom = parseFloat(getComputedStyle(root.querySelector('[data-join]')!).zoom) || 1;
+    verification.style.zoom = z > 0 ? String(1 / (z * sectionZoom)) : '';
   }
   window.addEventListener('resize', () => requestAnimationFrame(fitVerification));
   let token = '';
@@ -612,8 +610,8 @@ let last = '';
   let loadingVerification = false;
   function verificationStatus(message: string) {
     token = '';
-    submitStatus.hidden = false;
-    submitStatus.textContent = message;
+    verificationMessage.hidden = false;
+    verificationMessage.textContent = message;
   }
   async function loadVerification() {
     if (widget !== undefined || loadingVerification) return;
@@ -649,12 +647,18 @@ let last = '';
         {
           sitekey,
           action: 'membership',
+          theme: 'light',
+          size: 'flexible',
           callback: (value: string) => {
             token = value;
-            submitStatus.hidden = true;
+            verificationMessage.hidden = true;
           },
-          'expired-callback': () =>
-            verificationStatus('Verification expired. Please verify again before sending.'),
+          'expired-callback': () => {
+            verificationStatus('Verification expired. Refreshing the security check...');
+            if (widget !== undefined) turnstileWindow.turnstile?.reset(widget);
+          },
+          'timeout-callback': () =>
+            verificationStatus('The security check timed out. Please complete it again.'),
           'error-callback': () =>
             verificationStatus('Verification could not load. Check your connection and try again.'),
         },
@@ -712,7 +716,9 @@ let last = '';
         return;
       }
     }
-    const endpoint = import.meta.env.PUBLIC_MEMBERSHIP_API_URL;
+    const endpoint = import.meta.env.DEV
+      ? import.meta.env.PUBLIC_MEMBERSHIP_API_URL
+      : '/api/membership';
     submitStatus.hidden = false;
     if (!endpoint) {
       submitStatus.textContent =
@@ -797,6 +803,7 @@ let last = '';
       // Screen readers land on the welcome, not on the now-hidden send button.
       welcome.focus({ preventScroll: true });
     } catch (error) {
+      submitStatus.hidden = false;
       submitStatus.textContent =
         error instanceof Error && error.name === 'Error'
           ? error.message
@@ -806,7 +813,7 @@ let last = '';
       }
     } finally {
       token = '';
-      if (widget !== undefined) turnstileWindow.turnstile?.reset(widget);
+      if (stage !== 'done' && widget !== undefined) turnstileWindow.turnstile?.reset(widget);
       submitting = false;
       submitButton.disabled = false;
       (back as HTMLButtonElement).disabled = false;
@@ -942,7 +949,7 @@ let last = '';
     }
   }
   /* Mobile canvas: never render an input under 16px on screen, or iOS zooms in on focus. */
-  @media (max-width: 900px) {
+  @media (max-width: 900px), (pointer: coarse) and (max-height: 500px) {
     .jn-input {
       font-size: max(32px, calc(16px / var(--page-zoom, 1)));
     }
@@ -959,6 +966,15 @@ let last = '';
   }
   [data-jn-verification][hidden] {
     display: none !important;
+  }
+  .jn-verification {
+    width: min(320px, 100%);
+    margin: 24px auto 0;
+    text-align: center;
+    font: 400 14px/1.5 var(--font-body);
+  }
+  .jn-verification-label {
+    margin: 0 0 8px;
   }
   .jn-submit-status {
     text-align: center;
@@ -1557,7 +1573,7 @@ let last = '';
   }
 
   /* ---------- Mobile canvas (780px, phones and small tablets) ---------- */
-  @media (max-width: 900px) {
+  @media (max-width: 900px), (pointer: coarse) and (max-height: 500px) {
     .jn-shrink {
       zoom: 1;
       width: auto;
