@@ -91,7 +91,11 @@ const socials = [
       }
     </div>
     <span>made with love by our design team &lt;3</span>
-    <span>© 2026 cseed. All rights reserved.</span>
+    <span class="site-footer-rights">
+      &copy; 2026 cseed.
+      <a href="/content-notice.txt">Rights reserved for website text, photos, and branding.</a>
+      Template code licensed under <a href="/license.txt">MIT</a>.
+    </span>
   </div>
 </footer>
 
@@ -163,6 +167,16 @@ const socials = [
     display: flex;
     gap: 36px;
     margin-bottom: 28px;
+  }
+  .site-footer-rights {
+    max-width: 960px;
+    text-align: center;
+    line-height: 1.5;
+    text-wrap: pretty;
+  }
+  .site-footer-rights a {
+    color: inherit;
+    text-underline-offset: 0.18em;
   }
   .site-footer-social {
     display: flex;
