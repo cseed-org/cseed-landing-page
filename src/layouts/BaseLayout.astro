@@ -111,8 +111,8 @@ const {
         const nav = document.querySelector<HTMLElement>('[data-navbar-wrap]');
         if (!hero || !nav) return;
         const onScroll = () => {
-          const heroPx = hero.offsetHeight * zoom();
-          nav.classList.toggle('is-visible', window.scrollY >= heroPx * 0.55);
+          const vh = window.innerHeight || 800;
+          nav.classList.toggle('is-visible', window.scrollY >= vh * 0.6);
         };
         onScroll();
         window.addEventListener('scroll', onScroll, { passive: true });

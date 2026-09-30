@@ -137,7 +137,7 @@ const launchFacts = [
                 class="bh-lp-mask"
                 style="-webkit-mask:url('/images/buildher/lilypad-outline1.png') center/contain no-repeat; mask:url('/images/buildher/lilypad-outline1.png') center/contain no-repeat"
               >
-                <img src="/images/buildher/launchpad4.webp" alt="buildher members working together on their laptops" />
+                <img src="/images/buildher/launchpad1.webp" alt="builder presenting at launchpad cohort 0" />
               </div>
             </div>
           </Reveal>
@@ -206,7 +206,7 @@ const launchFacts = [
   .bh-hero-her {
     text-transform: uppercase;
     letter-spacing: -0.02em;
-    color: #e0457b;
+    color: #d97e98;
   }
   .bh-hero-tagline {
     font: 400 52px/1 var(--font-hand);
@@ -516,21 +516,22 @@ const launchFacts = [
 
   /* ---------- mobile canvas ---------- */
   @media (max-width: 900px), (pointer: coarse) and (max-height: 500px) {
-    :global(html[data-responsive]) .bh-hero-title { font-size: 104px; }
-    :global(html[data-responsive]) .bh-hero-sub { font-size: 30px; }
+    :global(html[data-responsive]) .bh-hero-title { font-size: 96px; }
+    :global(html[data-responsive]) .bh-hero-sub { font-size: 26px; max-width: none; }
 
     :global(html[data-responsive]) .bh-section { padding: 90px 40px 20px; }
     :global(html[data-responsive]) .bh-head { margin: 50px 0 70px !important; }
-    :global(html[data-responsive]) .bh-events { grid-template-columns: 1fr; gap: 80px; }
-    :global(html[data-responsive]) .bh-event { margin: 0 auto !important; max-width: 560px; }
-    :global(html[data-responsive]) .bh-event-title { font-size: 44px; }
-    :global(html[data-responsive]) .bh-event .bh-body { font-size: 28px !important; }
+    :global(html[data-responsive]) .bh-events { grid-template-columns: 1fr; gap: 72px; }
+    :global(html[data-responsive]) .bh-event { margin: 0 auto !important; max-width: 460px; }
+    :global(html[data-responsive]) .bh-event-title { font-size: 36px; }
+    :global(html[data-responsive]) .bh-event .bh-body { font-size: 22px !important; }
 
     :global(html[data-responsive]) .bh-launch { padding: 60px 40px 0; }
     :global(html[data-responsive]) .bh-launch-inner { grid-template-columns: 1fr; gap: 24px; }
-    :global(html[data-responsive]) .bh-launch-title { font-size: 100px; }
+    :global(html[data-responsive]) .bh-launch-title { font-size: 84px; }
+    :global(html[data-responsive]) .bh-launch .bh-body { font-size: 24px; }
     :global(html[data-responsive]) .bh-launch-facts { grid-template-columns: minmax(0, 1fr); gap: 24px; max-width: none; }
-    :global(html[data-responsive]) .bh-fact-value { font-size: 40px; }
+    :global(html[data-responsive]) .bh-fact-value { font-size: 36px; }
     :global(html[data-responsive]) .bh-scene { height: 700px; margin-top: 20px; }
   }
 </style>

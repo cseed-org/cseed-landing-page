@@ -42,10 +42,10 @@
   /* mobile canvas */
   @media (max-width: 900px), (pointer: coarse) and (max-height: 500px) {
     .pond-hero {
-      height: 900px;
+      height: 1180px;
     }
     .pond-copy {
-      padding: 250px 40px 0;
+      padding: 180px 40px 0;
     }
   }
 </style>
@@ -191,11 +191,12 @@
         spawnRipple(x, y, 0.6);
       }
     };
-    // On touch, a trailing ripple under every move reads as jittery while scrolling —
-    // so only mice get the cursor trail. Taps still ripple, anywhere on the hero.
+    // Mouse only. Under CSS zoom, touch pointer coords don't map reliably to the canvas
+    // on mobile browsers (the ripple landed in the wrong spot), so we skip ripples on
+    // touch entirely — the pads/water still drift on their own.
     const fine = window.matchMedia('(pointer: fine)').matches;
-    if (!reduce) {
-      if (fine) host.addEventListener('pointermove', pointer);
+    if (!reduce && fine) {
+      host.addEventListener('pointermove', pointer);
       host.addEventListener('pointerdown', (e) => spawnRipple(
         (e.clientX - canvas.getBoundingClientRect().left) * (canvas.clientWidth / canvas.getBoundingClientRect().width),
         (e.clientY - canvas.getBoundingClientRect().top) * (canvas.clientHeight / canvas.getBoundingClientRect().height),

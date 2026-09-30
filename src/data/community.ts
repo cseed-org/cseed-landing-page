@@ -11,6 +11,7 @@ export const TEAM: { name: string; photo: string }[] = [
   ['Maia Womack', 'maia-womack'],
   ['Maya Ma', 'maya-ma'],
   ['Nel Alaimaleata', 'nel-alaimaleata'],
+  ['Riley Fang', 'riley-fang'],
   // ['Shuhui Yang', 'shuhui-yang'], // hidden for now
   ['Surya Duraivenkatesh', 'surya-duraivenkatesh'],
   ['Victoria Tchervenski', 'victoria-tchervenski'],
