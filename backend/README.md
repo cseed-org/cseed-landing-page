@@ -8,7 +8,7 @@ Cloudflare Worker + D1 behind the `/join/` form and member wall. Two Workers tot
 | `cseed-site`           | `wrangler.jsonc` (repo root) | Static Astro site (`dist/` as static assets) | Cloudflare Workers Builds     |
 
 - Browser → API `POST /api/membership` → D1 (`People`, `Membership_submissions`)
-- Daily (midnight Pacific) → API calls site deploy hook if members changed → site build
+- Daily (7 a.m. Pacific, PST/PDT) → API calls site deploy hook → site build
   fetches names from `GET /internal/member-names` → deploy
 - Independent packages. Frontend (repo root) and backend share no code/deps.
 
@@ -45,7 +45,9 @@ Keep the Turnstile site key configured for `cseed.co` (and any development host)
 | `SUBMISSIONS_ENABLED` | `"true"` to accept signups. Anything else = kill switch (503) |
 
 Also in `backend/wrangler.jsonc`: `database_id` (D1 UUID), rate limiters, daily cron
-`0 7 * * *` (07:00 UTC = midnight PDT / 11pm PST; edit to change refresh time).
+`0 14 * * *` and `0 15 * * *`. The handler checks the scheduled timestamp in
+`America/Los_Angeles` and only dispatches at 7 a.m., automatically following PST/PDT.
+This starts a build at 7 a.m.; updated names go live after the build and deployment finish.
 
 **API Worker secrets** (`npx wrangler secret put <NAME>`, run in `backend/`)
 
@@ -146,7 +148,7 @@ Site Worker → Settings → Build → **Variables and secrets** (build-time, no
 Then Deployments → retry latest build (or push to `main`). Site live.
 
 **After setup:** push to `main` → API redeploys via GitHub Actions, site rebuilds via Workers
-Builds. Member wall rebuilds once a day, only if members changed. New migrations run on
+Builds. Member wall rebuilds every day at 7 a.m. Pacific, even without new signups. New migrations run on
 Cloudflare's DB via GitHub Actions, not your PC.
 
 Staging: use separate Turnstile widget, Workers, and D1 DB. Never test against production DB.
@@ -174,19 +176,22 @@ No real member data in local emulators, fixtures, logs, or screenshots.
 | GitHub: Deploy membership API | push to `main` touching `backend/**`; manual   | `npm ci` → `npm test` → migrate remote D1 → deploy  |
 | GitHub: Check frontend        | push to `main` touching frontend; PRs; manual  | `npm run check` only, no deploy                     |
 
-One site build per push, max one per day for the member wall. Missing build variables fail
+One site build per push, plus a scheduled build each day for the member wall. Missing build variables fail
 the build; last good deploy stays live. After changing a build variable, retry latest build.
 
 ## Member wall flow
 
-1. Signup saved → D1 trigger bumps `Member_wall_sync.revision` (same on rename/delete in `People`)
-2. Daily cron: `revision` > `dispatched_revision`? → API POSTs site deploy hook (empty body,
-   no member data). No changes → no build
-3. On success, `dispatched_revision` advanced. Failure → retried next day (or manually: site
-   Worker → Deployments, or POST the hook URL)
-4. Site build calls `/internal/member-names` → escapes names into static HTML
-   (`src/data/member-names.mjs`)
-5. `wrangler deploy` publishes `dist/`. Failed build → retry from dashboard (no auto-recovery)
+1. Signup saved in D1. No membership records are written to GitHub.
+2. Daily at 7 a.m. Pacific, the API POSTs the site deploy hook (empty body, no member data).
+3. An accepted hook means a build was requested, not that deployment succeeded. A new
+   request is made every day, so failed builds get another attempt the next morning.
+4. Every site build calls `/internal/member-names` and escapes names into static HTML
+   (`src/data/member-names.mjs`), including builds triggered by code pushes or the dashboard.
+5. `wrangler deploy` publishes `dist/`. A failed build leaves the previous site live;
+   retry from the dashboard for an earlier recovery.
+
+The existing `Member_wall_sync` table and triggers remain for schema compatibility;
+its counters no longer gate the daily rebuild.
 
 Display name = `preferred_name` (else `first_name`) + `last_name`, normalized, deduped, sorted.
 Count shown = unique names. Signup user sees own name immediately (browser-side only);
@@ -292,3 +297,22 @@ Docs: [D1 migrations](https://developers.cloudflare.com/d1/reference/migrations/
 | Build fails "Configure MEMBER_NAMES…" | Set both `MEMBER_NAMES_EXPORT_*` in site build variables (D)       |
 | Build fails "export failed"           | Token mismatch API Worker vs site build vars, or wrong URL         |
 | Wall not updated next day             | `SITE_DEPLOY_HOOK_URL` missing/wrong/deleted; check site build log |
+
+### Finding deployment and refresh errors
+
+- Site initialization/build errors: **cseed-site → Deployments → View build history**.
+  A stall before the build command begins cannot be caused by the member export fetch,
+  which runs inside Astro and has a 30-second timeout. Cancel a stuck build and retry
+  once. If initialization stalls again, keep the build ID and timestamps for Cloudflare
+  support; check https://www.cloudflarestatus.com/.
+- Daily refresh errors: **cseed-membership-api → Observability → Logs**.
+  After deploying this configuration, fixed diagnostic messages and sanitized hook
+  errors are persisted. Automatic invocation logs are disabled. Missing hook
+  configuration, HTTP failures, and timeouts fail the cron instead of silently skipping.
+- A `member_wall_build_accepted` message means a build request was accepted.
+  Inspect **cseed-site** build history to confirm deployment completed.
+- A `membership_submission_failed` message means an unexpected submission failure.
+  Check Turnstile configuration, rate limiter bindings, and D1 migrations. Raw exceptions,
+  request bodies, IPs, tokens, and member data are never logged by these diagnostics.
+- Old errors cannot be recovered from logs that were disabled. These diagnostics apply
+  after deployment; they do not establish the cause of an earlier failure.

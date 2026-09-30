@@ -53,8 +53,15 @@ async function readPayload(request) {
 }
 
 export default {
-  // Daily: rebuild the site only if People changed since the last rebuild.
-  async scheduled(_event, env) {
+  // A delayed invocation must still use its scheduled time to select PDT or PST.
+  async scheduled(event, env) {
+    const hour = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/Los_Angeles',
+      hour: '2-digit',
+      hourCycle: 'h23',
+    }).format(new Date(event.scheduledTime));
+    if (hour !== '07') return;
+    // Accepting yesterday's hook does not prove that deployment succeeded.
     await dispatchMemberWall(env);
   },
   async fetch(request, env) {
@@ -154,7 +161,8 @@ export default {
     } catch (error) {
       if (error instanceof ValidationError) return reply(400, { error: error.message });
       if (error instanceof RequestError) return reply(error.status, { error: error.message });
-      // Do not log payloads, emails, IPs, or database exceptions.
+      // Fixed diagnostic only: never log payloads, emails, IPs, or raw exceptions.
+      console.error('membership_submission_failed: check verification, limiter bindings and D1');
       return reply(503, { error: 'Unable to save your submission. Please try again.' });
     }
   },

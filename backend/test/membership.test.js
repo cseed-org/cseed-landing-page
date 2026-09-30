@@ -262,53 +262,89 @@ test('protected export returns only deduplicated display names, with preferred-n
   });
 });
 
-test('signups wait for the daily cron; failed dispatch is retried next run', async (t) => {
+test('daily rebuild runs at 7am Pacific across both daylight saving transitions', async (t) => {
+  const { env } = setup(t);
+  env.SITE_DEPLOY_HOOK_URL =
+    'https://api.cloudflare.com/client/v4/workers/builds/deploy_hooks/synthetic-hook';
+  t.mock.method(console, 'info', () => {});
+  let dispatches = 0;
+  globalThis.fetch.mock.mockImplementation(async (url, options) => {
+    assert.equal(url, env.SITE_DEPLOY_HOOK_URL);
+    assert.equal(options.method, 'POST');
+    assert.equal(options.body, undefined);
+    dispatches++;
+    return Response.json({ success: true, result: { build_uuid: 'synthetic-build' } });
+  });
+  for (const [date, utcHour] of [
+    ['2026-01-15', 15],
+    ['2026-03-07', 15],
+    ['2026-03-08', 14],
+    ['2026-03-09', 14],
+    ['2026-09-30', 14],
+    ['2026-10-31', 14],
+    ['2026-11-01', 15],
+    ['2026-11-02', 15],
+  ]) {
+    for (const hour of [14, 15]) {
+      const previous = dispatches;
+      await worker.scheduled({ scheduledTime: Date.parse(date + 'T' + hour + ':00:00Z') }, env);
+      assert.equal(dispatches - previous, hour === utcHour ? 1 : 0, date + ' hour ' + hour);
+    }
+  }
+  assert.equal(dispatches, 8);
+});
+
+test('signups wait for the daily rebuild and an accepted hook never suppresses tomorrow', async (t) => {
   const { send, env, db } = setup(t);
   env.SITE_DEPLOY_HOOK_URL =
     'https://api.cloudflare.com/client/v4/workers/builds/deploy_hooks/synthetic-hook';
+  t.mock.method(console, 'info', () => {});
   let dispatches = 0;
   let failing = true;
-  globalThis.fetch.mock.mockImplementation(async (url, options) => {
+  globalThis.fetch.mock.mockImplementation(async (url) => {
     if (url === env.SITE_DEPLOY_HOOK_URL) {
       dispatches++;
-      assert.equal(options.body, undefined);
-      return new Response(null, { status: failing ? 503 : 204 });
+      return failing
+        ? new Response(null, { status: 503 })
+        : Response.json({ success: true, result: { build_uuid: 'synthetic-build' } });
     }
     return Response.json({ success: true, hostname: 'membership.example', action: 'membership' });
   });
-  const data = payload();
-  assert.equal((await send(data)).status, 201);
+  assert.equal((await send(payload())).status, 201);
   assert.equal(dispatches, 0);
-  await assert.rejects(worker.scheduled({}, env));
-  assert.equal(dispatches, 1);
-  assert.equal(
-    db.prepare('SELECT dispatched_revision FROM Member_wall_sync').get().dispatched_revision,
-    0,
-  );
+  const run = (date) => worker.scheduled({ scheduledTime: Date.parse(date + 'T14:00:00Z') }, env);
+  await assert.rejects(run('2026-09-28'), /HTTP 503/);
   failing = false;
-  await worker.scheduled({}, env);
-  assert.equal(dispatches, 2);
-  await worker.scheduled({}, env);
-  assert.equal(dispatches, 2);
-  assert.equal((await send(data)).status, 201);
-  assert.equal(dispatches, 2);
-  db.prepare("UPDATE People SET preferred_name = 'Changed'").run();
-  await worker.scheduled({}, env);
+  await run('2026-09-29');
+  // Even an old acknowledged revision must not prevent the next day's retry.
+  db.exec('UPDATE Member_wall_sync SET dispatched_revision = revision');
+  await run('2026-09-30');
   assert.equal(dispatches, 3);
 });
 
-test('dispatch acknowledgement never drops a concurrent membership change', async (t) => {
-  const { env, db } = setup(t);
+test('deploy hook failures are actionable without leaking credentials or responses', async (t) => {
+  const { env } = setup(t);
+  await assert.rejects(dispatchMemberWall(env), /configure SITE_DEPLOY_HOOK_URL/);
+  env.SITE_DEPLOY_HOOK_URL = 'https://example.invalid/private-hook';
+  await assert.rejects(dispatchMemberWall(env), /configure SITE_DEPLOY_HOOK_URL/);
   env.SITE_DEPLOY_HOOK_URL =
-    'https://api.cloudflare.com/client/v4/workers/builds/deploy_hooks/synthetic-hook';
-  globalThis.fetch.mock.mockImplementation(async () => {
-    db.exec('UPDATE Member_wall_sync SET revision = revision + 1');
-    return new Response(null, { status: 204 });
-  });
-  await dispatchMemberWall(env);
-  const state = db.prepare('SELECT * FROM Member_wall_sync').get();
-  assert.equal(state.revision, 2);
-  assert.equal(state.dispatched_revision, 1);
+    'https://api.cloudflare.com/client/v4/workers/builds/deploy_hooks/private-hook';
+  for (const response of [
+    () => {
+      throw new Error(env.SITE_DEPLOY_HOOK_URL);
+    },
+    () => new Response('private response', { status: 403 }),
+    () => new Response('private response'),
+    () => Response.json({ success: false, errors: ['private response'] }),
+    () => Response.json({ success: true }),
+  ]) {
+    globalThis.fetch.mock.mockImplementation(async () => response());
+    await assert.rejects(dispatchMemberWall(env), (error) => {
+      assert.match(error.message, /Member wall:/);
+      assert.doesNotMatch(error.message, /private-hook|private response/);
+      return true;
+    });
+  }
 });
 
 test('build loader fails closed on private fields, bad responses and missing configuration', async (t) => {

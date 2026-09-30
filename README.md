@@ -140,7 +140,7 @@ npm run build
 npm run preview
 ```
 
-Upload the generated `dist/` directory to a static host. The included Cloudflare setup uses one Worker for static assets and a separate Worker with D1 for membership. The member wall is rendered at build time; the backend can trigger a daily rebuild when member names change.
+Upload the generated `dist/` directory to a static host. The included Cloudflare setup uses one Worker for static assets and a separate Worker with D1 for membership. The member wall is rendered at build time; the backend triggers a daily rebuild at 7 a.m. Pacific, including daylight saving changes.
 
 For Cloudflare, follow [backend setup and deployment](backend/README.md#one-time-setup). Replace the cseed Worker names, database binding, domain/origin settings, and account-specific configuration with your own before enabling deployments. The included GitHub workflows check the frontend and deploy the membership API; the site itself uses Cloudflare Workers Builds.
 

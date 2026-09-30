@@ -44,22 +44,35 @@ export async function exportMemberNames(request, env) {
 const DEPLOY_HOOK_PREFIX = 'https://api.cloudflare.com/client/v4/workers/builds/deploy_hooks/';
 
 export async function dispatchMemberWall(env) {
-  if (!env.SITE_DEPLOY_HOOK_URL?.startsWith(DEPLOY_HOOK_PREFIX)) return;
-  const state = await env.DB.prepare(
-    'SELECT revision, dispatched_revision FROM Member_wall_sync WHERE singleton = 1',
-  ).first();
-  if (!state || state.revision <= state.dispatched_revision) return;
+  if (!env.SITE_DEPLOY_HOOK_URL?.startsWith(DEPLOY_HOOK_PREFIX)) {
+    throw new Error(
+      'Member wall: configure SITE_DEPLOY_HOOK_URL with a Workers Builds deploy hook.',
+    );
+  }
   // Empty request: no names, identifiers, or other member data in the rebuild trigger.
-  const response = await fetch(env.SITE_DEPLOY_HOOK_URL, {
-    method: 'POST',
-    signal: AbortSignal.timeout(8000),
-    redirect: 'error',
-  });
-  if (!response.ok) throw new Error('Member wall dispatch failed');
-  // A concurrent signup remains pending; an older dispatch cannot move this backwards.
-  await env.DB.prepare(
-    'UPDATE Member_wall_sync SET dispatched_revision = MAX(dispatched_revision, ?) WHERE singleton = 1',
-  )
-    .bind(state.revision)
-    .run();
+  let response;
+  try {
+    response = await fetch(env.SITE_DEPLOY_HOOK_URL, {
+      method: 'POST',
+      signal: AbortSignal.timeout(8000),
+      redirect: 'error',
+    });
+  } catch {
+    // Fetch errors can contain the secret hook URL. Never propagate the original error.
+    throw new Error('Member wall: deploy hook request failed or timed out.');
+  }
+  if (!response.ok) {
+    throw new Error('Member wall: deploy hook returned HTTP ' + response.status + '.');
+  }
+  let result;
+  try {
+    result = await response.json();
+  } catch {
+    throw new Error('Member wall: invalid deploy hook response.');
+  }
+  if (result?.success !== true || !result.result?.build_uuid) {
+    throw new Error('Member wall: deploy hook did not confirm a build.');
+  }
+  // Acceptance is not deployment success. Always try again at the next daily refresh.
+  console.info('member_wall_build_accepted: check cseed-site build history for deployment status');
 }

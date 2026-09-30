@@ -5,9 +5,12 @@
   "compatibility_date": "2026-09-26",
   "workers_dev": true,
   "preview_urls": false,
-  "observability": { "enabled": false },
-  // 07:00 UTC = midnight PDT / 11pm PST. Rebuilds the member wall once a day.
-  "triggers": { "crons": ["0 7 * * *"] },
+  "observability": {
+    "enabled": true,
+    "logs": { "enabled": true, "invocation_logs": false },
+  },
+  // UTC candidates for 7am Pacific; the handler selects PDT or PST by scheduledTime.
+  "triggers": { "crons": ["0 14 * * *", "0 15 * * *"] },
   "vars": {
     // TURNSTILE_SECRET_KEY, MEMBER_NAMES_EXPORT_TOKEN and SITE_DEPLOY_HOOK_URL
     // must be set with wrangler secret put, never here.
