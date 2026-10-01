@@ -1763,12 +1763,23 @@ let last = '';
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 64px;
     }
-    :global(html[data-responsive]) .jn-members {
-      column-count: 3;
-      column-gap: 44px;
-    }
     :global(html[data-responsive]) .jn-socials {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  /* Size the member directory in screen pixels across both tablet canvas scales. */
+  @media (hover: none) and (pointer: coarse) and (min-width: 768px) and (max-width: 1400px) and (min-height: 600px) {
+    :global(html[data-responsive]) .jn-members {
+      columns: calc(220px / var(--page-zoom, 1));
+      column-gap: calc(24px / var(--page-zoom, 1));
+      font-size: calc(20px / var(--page-zoom, 1));
+    }
+    .jn-members :global(.jn-member) {
+      line-height: 1.4;
+    }
+    .jn-members :global(.jn-letter) {
+      font-size: calc(32px / var(--page-zoom, 1));
+      padding: 1em 0 0.375em;
     }
   }
 </style>

@@ -315,7 +315,7 @@ const ABOUT_STATS = [
   @media (hover: none) and (pointer: coarse) and (min-width: 901px) and (max-width: 1400px) and (min-height: 600px) and (orientation: landscape) {
     :global(html[data-responsive]) .ab-opener {
       display: grid;
-      grid-template-columns: 280px minmax(0, 1fr);
+      grid-template-columns: max-content minmax(0, 1fr);
       gap: 80px;
     }
     :global(html[data-responsive]) .ab-opener-copy {
@@ -330,6 +330,20 @@ const ABOUT_STATS = [
     }
     :global(html[data-responsive]) .ab-person-name {
       font-size: 28px;
+    }
+  }
+  /* Keep tablet type readable at either canvas scale without changing phones or PCs. */
+  @media (hover: none) and (pointer: coarse) and (min-width: 768px) and (max-width: 1400px) and (min-height: 600px) {
+    :global(html[data-responsive]) .ab-stat-value {
+      font-size: calc(64px / var(--page-zoom, 1));
+      line-height: 1.1;
+      white-space: nowrap;
+    }
+    :global(html[data-responsive]) .ab-opener-copy h1 {
+      font-size: calc(64px / var(--page-zoom, 1));
+    }
+    :global(html[data-responsive]) .ab-execution p {
+      font-size: calc(24px / var(--page-zoom, 1));
     }
   }
 </style>

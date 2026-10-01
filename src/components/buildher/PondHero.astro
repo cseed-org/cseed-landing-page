@@ -51,13 +51,20 @@
 
   /* Compact landscape tablet composition; desktop and portrait styles stay separate. */
   @media (hover: none) and (pointer: coarse) and (min-width: 901px) and (max-width: 1400px) and (min-height: 600px) and (orientation: landscape) {
-    :global(html[data-responsive]) .pond-hero {
-      height: auto;
-      min-height: 660px;
-    }
     :global(html[data-responsive]) .pond-copy {
       padding: 180px 64px 100px;
       max-width: 960px;
+    }
+  }
+
+  /* Fill one tablet screen, accounting for the scaled canvas. Allow larger text to grow. */
+  @media (hover: none) and (pointer: coarse) and (min-width: 768px) and (max-width: 1400px) and (min-height: 600px) {
+    :global(html[data-responsive]) .pond-hero {
+      height: auto;
+      min-height: calc(100svh / var(--page-zoom, 1));
+    }
+    :global(html[data-responsive]) .pond-copy {
+      padding-bottom: 100px;
     }
   }
 </style>

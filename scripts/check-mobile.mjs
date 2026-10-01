@@ -308,6 +308,16 @@ function measure() {
     width,
     height: innerHeight,
     pondHeight: document.querySelector('.pond-hero')?.getBoundingClientRect().height,
+    wrappedStats: [...document.querySelectorAll('.ab-stat-value')].filter((el) => {
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      return range.getClientRects().length > 1;
+    }).map((el) => el.textContent),
+    memberFont: document.querySelector('.jn-member')
+      ? parseFloat(getComputedStyle(document.querySelector('.jn-member')).fontSize) *
+        parseFloat(style.getPropertyValue('--page-zoom'))
+      : undefined,
+    buildspaceCopy: document.querySelector('.bs-what-copy')?.textContent,
     largestProgramPhoto: Math.max(
       0,
       ...[...document.querySelectorAll('.program-photo')].map(
@@ -335,15 +345,25 @@ function measure() {
   };
 }
 
-function expectations({ device: d }, m) {
+function expectations({ device: d, variant }, m) {
   const failures = [];
   const landscapeTablet =
     d.kind === 'tablet' && m.width > 900 && m.width > m.height && m.height >= 600;
   const expectedCanvas =
     d.kind === 'desktop' && m.width > 900 ? 2083 : landscapeTablet ? 1440 : 780;
+  if (d.kind === 'tablet') {
+    if (m.pondHeight !== undefined && m.pondHeight < m.height - 2)
+      failures.push('pond: tablet hero does not fill the viewport');
+    if (variant !== 'text130' && m.pondHeight > m.height + 2)
+      failures.push('pond: tablet hero extends beyond one screen');
+    if (m.wrappedStats.length)
+      failures.push(`about: statistic split across lines: ${m.wrappedStats.join(', ')}`);
+    if (m.memberFont > (variant === 'text130' ? 27 : 21))
+      failures.push(`join: member names are too large (${m.memberFont}px)`);
+  }
+  if (m.buildspaceCopy && !/find\s+passion,\s+community,\s+and\s+accountability/.test(m.buildspaceCopy))
+    failures.push('buildspace: missing spaces around highlighted words');
   if (landscapeTablet) {
-    if (m.pondHeight > m.height * 0.9)
-      failures.push('pond: landscape hero is taller than 90% of the viewport');
     if (m.largestProgramPhoto > m.width * 0.58)
       failures.push('photos: landscape program photos should fit beside their copy');
     if (m.largestBuildherCard > m.width * 0.34)
@@ -435,6 +455,26 @@ async function check(run, screenshot) {
     const response = await page.goto(origin + route, { waitUntil: 'load', timeout: 90000 });
     if (response?.status() !== 200) return [`status ${response?.status()}`];
     await page.evaluate(() => document.fonts.ready);
+    if (d.kind === 'tablet' && route === '/join/') {
+      // Development has no private member export. Exercise the directory with browser-only
+      // fictional names, including wrapping names, so an empty wall cannot mask regressions.
+      await page.evaluate(() => {
+        const wall = document.querySelector('[data-jn-members]');
+        wall.replaceChildren();
+        for (const letter of ['A', 'B', 'C', 'D', 'E', 'F']) {
+          const heading = document.createElement('div');
+          heading.className = 'jn-letter';
+          heading.textContent = letter;
+          wall.append(heading);
+          for (const name of ['Alex Example', 'Bailey Sample', 'Casey Long-Example-Surname', 'Devin Test', 'Emery Example', 'Frankie Sample']) {
+            const member = document.createElement('div');
+            member.className = 'jn-member';
+            member.textContent = name;
+            wall.append(member);
+          }
+        }
+      });
+    }
     if (variant === 'text130') await page.evaluate(enlargeText, 1.3);
     await page.evaluate(scrollThrough);
     await page.waitForTimeout(1400); // reveal transitions
