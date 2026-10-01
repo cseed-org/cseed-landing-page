@@ -94,4 +94,12 @@ import Reveal from '../core/Reveal.astro';
       aspect-ratio: 560 / 644;
     }
   }
+
+  /* Compact landscape tablet composition; desktop and portrait styles stay separate. */
+  @media (hover: none) and (pointer: coarse) and (min-width: 901px) and (max-width: 1400px) and (min-height: 600px) and (orientation: landscape) {
+    :global(html[data-responsive]) .community-photos {
+      max-width: 1120px;
+      margin-inline: auto;
+    }
+  }
 </style>

@@ -1584,4 +1584,67 @@ void main() {
       max-width: 100%;
     }
   }
+
+  /* Compact landscape tablet composition; desktop and portrait styles stay separate. */
+  @media (hover: none) and (pointer: coarse) and (min-width: 901px) and (max-width: 1400px) and (min-height: 600px) and (orientation: landscape) {
+    :global(html[data-responsive]) .bs-space-copy {
+      padding: 190px 64px 100px;
+    }
+    :global(html[data-responsive]) .bs-space-copy p {
+      max-width: 1000px;
+    }
+    :global(html[data-responsive]) .bs-cohort-facts {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 44px;
+    }
+    :global(html[data-responsive]) .bs-photo-collage {
+      max-width: 1200px;
+      margin-inline: auto;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    :global(html[data-responsive]) .bs-photo-collage > :global(.reveal:nth-child(2)) {
+      grid-column: span 2;
+    }
+    :global(html[data-responsive]) .bs-details {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    :global(html[data-responsive]) .bs-details > :global(.reveal:nth-child(5)) {
+      grid-column: auto;
+    }
+    :global(html[data-responsive]) .bs-what-head {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 64px;
+    }
+    :global(html[data-responsive]) .bs-what-steps {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 44px;
+    }
+    :global(html[data-responsive]) .bs-endless {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 64px;
+    }
+    :global(html[data-responsive]) .bs-endless-title {
+      font-size: 80px !important;
+    }
+    :global(html[data-responsive]) .bs-explode-block {
+      padding: 80px 440px 80px 44px;
+    }
+    :global(html[data-responsive]) .bs-cutout {
+      height: 400px;
+    }
+    :global(html[data-responsive]) .bs-tracks {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 32px;
+    }
+    :global(html[data-responsive]) .bs-track {
+      height: 100%;
+    }
+    :global(html[data-responsive]) .bs-group-cutout {
+      max-width: 1020px;
+      margin-inline: auto;
+    }
+  }
 </style>

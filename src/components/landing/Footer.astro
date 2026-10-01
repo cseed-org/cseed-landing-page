@@ -316,4 +316,33 @@ const columns = [
       content: none;
     }
   }
+
+  /* Compact landscape tablet composition; desktop and portrait styles stay separate. */
+  @media (hover: none) and (pointer: coarse) and (min-width: 901px) and (max-width: 1400px) and (min-height: 600px) and (orientation: landscape) {
+    :global(html[data-responsive]) .site-footer-top {
+      flex-direction: row;
+      gap: 64px;
+      padding-bottom: 32px;
+    }
+    :global(html[data-responsive]) .site-footer-main {
+      flex: 0 1 440px;
+      min-width: 0;
+    }
+    :global(html[data-responsive]) .site-footer-columns {
+      flex: 1;
+      min-width: 0;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    :global(html[data-responsive]) .site-footer-link {
+      font-size: 26px;
+    }
+    :global(html[data-responsive]) .site-footer-people {
+      width: 520px;
+      max-width: 100%;
+      margin-inline: auto;
+    }
+    :global(html[data-responsive]) .site-footer-note {
+      font-size: 20px;
+    }
+  }
 </style>

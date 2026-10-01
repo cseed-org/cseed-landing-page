@@ -66,7 +66,7 @@ Run frontend commands from the repository root:
 | `npm run check:seo`    | Verify the running site at `http://localhost:4321`    |
 | `npm run check:mobile` | Check the running site's layout on phones and tablets |
 | `npm run check:tablet` | Check iPads in Safari/WebKit and Chromium, including rotation |
-| `npm run check:desktop` | Verify the original desktop layout at 1024?1920px and after resizing |
+| `npm run check:desktop` | Verify the original desktop layout at 1024-1920px and after resizing |
 | `npm run lint`         | Check formatting with Prettier                        |
 | `npm run format`       | Format the project with Prettier                      |
 
@@ -74,7 +74,7 @@ For SEO and mobile checks, keep the development server running in another termin
 
 #### Mobile check
 
-`npm run check:mobile` opens every page in the three browser engines: WebKit (every iOS browser), Chromium (Android Chrome, Samsung Internet, and in-app browsers), and Firefox. It uses 11 phone sizes in portrait, 6 in landscape, 7 tablet sizes, and 6 desktop widths. Every phone and tablet, either way up, must get the 780px stacked canvas, scaled to the screen before the first paint, with no text clipped, overlapping, or scrolling sideways. It also renders with text 30% larger (Android's font size setting), with forced dark mode (Samsung Internet), and on a slow repeat visit.
+`npm run check:mobile` opens every page in the three browser engines: WebKit (every iOS browser), Chromium (Android Chrome, Samsung Internet, and in-app browsers), and Firefox. It uses 11 phone sizes in portrait, 6 in landscape, 8 tablet sizes, and 6 desktop widths. Phones and portrait tablets use the 780px stacked canvas; landscape tablets use the 1440px canvas. Each view must fit the screen before the first paint, with no text clipped, overlapping, or scrolling sideways. It also renders with text 30% larger (Android's font size setting), with forced dark mode (Samsung Internet), and on a slow repeat visit.
 
 Install the browsers once with `npx playwright install chromium webkit firefox`. The full run takes about 20 minutes; add `-- --quick` for a representative subset in about 3 minutes. Use `npm run check:desktop` to verify the 2083px desktop composition at narrow and wide desktop widths. Use `npm run check:tablet` to focus on iPads, including large iPads in both orientations, enlarged text, and rotation without reloading. Other options:
 
@@ -130,7 +130,7 @@ npm test
 
 Pages use static Astro markup, scoped CSS, and small browser scripts for interactions such as reveals, countdowns, tooltips, and the application form. There is no client-side UI framework.
 
-The design uses a **2083px desktop canvas** scaled through `BaseLayout.astro`. Pages using the `responsive` prop switch to a **780px stacked canvas on phones and tablets** (screens up to 900px wide, plus touch-first devices without hover up to 1400px wide) and scale to fill the viewport. Above 900px, mouse/trackpad desktops retain the original desktop composition, including laptops with a secondary touchscreen. The scale is set by a small inline script in the page head, so it is in place before the first paint. The mobile media query is defined in `src/styles/tokens/layout.css`, and every component's mobile block repeats it verbatim. Layout tokens live in the same file. Check both narrow and wide screens when changing section dimensions, and check phones and large iPads in both orientations.
+The design uses a **2083px desktop canvas** scaled through `BaseLayout.astro`. Pages using the `responsive` prop switch to a **780px stacked canvas on phones and tablets** (screens up to 900px wide, plus touch-first devices without hover up to 1400px wide) and scale to fill the viewport. Landscape touch tablets (901-1400px wide and at least 600px tall) use a **1440px canvas** with smaller photos, a shorter buildher pond, and flowing multi-column layouts. Phones remain on the 780px canvas in both orientations. Above 900px, mouse/trackpad desktops retain the original desktop composition, including laptops with a secondary touchscreen. The scale is set by a small inline script in the page head, so it is in place before the first paint. The mobile media query is defined in `src/styles/tokens/layout.css`, and every component's mobile block repeats it verbatim. Layout tokens live in the same file. Check both narrow and wide screens when changing section dimensions, and check phones and large iPads in both orientations.
 
 ## Deployment
 

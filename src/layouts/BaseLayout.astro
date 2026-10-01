@@ -36,18 +36,30 @@ const {
         var mobile = window.matchMedia(
           '(max-width: 900px), (hover: none) and (pointer: coarse) and (max-width: 1400px)',
         );
+        var landscapeTablet = window.matchMedia(
+          '(hover: none) and (pointer: coarse) and (min-width: 901px) and (max-width: 1400px) and (min-height: 600px) and (orientation: landscape)',
+        );
         function fit() {
           // clientWidth, not innerWidth: it leaves out the scrollbar and holds still while
           // the page is pinch-zoomed.
           var w = root.clientWidth || window.innerWidth || 2083;
-          var canvas = responsive && mobile.matches ? 780 : 2083;
+          var canvas = responsive && landscapeTablet.matches
+            ? 1440
+            : responsive && mobile.matches ? 780 : 2083;
           var z = responsive ? w / canvas : Math.min(1, w / canvas);
-          root.style.setProperty('--page-zoom', String(z || 1));
+          var value = String(z || 1);
+          if (root.style.getPropertyValue('--page-zoom') !== value) {
+            root.style.setProperty('--page-zoom', value);
+          }
         }
         fit();
         window.addEventListener('resize', fit);
         window.addEventListener('load', fit);
-        if (window.ResizeObserver) new ResizeObserver(fit).observe(root);
+        // Zoom changes the observed page height. Write on the next frame to avoid
+        // resizing the observed element during Safari's observer delivery cycle.
+        if (window.ResizeObserver) new ResizeObserver(function () {
+          requestAnimationFrame(fit);
+        }).observe(root);
       })();
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -182,7 +194,9 @@ const {
       requestAnimationFrame(fitHero);
       window.addEventListener('load', fitHero);
       window.addEventListener('resize', fitHero);
-      if (window.ResizeObserver) new ResizeObserver(fitHero).observe(document.documentElement);
+      if (window.ResizeObserver) {
+        new ResizeObserver(() => requestAnimationFrame(fitHero)).observe(document.documentElement);
+      }
 
       initNavVisibility();
       initReveal();

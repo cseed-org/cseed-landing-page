@@ -534,6 +534,67 @@ const launchFacts = [
     :global(html[data-responsive]) .bh-fact-value { font-size: 36px; }
     :global(html[data-responsive]) .bh-scene { height: 700px; margin-top: 20px; }
   }
+
+  /* Compact landscape tablet composition; desktop and portrait styles stay separate. */
+  @media (hover: none) and (pointer: coarse) and (min-width: 901px) and (max-width: 1400px) and (min-height: 600px) and (orientation: landscape) {
+    :global(html[data-responsive]) .bh-hero-sub {
+      max-width: 760px;
+    }
+    :global(html[data-responsive]) .bh-events {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 44px;
+      align-items: start;
+    }
+    :global(html[data-responsive]) .bh-event {
+      max-width: 390px;
+    }
+    :global(html[data-responsive]) .bh-launch {
+      margin-top: 100px;
+    }
+    :global(html[data-responsive]) .bh-launch-inner {
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+      gap: 64px;
+    }
+    :global(html[data-responsive]) .bh-launch-facts {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 24px;
+    }
+    :global(html[data-responsive]) .bh-fact-value {
+      font-size: 32px;
+    }
+    :global(html[data-responsive]) .bh-scene {
+      height: 540px;
+      margin-top: 0;
+    }
+    :global(html[data-responsive]) .bh-pond-water {
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 500px;
+    }
+    :global(html[data-responsive]) .bh-si-photo1 {
+      left: 0;
+      top: 24px;
+    }
+    :global(html[data-responsive]) .bh-si-photo2 {
+      right: 0;
+      top: 270px;
+    }
+    :global(html[data-responsive]) .bh-si-photo1 .bh-lp-photo {
+      width: 300px !important;
+    }
+    :global(html[data-responsive]) .bh-si-photo2 .bh-lp-photo {
+      width: 250px !important;
+    }
+    :global(html[data-responsive]) .bh-si-lily1 {
+      left: 260px;
+      top: 240px;
+    }
+    :global(html[data-responsive]) .bh-si-lily2 {
+      right: 250px;
+      top: 440px;
+    }
+  }
 </style>
 
 <script>

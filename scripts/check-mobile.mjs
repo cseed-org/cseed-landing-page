@@ -1,8 +1,8 @@
 // Renders every page on phones (portrait and landscape), tablets, and desktops in all three
 // browser engines -- WebKit (every iOS browser), Chromium (Android Chrome, Samsung Internet,
-// in-app browsers), and Firefox -- and checks that each layout holds: phones and tablets get the stacked
-// canvas, scaled to the screen before the first paint, with no text clipped, overlapping, or
-// scrolling sideways.
+// in-app browsers), and Firefox -- and checks the phone, portrait tablet, landscape tablet,
+// and desktop layouts: scaled before the first paint, with no clipped or overlapping text
+// and no sideways scrolling.
 //
 //   npm run check:mobile [-- <origin>] [--quick | --tablet | --desktop] [--only <text>] [--shots] [--concurrency <n>]
 //
@@ -32,7 +32,7 @@ const routes = readdirSync(new URL('../src/pages/', import.meta.url))
   .filter((file) => file.endsWith('.astro'))
   .map((file) => (file === 'index.astro' ? '/' : `/${file.replace('.astro', '')}/`));
 
-// CSS viewport sizes of real devices. Every phone and tablet, either way up, must get the stacked canvas.
+// CSS viewport sizes of real devices, with separate portrait and landscape tablet layouts.
 const device = (name, width, height, kind = 'phone') => ({ name, width, height, kind });
 const PORTRAIT = [
   device('iphone-se-1', 320, 568),
@@ -59,6 +59,7 @@ const LANDSCAPE = PORTRAIT.filter((d) =>
 ).map((d) => device(`${d.name}-landscape`, d.height, d.width));
 const TABLETS = [
   device('ipad-mini', 768, 1024, 'tablet'),
+  device('ipad-mini-landscape', 1024, 768, 'tablet'),
   device('ipad-air', 820, 1180, 'tablet'),
   device('ipad-pro', 1024, 1366, 'tablet'),
   device('ipad-pro-13', 1032, 1376, 'tablet'),
@@ -208,12 +209,16 @@ function enlargeText(scale) {
 
 // In the page: scroll to the bottom and back, so every reveal-on-scroll block triggers.
 async function scrollThrough() {
+  const paint = () =>
+    new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
   const step = Math.max(200, innerHeight * 0.7);
   for (let y = 0; y < document.documentElement.scrollHeight; y += step) {
     scrollTo(0, y);
+    await paint();
     await new Promise((resolve) => setTimeout(resolve, 90));
   }
   scrollTo(0, document.documentElement.scrollHeight);
+  await paint();
   await new Promise((resolve) => setTimeout(resolve, 150));
   scrollTo(0, 0);
 }
@@ -301,6 +306,18 @@ function measure() {
 
   return {
     width,
+    height: innerHeight,
+    pondHeight: document.querySelector('.pond-hero')?.getBoundingClientRect().height,
+    largestProgramPhoto: Math.max(
+      0,
+      ...[...document.querySelectorAll('.program-photo')].map(
+        (el) => el.getBoundingClientRect().width,
+      ),
+    ),
+    largestBuildherCard: Math.max(
+      0,
+      ...[...document.querySelectorAll('.bh-event')].map((el) => el.getBoundingClientRect().width),
+    ),
     canvasWidth: parseFloat(style.getPropertyValue('--canvas-width')),
     canvasRendered: canvas?.width,
     programCopyPosition: document.querySelector('.program-copy')
@@ -320,7 +337,18 @@ function measure() {
 
 function expectations({ device: d }, m) {
   const failures = [];
-  const expectedCanvas = d.kind === 'desktop' && m.width > 900 ? 2083 : 780;
+  const landscapeTablet =
+    d.kind === 'tablet' && m.width > 900 && m.width > m.height && m.height >= 600;
+  const expectedCanvas =
+    d.kind === 'desktop' && m.width > 900 ? 2083 : landscapeTablet ? 1440 : 780;
+  if (landscapeTablet) {
+    if (m.pondHeight > m.height * 0.9)
+      failures.push('pond: landscape hero is taller than 90% of the viewport');
+    if (m.largestProgramPhoto > m.width * 0.58)
+      failures.push('photos: landscape program photos should fit beside their copy');
+    if (m.largestBuildherCard > m.width * 0.34)
+      failures.push('photos: landscape buildher cards should fit in three columns');
+  }
   if (m.canvasWidth !== expectedCanvas)
     failures.push(`canvas: ${d.kind} expected ${expectedCanvas}px, got ${m.canvasWidth}px`);
   const expectedPosition = expectedCanvas === 2083 ? 'absolute' : 'relative';

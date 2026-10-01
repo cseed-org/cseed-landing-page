@@ -43,3 +43,11 @@
     --canvas-width: 780px;
   }
 }
+
+/* Landscape tablets get a wider, denser canvas instead of enlarging the phone layout.
+   Keep this query in sync with BaseLayout and the component landscape overrides. */
+@media (hover: none) and (pointer: coarse) and (min-width: 901px) and (max-width: 1400px) and (min-height: 600px) and (orientation: landscape) {
+  html[data-responsive] {
+    --canvas-width: 1440px;
+  }
+}

@@ -310,4 +310,26 @@ const ABOUT_STATS = [
       font-size: 34px;
     }
   }
+
+  /* Compact landscape tablet composition; desktop and portrait styles stay separate. */
+  @media (hover: none) and (pointer: coarse) and (min-width: 901px) and (max-width: 1400px) and (min-height: 600px) and (orientation: landscape) {
+    :global(html[data-responsive]) .ab-opener {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 80px;
+    }
+    :global(html[data-responsive]) .ab-opener-copy {
+      order: 0;
+    }
+    :global(html[data-responsive]) .ab-wall {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 44px;
+    }
+    :global(html[data-responsive]) .team-photo {
+      width: 120px;
+    }
+    :global(html[data-responsive]) .ab-person-name {
+      font-size: 28px;
+    }
+  }
 </style>

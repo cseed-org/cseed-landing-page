@@ -182,4 +182,12 @@ const { title, description, eyebrow, heading, html } = Astro.props;
       font-weight: 500;
     }
   }
+
+  /* Compact landscape tablet composition; desktop and portrait styles stay separate. */
+  @media (hover: none) and (pointer: coarse) and (min-width: 901px) and (max-width: 1400px) and (min-height: 600px) and (orientation: landscape) {
+    :global(html[data-responsive]) .doc-body {
+      max-width: 1160px;
+      margin-inline: auto;
+    }
+  }
 </style>

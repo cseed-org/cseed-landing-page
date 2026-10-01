@@ -48,6 +48,18 @@
       padding: 180px 40px 0;
     }
   }
+
+  /* Compact landscape tablet composition; desktop and portrait styles stay separate. */
+  @media (hover: none) and (pointer: coarse) and (min-width: 901px) and (max-width: 1400px) and (min-height: 600px) and (orientation: landscape) {
+    :global(html[data-responsive]) .pond-hero {
+      height: auto;
+      min-height: 660px;
+    }
+    :global(html[data-responsive]) .pond-copy {
+      padding: 180px 64px 100px;
+      max-width: 960px;
+    }
+  }
 </style>
 
 <script>

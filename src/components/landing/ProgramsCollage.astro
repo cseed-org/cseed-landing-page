@@ -327,4 +327,70 @@ const programs = [
       font-size: 30px !important;
     }
   }
+
+  /* Compact landscape tablet composition; desktop and portrait styles stay separate. */
+  @media (hover: none) and (pointer: coarse) and (min-width: 901px) and (max-width: 1400px) and (min-height: 600px) and (orientation: landscape) {
+    :global(html[data-responsive]) .programs-collage {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-areas: 'intro intro' 'space-photo space-copy' 'her-copy her-photo' 'sat-photo sat-copy';
+      gap: 100px 64px;
+      align-items: center;
+    }
+    :global(html[data-responsive]) .programs-collage > :global(*) {
+      min-width: 0;
+    }
+    :global(html[data-responsive]) .programs-intro {
+      grid-area: intro;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 28px 64px;
+      align-items: end;
+    }
+    :global(html[data-responsive]) .programs-intro > :global(.reveal:nth-child(2)) {
+      display: none !important;
+    }
+    :global(html[data-responsive]) .programs-lede {
+      font-size: 26px;
+    }
+    :global(html[data-responsive]) .program-copy {
+      margin-top: 0;
+    }
+    :global(html[data-responsive]) :global(.program-photo) {
+      margin-top: 0;
+      width: 100%;
+    }
+    :global(html[data-responsive]) :global(.program-photo--buildspace) {
+      grid-area: space-photo;
+    }
+    :global(html[data-responsive]) .program-copy--buildspace {
+      grid-area: space-copy;
+    }
+    :global(html[data-responsive]) :global(.program-photo--buildher) {
+      grid-area: her-photo;
+      width: 85%;
+    }
+    :global(html[data-responsive]) :global(.program-photo--buildher-tall) {
+      grid-area: her-photo;
+      width: 35%;
+      margin-top: 0;
+      align-self: end;
+      justify-self: end;
+    }
+    :global(html[data-responsive]) .program-copy--buildher {
+      grid-area: her-copy;
+    }
+    :global(html[data-responsive]) :global(.program-photo--saturdays) {
+      grid-area: sat-photo;
+    }
+    :global(html[data-responsive]) .program-copy--saturdays {
+      grid-area: sat-copy;
+    }
+    :global(html[data-responsive]) .program-name {
+      font-size: 80px;
+    }
+    :global(html[data-responsive]) .program-blurb {
+      font-size: 26px;
+    }
+  }
 </style>
