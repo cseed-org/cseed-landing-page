@@ -34,7 +34,7 @@ const {
         var responsive = root.hasAttribute('data-responsive');
         // The mobile canvas query, kept identical to the one in styles/tokens/layout.css.
         var mobile = window.matchMedia(
-          '(max-width: 900px), (pointer: coarse) and (max-height: 500px)',
+          '(max-width: 900px), (hover: none) and (pointer: coarse) and (max-width: 1400px)',
         );
         function fit() {
           // clientWidth, not innerWidth: it leaves out the scrollbar and holds still while
@@ -131,7 +131,9 @@ const {
           const vh = window.innerHeight || document.documentElement.clientHeight || 0;
           pending.forEach((el) => {
             const r = el.getBoundingClientRect();
-            if (r.top < vh * 0.94 && r.bottom > -vh) show(el);
+            // Safari can coalesce scroll events across several screens. Reveal content
+            // already passed as well, so a skipped viewport never leaves it hidden.
+            if (r.top < vh * 0.94) show(el);
           });
         };
         if ('IntersectionObserver' in window) {

@@ -31,7 +31,7 @@ const { logos } = Astro.props;
   }
 
   /* Mobile canvas (responsive pages only): logos wrap two to a row. */
-  @media (max-width: 900px), (pointer: coarse) and (max-height: 500px) {
+  @media (max-width: 900px), (hover: none) and (pointer: coarse) and (max-width: 1400px) {
     :global(html[data-responsive]) .sponsor-strip {
       height: auto;
       padding: 64px 40px;

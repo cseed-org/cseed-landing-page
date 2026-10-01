@@ -72,7 +72,7 @@ const { title, description, compactFooter = false, responsive = false } = Astro.
     z-index: 10;
   }
   /* The mobile canvas is authored at its final size, so no extra footer shrink. */
-  @media (max-width: 900px), (pointer: coarse) and (max-height: 500px) {
+  @media (max-width: 900px), (hover: none) and (pointer: coarse) and (max-width: 1400px) {
     :global(html[data-responsive]) .footer-compact {
       zoom: 1;
       width: auto;

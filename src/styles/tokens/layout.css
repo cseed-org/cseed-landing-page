@@ -33,12 +33,12 @@
   --shadow-none: none;
 }
 
-/* Responsive pages (BaseLayout's `responsive` prop) swap to a narrower, stacked
-   780px canvas on phones and small tablets; BaseLayout scales it to fit the screen.
-   This query is the one definition of "the mobile canvas": screens up to 900px wide,
-   plus phones held sideways (the only touch screens under 500px tall). Every mobile
-   block in the components repeats it verbatim, as does BaseLayout's head script. */
-@media (max-width: 900px), (pointer: coarse) and (max-height: 500px) {
+/* Responsive pages keep the original 900px narrow-screen breakpoint. Above it,
+   only touch-first devices without hover use the stacked canvas (including large
+   iPads in landscape). A mouse/trackpad desktop keeps the 2083px composition even
+   in a narrow window or when it also has a touchscreen. Keep this query identical
+   in component styles and BaseLayout's pre-paint sizing script. */
+@media (max-width: 900px), (hover: none) and (pointer: coarse) and (max-width: 1400px) {
   html[data-responsive] {
     --canvas-width: 780px;
   }

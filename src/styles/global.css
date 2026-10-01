@@ -122,7 +122,7 @@ svg {
 }
 /* Mobile canvas on responsive pages (see tokens/layout.css). The canvas renders at
    about half size on phones, so eyebrows grow to stay legible. */
-@media (max-width: 900px), (pointer: coarse) and (max-height: 500px) {
+@media (max-width: 900px), (hover: none) and (pointer: coarse) and (max-width: 1400px) {
   html[data-responsive] .t-serif {
     font-size: 104px;
   }

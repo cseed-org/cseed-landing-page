@@ -1,15 +1,15 @@
 // Renders every page on phones (portrait and landscape), tablets, and desktops in all three
 // browser engines -- WebKit (every iOS browser), Chromium (Android Chrome, Samsung Internet,
-// in-app browsers), and Firefox -- and checks that each layout holds: phones get the mobile
+// in-app browsers), and Firefox -- and checks that each layout holds: phones and tablets get the stacked
 // canvas, scaled to the screen before the first paint, with no text clipped, overlapping, or
 // scrolling sideways.
 //
-//   npm run check:mobile [-- <origin>] [--quick] [--only <text>] [--shots] [--concurrency <n>]
+//   npm run check:mobile [-- <origin>] [--quick | --tablet | --desktop] [--only <text>] [--shots] [--concurrency <n>]
 //
 // Failures are re-run one at a time before they count, since a busy machine can starve the
 // reveal-on-scroll animations. Screenshots of failures are saved to .mobile-check/.
 import { chromium, firefox, webkit } from 'playwright';
-import { mkdirSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 const args = process.argv.slice(2);
@@ -19,18 +19,20 @@ const origin =
   args.find((arg, i) => !arg.startsWith('--') && !takesValue.has(args[i - 1])) ??
   'http://localhost:4321';
 const quick = args.includes('--quick');
+const tablet = args.includes('--tablet');
+const desktop = args.includes('--desktop');
 const keepAllShots = args.includes('--shots');
 const only = valueOf('--only') ?? '';
 const concurrency = Number(valueOf('--concurrency') ?? 4);
-const out = new URL('../.mobile-check/', import.meta.url);
-rmSync(out, { recursive: true, force: true });
+// Keep previous diagnostics; each run writes to its own directory.
+const out = new URL(`../.mobile-check/run-${Date.now()}/`, import.meta.url);
 mkdirSync(new URL('shots/', out), { recursive: true });
 
 const routes = readdirSync(new URL('../src/pages/', import.meta.url))
   .filter((file) => file.endsWith('.astro'))
   .map((file) => (file === 'index.astro' ? '/' : `/${file.replace('.astro', '')}/`));
 
-// CSS viewport sizes of real devices. Every phone, either way up, must get the mobile canvas.
+// CSS viewport sizes of real devices. Every phone and tablet, either way up, must get the stacked canvas.
 const device = (name, width, height, kind = 'phone') => ({ name, width, height, kind });
 const PORTRAIT = [
   device('iphone-se-1', 320, 568),
@@ -59,9 +61,19 @@ const TABLETS = [
   device('ipad-mini', 768, 1024, 'tablet'),
   device('ipad-air', 820, 1180, 'tablet'),
   device('ipad-pro', 1024, 1366, 'tablet'),
+  device('ipad-pro-13', 1032, 1376, 'tablet'),
+  device('ipad-pro-landscape', 1366, 1024, 'tablet'),
+  device('ipad-pro-13-landscape', 1376, 1032, 'tablet'),
   device('ipad-landscape', 1180, 820, 'tablet'),
 ];
-const DESKTOPS = [device('laptop', 1440, 900, 'desktop'), device('desktop', 1920, 1080, 'desktop')];
+const DESKTOPS = [
+  device('narrow-desktop', 1024, 1366, 'desktop'),
+  device('desktop-1100', 1100, 800, 'desktop'),
+  device('compact-laptop', 1280, 800, 'desktop'),
+  device('laptop-1366', 1366, 768, 'desktop'),
+  device('laptop', 1440, 900, 'desktop'),
+  device('desktop', 1920, 1080, 'desktop'),
+];
 const pick = (...names) =>
   [...PORTRAIT, ...LANDSCAPE, ...TABLETS, ...DESKTOPS].filter((d) => names.includes(d.name));
 
@@ -69,29 +81,74 @@ const pick = (...names) =>
 // Firefox's automatic font sizing can; `dark` is Chromium forcing dark mode on the page, as
 // Samsung Internet does; `slow` is a repeat visit on a slow connection, where styles come from
 // the cache while the HTML is still arriving, so the browser paints as it parses.
-const plan = quick
-  ? [
-      ['webkit', 'base', pick('iphone-se-1', 'iphone-14', 'iphone-pro-max-landscape')],
-      ['chromium', 'base', pick('galaxy-s', 'galaxy-ultra-landscape', 'ipad-pro', 'laptop')],
-      ['firefox', 'base', pick('iphone-14')],
-      ['chromium', 'text130', pick('galaxy-s')],
-      ['chromium', 'dark', pick('iphone-14')],
-      ['chromium', 'slow', pick('galaxy-s')],
-    ]
-  : [
-      ['chromium', 'base', [...PORTRAIT, ...LANDSCAPE, ...TABLETS, ...DESKTOPS]],
-      ['webkit', 'base', [...PORTRAIT, ...LANDSCAPE, ...TABLETS]],
-      // Playwright can't emulate a phone in Firefox, so there it covers phone widths.
-      ['firefox', 'base', [...PORTRAIT, ...DESKTOPS]],
-      [
-        'chromium',
-        'text130',
-        pick('galaxy-s', 'iphone-14', 'galaxy-ultra', 'iphone-pro-max-landscape'),
-      ],
-      ['firefox', 'text130', pick('galaxy-s', 'iphone-14', 'galaxy-ultra')],
-      ['chromium', 'dark', pick('iphone-14')],
-      ['chromium', 'slow', pick('galaxy-s')],
-    ];
+const TABLET_PLAN = [
+  ['webkit', 'base', TABLETS],
+  ['chromium', 'base', TABLETS],
+  ['webkit', 'text130', pick('ipad-pro', 'ipad-pro-landscape')],
+  ['chromium', 'text130', pick('ipad-pro', 'ipad-pro-landscape')],
+  ['webkit', 'rotate', pick('ipad-pro')],
+  ['chromium', 'rotate', pick('ipad-pro')],
+];
+const DESKTOP_PLAN = [
+  ['webkit', 'base', DESKTOPS],
+  ['chromium', 'base', DESKTOPS],
+  ['firefox', 'base', pick('narrow-desktop', 'laptop-1366', 'desktop')],
+  ['webkit', 'rotate', pick('narrow-desktop')],
+  ['chromium', 'rotate', pick('narrow-desktop')],
+];
+const plan = desktop
+  ? DESKTOP_PLAN
+  : tablet
+    ? TABLET_PLAN
+    : quick
+      ? [
+          [
+            'webkit',
+            'base',
+            pick(
+              'iphone-se-1',
+              'iphone-14',
+              'iphone-pro-max-landscape',
+              'ipad-pro',
+              'ipad-pro-landscape',
+              'narrow-desktop',
+              'laptop-1366',
+            ),
+          ],
+          [
+            'chromium',
+            'base',
+            pick(
+              'galaxy-s',
+              'galaxy-ultra-landscape',
+              'ipad-pro',
+              'ipad-pro-landscape',
+              'narrow-desktop',
+              'laptop-1366',
+              'laptop',
+            ),
+          ],
+          ['firefox', 'base', pick('iphone-14')],
+          ['chromium', 'text130', pick('galaxy-s')],
+          ['chromium', 'dark', pick('iphone-14')],
+          ['chromium', 'slow', pick('galaxy-s')],
+        ]
+      : [
+          ['chromium', 'base', [...PORTRAIT, ...LANDSCAPE, ...TABLETS, ...DESKTOPS]],
+          ['webkit', 'base', [...PORTRAIT, ...LANDSCAPE, ...TABLETS, ...DESKTOPS]],
+          // Playwright can't emulate a phone in Firefox, so there it covers phone widths.
+          ['firefox', 'base', [...PORTRAIT, ...DESKTOPS]],
+          ...TABLET_PLAN.filter(([, variant]) => variant !== 'base'),
+          ...DESKTOP_PLAN.filter(([, variant]) => variant !== 'base'),
+          [
+            'chromium',
+            'text130',
+            pick('galaxy-s', 'iphone-14', 'galaxy-ultra', 'iphone-pro-max-landscape'),
+          ],
+          ['firefox', 'text130', pick('galaxy-s', 'iphone-14', 'galaxy-ultra')],
+          ['chromium', 'dark', pick('iphone-14')],
+          ['chromium', 'slow', pick('galaxy-s')],
+        ];
 const runs = plan
   .flatMap(([engine, variant, devices]) =>
     devices.flatMap((d) =>
@@ -246,6 +303,9 @@ function measure() {
     width,
     canvasWidth: parseFloat(style.getPropertyValue('--canvas-width')),
     canvasRendered: canvas?.width,
+    programCopyPosition: document.querySelector('.program-copy')
+      ? getComputedStyle(document.querySelector('.program-copy')).position
+      : null,
     scrollWidth: document.scrollingElement.scrollWidth,
     panned,
     clipped,
@@ -260,8 +320,12 @@ function measure() {
 
 function expectations({ device: d }, m) {
   const failures = [];
-  if (d.kind === 'phone' && m.canvasWidth !== 780)
-    failures.push(`canvas: a phone got the ${m.canvasWidth}px desktop canvas`);
+  const expectedCanvas = d.kind === 'desktop' && m.width > 900 ? 2083 : 780;
+  if (m.canvasWidth !== expectedCanvas)
+    failures.push(`canvas: ${d.kind} expected ${expectedCanvas}px, got ${m.canvasWidth}px`);
+  const expectedPosition = expectedCanvas === 2083 ? 'absolute' : 'relative';
+  if (m.programCopyPosition && m.programCopyPosition !== expectedPosition)
+    failures.push(`programs: expected ${expectedPosition} placement, got ${m.programCopyPosition}`);
   if (m.canvasRendered !== undefined && Math.abs(m.canvasRendered - m.width) > 1)
     failures.push(
       `fit: the canvas renders ${Math.round(m.canvasRendered)}px wide on a ${m.width}px screen`,
@@ -347,6 +411,22 @@ async function check(run, screenshot) {
     await page.evaluate(scrollThrough);
     await page.waitForTimeout(1400); // reveal transitions
     const failures = expectations(run, await page.evaluate(measure));
+    if (variant === 'rotate') {
+      // Rotate the same document both ways to catch stale scale and hero dimensions.
+      for (const viewport of [
+        { width: d.height, height: d.width },
+        { width: d.width, height: d.height },
+      ]) {
+        await page.setViewportSize(viewport);
+        await page.evaluate(scrollThrough);
+        await page.waitForTimeout(1400);
+        failures.push(
+          ...expectations(run, await page.evaluate(measure)).map(
+            (failure) => `${viewport.width}x${viewport.height} after rotation: ${failure}`,
+          ),
+        );
+      }
+    }
     if (errors.length) failures.push(`script error: ${errors.join(' | ')}`);
     if (variant === 'dark') {
       const brightness = await footerBrightness(page);
@@ -389,6 +469,7 @@ async function checkAll(list, workers, screenshot) {
 }
 
 console.error(`Checking ${runs.length} page views at ${origin}...`);
+console.error(`Diagnostics: ${fileURLToPath(out)}`);
 const firstPass = await checkAll(runs, concurrency, false);
 const failed = firstPass.size ? await checkAll([...firstPass.keys()], 1, true) : new Map();
 for (const browser of Object.values(browsers)) await browser.close();
@@ -401,7 +482,7 @@ writeFileSync(
 if (failed.size) {
   console.error(`\n${report.join('\n\n')}\n`);
   console.error(
-    `Mobile check failed for ${failed.size} of ${runs.length} page views. Screenshots are in .mobile-check/shots/.`,
+    `Mobile check failed for ${failed.size} of ${runs.length} page views. Screenshots are in ${fileURLToPath(new URL('shots/', out))}.`,
   );
   process.exit(1);
 }

@@ -955,7 +955,7 @@ let last = '';
     }
   }
   /* Mobile canvas: never render an input under 16px on screen, or iOS zooms in on focus. */
-  @media (max-width: 900px), (pointer: coarse) and (max-height: 500px) {
+  @media (max-width: 900px), (hover: none) and (pointer: coarse) and (max-width: 1400px) {
     .jn-input {
       font-size: max(32px, calc(16px / var(--page-zoom, 1)));
     }
@@ -1601,8 +1601,8 @@ let last = '';
     padding-block: 0.275em;
   }
 
-  /* ---------- Mobile canvas (780px, phones and small tablets) ---------- */
-  @media (max-width: 900px), (pointer: coarse) and (max-height: 500px) {
+  /* ---------- Mobile canvas (780px, phones and tablets) ---------- */
+  @media (max-width: 900px), (hover: none) and (pointer: coarse) and (max-width: 1400px) {
     .jn-shrink {
       zoom: 1;
       width: auto;

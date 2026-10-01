@@ -10,6 +10,8 @@
     "check": "astro check",
     "check:seo": "node scripts/verify-seo.mjs",
     "check:mobile": "node scripts/check-mobile.mjs",
+    "check:tablet": "node scripts/check-mobile.mjs --tablet",
+    "check:desktop": "node scripts/check-mobile.mjs --desktop",
     "lint": "prettier --check .",
     "format": "prettier --write .",
     "astro": "astro"
