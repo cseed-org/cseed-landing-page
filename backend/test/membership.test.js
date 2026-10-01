@@ -272,6 +272,7 @@ test('daily rebuild runs at 7am Pacific across both daylight saving transitions'
     assert.equal(url, env.SITE_DEPLOY_HOOK_URL);
     assert.equal(options.method, 'POST');
     assert.equal(options.body, undefined);
+    assert.equal(options.redirect, 'manual');
     dispatches++;
     return Response.json({ success: true, result: { build_uuid: 'synthetic-build' } });
   });
@@ -320,6 +321,24 @@ test('signups wait for the daily rebuild and an accepted hook never suppresses t
   db.exec('UPDATE Member_wall_sync SET dispatched_revision = revision');
   await run('2026-09-30');
   assert.equal(dispatches, 3);
+});
+
+test('deploy hook redirects fail without following the target or logging its URL', async (t) => {
+  const { env } = setup(t);
+  env.SITE_DEPLOY_HOOK_URL =
+    'https://api.cloudflare.com/client/v4/workers/builds/deploy_hooks/private-hook';
+  globalThis.fetch.mock.mockImplementation(async (url, options) => {
+    assert.equal(url, env.SITE_DEPLOY_HOOK_URL);
+    assert.equal(options.redirect, 'manual');
+    return new Response(null, {
+      status: 302,
+      headers: { Location: 'https://example.invalid/private-redirect' },
+    });
+  });
+  await assert.rejects(dispatchMemberWall(env), {
+    message: 'Member wall: deploy hook returned HTTP 302.',
+  });
+  assert.equal(globalThis.fetch.mock.callCount(), 1);
 });
 
 test('deploy hook failures are actionable without leaking credentials or responses', async (t) => {

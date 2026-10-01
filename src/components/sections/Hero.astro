@@ -88,17 +88,20 @@ const { display = 'good people. curious ideas.', cta = 'scroll down' } = Astro.p
     background: linear-gradient(rgba(20, 16, 10, 0) 28%, rgba(20, 16, 10, 0.52) 52%, rgba(20, 16, 10, 0.72) 100%);
   }
   .hero-wordmark {
+    --logo-width: 266px;
     position: absolute;
     left: 0;
     right: 0;
     top: 60px;
-    width: 266px;
+    /* The letters occupy the first 471px of the 640px logo. Center that
+       portion and let the plant extend to its right. */
+    width: calc(var(--logo-width) * 471 / 640);
     margin-inline: auto;
-    text-align: center;
     animation: cseed-fade-up var(--dur-hero) var(--ease-soft) 200ms both;
   }
   .hero-wordmark img {
-    width: 100%;
+    width: var(--logo-width);
+    max-width: none;
     height: auto;
   }
   /* Keep the headline and calendar together as text wraps or grows. */

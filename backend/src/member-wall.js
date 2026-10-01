@@ -55,7 +55,9 @@ export async function dispatchMemberWall(env) {
     response = await fetch(env.SITE_DEPLOY_HOOK_URL, {
       method: 'POST',
       signal: AbortSignal.timeout(8000),
-      redirect: 'error',
+      // Workers rejects redirect: 'error' before sending the request. Return
+      // redirects unchanged so the !response.ok check below rejects them.
+      redirect: 'manual',
     });
   } catch {
     // Fetch errors can contain the secret hook URL. Never propagate the original error.

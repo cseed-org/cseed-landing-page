@@ -311,6 +311,10 @@ Docs: [D1 migrations](https://developers.cloudflare.com/d1/reference/migrations/
   configuration, HTTP failures, and timeouts fail the cron instead of silently skipping.
 - A `member_wall_build_accepted` message means a build request was accepted.
   Inspect **cseed-site** build history to confirm deployment completed.
+- Older deployments used `redirect: 'error'` for the hook request. The Workers
+  runtime rejects that option before sending the POST, but the catch block reports
+  it as "deploy hook request failed or timed out." Deploy the fix using
+  `redirect: 'manual'`; redirect responses still fail with their HTTP status.
 - A `membership_submission_failed` message means an unexpected submission failure.
   Check Turnstile configuration, rate limiter bindings, and D1 migrations. Raw exceptions,
   request bodies, IPs, tokens, and member data are never logged by these diagnostics.
