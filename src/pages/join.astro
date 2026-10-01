@@ -148,9 +148,15 @@ let last = '';
       <div class="jn-lower" data-jn-lower>
         <div class="jn-cta">
           <Reveal delay={240}>
-            <button type="button" class="jn-step-btn" data-jn-start>
-              <span>become a member now!</span><span class="jn-step-arrow">→</span>
-            </button>
+            <div class="jn-signup">
+              <button type="button" class="jn-step-btn" data-jn-start aria-describedby="jn-membership-note">
+                <span>become a member now!</span><span class="jn-step-arrow">→</span>
+              </button>
+              <p class="jn-membership-note" id="jn-membership-note">
+                This signs you up for cseed membership. Interested in buildspace?{' '}
+                <a href="/buildspace/">Apply separately to the program.</a>
+              </p>
+            </div>
           </Reveal>
           <Reveal delay={320}>
             <ul class="jn-facts">
@@ -1117,6 +1123,29 @@ let last = '';
     max-width: 820px;
     white-space: normal;
   }
+  .jn-signup {
+    display: flex;
+    flex-direction: column;
+    width: max-content;
+    max-width: 100%;
+  }
+  .jn-membership-note {
+    /* Wrap to the button's width so their centers stay aligned. */
+    width: 0;
+    min-width: 100%;
+    text-align: center;
+    margin: 24px 0 0;
+    font: 300 20px/1.5 var(--font-body);
+    color: var(--cseed-ink-soft);
+  }
+  .jn-membership-note a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+  }
+  .jn-membership-note a:hover {
+    color: var(--cseed-ink);
+  }
   /* The quick facts, stacked under the button with yellow dots. */
   .jn-facts {
     margin: 40px 0 0;
@@ -1603,6 +1632,12 @@ let last = '';
     .jn-cta .jn-step-btn {
       width: 100%;
       justify-content: center;
+    }
+    .jn-signup {
+      width: 100%;
+    }
+    .jn-membership-note {
+      font-size: 26px;
     }
     .jn-facts {
       font-size: 30px;

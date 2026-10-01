@@ -1,14 +1,13 @@
 ---
-import Wordmark from '../core/Wordmark.astro';
 import TextLink from '../core/TextLink.astro';
 
 /*
  * Source node "hero" -- a photograph bled past the 2083px-wide canvas,
- * yellow wordmark, 160px display line in --cseed-sun, and a centred white
+ * plant logo, display line in --cseed-sun, and a centred white
  * mono CTA. All other positions below are the literal pixel values
  * from the source design, authored against this fixed canvas -- the whole
  * page (see BaseLayout's script) is scaled as one unit via CSS `zoom`, so
- * nothing in here needs to be responsive on its own.
+ * mobile overrides use the narrower 780px canvas.
  *
  * Height is set client-side to fill the viewport (see `fitHero()` in
  * BaseLayout's script); 1293 is only the pre-JS default.
@@ -24,9 +23,19 @@ const { display = 'good people. curious ideas.', cta = 'scroll down' } = Astro.p
   <div class="hero-photo" aria-hidden="true"></div>
   <div class="hero-scrim" aria-hidden="true"></div>
   <div class="hero-wordmark">
-    <Wordmark size={75} color="var(--text-wordmark-photo)" />
+    <img src="/images/cseed-logo-white.png" alt="cseed" width="266" height="60" />
   </div>
-  <h1 class="hero-display">{display}</h1>
+  <div class="hero-content">
+    <h1 class="hero-display">{display}</h1>
+    <a
+      class="hero-events"
+      href="https://luma.com/uwcseed"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Event Calendar <span aria-hidden="true">&#8599;</span>
+    </a>
+  </div>
   <div class="hero-cta" data-hero-cta>
     <TextLink variant="mono" href="#programs" style="font-size:32px">{cta}</TextLink>
   </div>
@@ -54,6 +63,7 @@ const { display = 'good people. curious ideas.', cta = 'scroll down' } = Astro.p
   .hero {
     position: relative;
     width: var(--canvas-width);
+    min-height: 640px;
     overflow: hidden;
     background: var(--surface-photo);
   }
@@ -79,21 +89,33 @@ const { display = 'good people. curious ideas.', cta = 'scroll down' } = Astro.p
   }
   .hero-wordmark {
     position: absolute;
-    left: 909px;
-    top: 0;
+    left: 0;
+    right: 0;
+    top: 60px;
     width: 266px;
+    margin-inline: auto;
     text-align: center;
     animation: cseed-fade-up var(--dur-hero) var(--ease-soft) 200ms both;
   }
-  /* Anchored from the bottom (unlike the source's top:895px) so it can never
-     collide with the wordmark above it when the viewport-fit hero comes out
-     shorter than the source's ~1293px default -- common on real monitors. */
-  .hero-display {
+  .hero-wordmark img {
+    width: 100%;
+    height: auto;
+  }
+  /* Keep the headline and calendar together as text wraps or grows. */
+  .hero-content {
     position: absolute;
-    left: 140px;
-    bottom: 242px;
+    left: 40px;
+    right: 40px;
+    bottom: 214px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 36px;
+  }
+  .hero-display {
     margin: 0;
-    width: 1853px;
+    width: 100%;
+    line-height: 1.2;
     text-align: center;
     font-family: var(--font-display);
     font-weight: var(--weight-display);
@@ -102,6 +124,33 @@ const { display = 'good people. curious ideas.', cta = 'scroll down' } = Astro.p
     white-space: nowrap;
     font-size: 130px;
     animation: cseed-hero-settle var(--dur-hero) var(--ease-soft) 420ms both;
+  }
+  .hero-events {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    min-height: max(76px, calc(44px / var(--page-zoom, 1)));
+    padding: 18px 32px;
+    border: 1.5px solid color-mix(in srgb, var(--cseed-sun) 65%, transparent);
+    background: rgba(20, 16, 10, 0.18);
+    color: var(--text-on-photo);
+    font: 400 28px/1.2 var(--font-mono);
+    text-decoration: none;
+    transition:
+      background var(--dur-hover) var(--ease-soft),
+      border-color var(--dur-hover) var(--ease-soft);
+  }
+  .hero-events span {
+    color: var(--cseed-sun);
+  }
+  .hero-events:hover {
+    background: color-mix(in srgb, var(--cseed-sun) 12%, transparent);
+    border-color: var(--cseed-sun);
+  }
+  .hero-events:focus-visible {
+    outline: 3px solid var(--cseed-sun);
+    outline-offset: 6px;
   }
   .hero-cta {
     position: absolute;
@@ -150,25 +199,25 @@ const { display = 'good people. curious ideas.', cta = 'scroll down' } = Astro.p
   @media (max-width: 900px), (pointer: coarse) and (max-height: 500px) {
     :global(html[data-responsive]) .hero-photo {
       left: 0;
+      top: 0;
       width: 100%;
+      height: 100%;
+      /* Center the pair and remove desktop overscan to keep both faces in frame. */
+      background-position: 43% center;
     }
     :global(html[data-responsive]) .hero-scrim {
       left: 0;
       right: 0;
     }
-    :global(html[data-responsive]) .hero-wordmark {
-      left: 0;
-      right: 0;
-      width: auto;
-    }
     :global(html[data-responsive]) .hero-display {
-      left: 40px;
-      right: 40px;
-      width: auto;
-      bottom: 230px;
       white-space: normal;
       font-size: 104px;
       line-height: 1;
+    }
+    :global(html[data-responsive]) .hero-events {
+      min-height: max(96px, calc(44px / var(--page-zoom, 1)));
+      padding: 24px 36px;
+      font-size: 34px;
     }
   }
 </style>
