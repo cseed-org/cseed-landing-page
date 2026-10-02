@@ -6,11 +6,13 @@ export const TEAM: { name: string; photo: string }[] = [
   ['Shiloh Dhasan', 'shiloh-dhasan'],
   ['Talal Kheiry', 'talal-kheiry'],
   ['Angela Yang', 'angela-yang'],
+  ['Aarav Gupta', 'aarav-gupta'],
   ['Adam Esayas', 'adam-esayas'],
   ['Avi Agola', 'avi-agola'],
   ['Maia Womack', 'maia-womack'],
   ['Maya Ma', 'maya-ma'],
   ['Nel Alaimaleata', 'nel-alaimaleata'],
+  ['Ria Kharade', 'ria-kharade'],
   ['Riley Fang', 'riley-fang'],
   // ['Shuhui Yang', 'shuhui-yang'], // hidden for now
   ['Surya Duraivenkatesh', 'surya-duraivenkatesh'],

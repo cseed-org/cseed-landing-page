@@ -80,8 +80,8 @@ const introPhotos: {
     w: 460,
     h: 560,
     r: -3,
-    src: '/images/buildspace/intro-thankyou-card.webp',
-    alt: 'A handwritten thank-you card from the buildspace cohort 2 team',
+    src: '/images/buildspace/intro-cohort3-poster.webp',
+    alt: 'Three buildspace members smiling in front of the cohort 3 poster',
   },
 ];
 
@@ -386,6 +386,19 @@ const tracks = [
           ))
         }
       </div>
+      <Reveal delay={480}>
+        <p class="bs-faq">
+          have more questions?
+          <TextLink
+            href="https://cseed.notion.site/public-buildspace-FAQ-19fe117c3bad80299a57c57d53c15920#19fe117c3bad80b2a296e6b93ec125b2"
+            external
+            arrowLength={26}
+            style="font:inherit; gap:14px"
+          >
+            check out our faq
+          </TextLink>
+        </p>
+      </Reveal>
     </section>
 
     <div class="bs-group">
@@ -1243,6 +1256,17 @@ void main() {
     width: 100%;
     height: auto;
     aspect-ratio: 3 / 2;
+  }
+
+  .bs-faq {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0 18px;
+    margin: 90px 0 0;
+    font: 400 34px/1.4 var(--font-body);
+    color: var(--cseed-ink);
   }
 
   /* tracks: a horizontal accordion inside a fixed 1883x618 box. Hovering (or
