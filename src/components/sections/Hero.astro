@@ -33,7 +33,10 @@ const { display = 'good people. curious ideas.', cta = 'scroll down' } = Astro.p
       target="_blank"
       rel="noopener noreferrer"
     >
-      Event Calendar <span aria-hidden="true">&#8599;</span>
+      Event Calendar
+      <svg class="hero-events-tri" viewBox="0 0 10 10" aria-hidden="true">
+        <path d="M5 0 L10 10 L0 10 Z" fill="currentColor"></path>
+      </svg>
     </a>
   </div>
   <div class="hero-cta" data-hero-cta>
@@ -132,24 +135,22 @@ const { display = 'good people. curious ideas.', cta = 'scroll down' } = Astro.p
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 16px;
+    gap: 14px;
     min-height: max(76px, calc(44px / var(--page-zoom, 1)));
-    padding: 18px 32px;
-    border: 1.5px solid color-mix(in srgb, var(--cseed-sun) 65%, transparent);
-    background: rgba(20, 16, 10, 0.18);
+    padding: 0 8px;
     color: var(--text-on-photo);
     font: 400 28px/1.2 var(--font-mono);
     text-decoration: none;
-    transition:
-      background var(--dur-hover) var(--ease-soft),
-      border-color var(--dur-hover) var(--ease-soft);
   }
-  .hero-events span {
-    color: var(--cseed-sun);
+  /* Small solid triangle pointing up-right (45deg) to signal an external link. */
+  .hero-events-tri {
+    width: 0.5em;
+    height: 0.5em;
+    transform: rotate(45deg);
+    transition: transform var(--dur-hover) var(--ease-soft);
   }
-  .hero-events:hover {
-    background: color-mix(in srgb, var(--cseed-sun) 12%, transparent);
-    border-color: var(--cseed-sun);
+  .hero-events:hover .hero-events-tri {
+    transform: translate(3px, -3px) rotate(45deg);
   }
   .hero-events:focus-visible {
     outline: 3px solid var(--cseed-sun);
@@ -219,7 +220,6 @@ const { display = 'good people. curious ideas.', cta = 'scroll down' } = Astro.p
     }
     :global(html[data-responsive]) .hero-events {
       min-height: max(96px, calc(44px / var(--page-zoom, 1)));
-      padding: 24px 36px;
       font-size: 34px;
     }
   }
